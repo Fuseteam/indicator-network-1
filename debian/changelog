@@ -1,3 +1,13 @@
+indicator-network (0.5.1+14.10.20141030~rtm-0ubuntu1) 14.09; urgency=low
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Kevin Gunn ]
+  * bump deb dep to dbus-cpp4.1.0
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 30 Oct 2014 14:36:24 +0000
+
 indicator-network (0.5.1+14.10.20141015-0ubuntu1) 14.09; urgency=low
 
   [ Antti Kaijanmäki ]
