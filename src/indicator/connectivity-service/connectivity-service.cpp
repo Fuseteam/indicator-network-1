@@ -138,7 +138,7 @@ ConnectivityService::Private::ConstructL()
         m_bus->run();
     } catch(const std::exception &e) {
         std::cerr << __PRETTY_FUNCTION__ << "dbus-cpp crashed: " << e.what() << "\n";
-        exit(0);
+        std::quick_exit(0);
     }
     }));
 

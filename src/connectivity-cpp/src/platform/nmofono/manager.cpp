@@ -104,7 +104,7 @@ Manager::State::State()
            // If this happens, indicator-network is in an unknown state with no clear way of
            // recovering. The only reasonable way out is a graceful exit.
            std::cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << std::endl;
-           exit(0);
+           std::quick_exit(0);
         }
     }));
     location::set_name_for_thread(

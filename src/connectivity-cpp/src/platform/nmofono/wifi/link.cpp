@@ -141,7 +141,7 @@ void Link::ap_added(const dbus::types::ObjectPath &path)
         // If this happens, indicator-network is in an unknown state with no clear way of
         // recovering. The only reasonable way out is a graceful exit.
         std::cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << std::endl;
-        exit(0);
+        std::quick_exit(0);
     }
 }
 
@@ -357,7 +357,7 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
         // If this happens, indicator-network is in an unknown state with no clear way of
         // recovering. The only reasonable way out is a graceful exit.
         std::cerr << __PRETTY_FUNCTION__ << " Failed to activate connection: " << e.what() << std::endl;
-        exit(0);
+        std::quick_exit(0);
     }
 }
 

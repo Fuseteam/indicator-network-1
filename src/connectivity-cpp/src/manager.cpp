@@ -38,7 +38,7 @@ Manager::createInstance()
         // If this happens, indicator-network is in an unknown state with no clear way of
         // recovering. The only reasonable way out is a graceful exit.
         std::cerr << __PRETTY_FUNCTION__ << " Failed to connect to managerinstance: " << e.what() << std::endl;
-        exit(0);
+        std::quick_exit(0);
     }
     return mgr;
 }
