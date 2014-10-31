@@ -40,9 +40,51 @@ namespace wifi {
 
 class AccessPoint : public connectivity::networking::wifi::AccessPoint
 {
-
 public:
     typedef std::shared_ptr<AccessPoint> Ptr;
+
+    struct Key {
+        std::string ssid;
+        uint32_t flags;
+        uint32_t secflags;
+        uint32_t mode;
+
+        bool operator<(const Key &other) const
+        {
+            // Standard lexigraphic comparison.
+            if(ssid < other.ssid)
+                return true;
+            if(ssid > other.ssid)
+                return false;
+
+            if(flags < other.flags)
+                return true;
+            if(flags > other.flags)
+                return false;
+
+            if(secflags  < other.secflags)
+                return true;
+            if(secflags > secflags)
+                return false;
+
+            if(mode < other.mode)
+                return true;
+            if(mode > other.mode)
+                return false;
+            return false;
+        }
+
+        Key() = delete;
+        Key(const AccessPoint::Ptr &curap)
+        {
+            ssid = curap->ssid();
+            flags = curap->m_flags;
+            secflags = curap->m_secflags;
+            mode = curap->m_mode;
+        }
+    };
+    friend class Key;
+
 
     AccessPoint(const org::freedesktop::NetworkManager::Interface::AccessPoint &ap);
     const core::Property<double>& strength() const;
@@ -54,14 +96,13 @@ public:
     const core::Property<std::chrono::system_clock::time_point>& lastConnected() const;
 
     const std::string& ssid() const override;
+    const std::vector<std::int8_t>& raw_ssid() const;
 
     bool secured() const override;
 
     bool adhoc() const override;
 
     const core::dbus::types::ObjectPath object_path() const;
-
-    const org::freedesktop::NetworkManager::Interface::AccessPoint& get_ap() const { return m_ap; }
 
     bool operator==(const platform::nmofono::wifi::AccessPoint &other) const;
     bool operator!=(const platform::nmofono::wifi::AccessPoint &other) const { return !(*this == other); };
@@ -71,8 +112,13 @@ private:
     core::Property<std::chrono::system_clock::time_point> m_lastConnected;
     org::freedesktop::NetworkManager::Interface::AccessPoint m_ap;
     std::string m_ssid;
+    std::vector<std::int8_t> m_raw_ssid;
     bool m_secured;
     bool m_adhoc;
+
+    std::uint32_t m_flags;
+    std::uint32_t m_secflags;
+    std::uint32_t m_mode;
 };
 
 }

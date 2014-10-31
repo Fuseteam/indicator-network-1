@@ -54,7 +54,7 @@ public:
             g_main_context_release(g_main_context_default());
         } else {
             std::unique_lock<std::mutex> lk(m_mutex);
-            g_idle_add_full(G_PRIORITY_HIGH,
+            g_idle_add_full(G_PRIORITY_HIGH + 1,
                             GSourceFunc(GMainLoopSync::dispatch_cb),
                             this,
                             nullptr);
@@ -77,7 +77,7 @@ public:
     static std::list<Func *> _funcs;
 
     //GMainLoopDispatch() = delete;
-    GMainLoopDispatch(std::function<void()> func);
+    GMainLoopDispatch(Func func);
 };
 
 struct GObjectDeleter {

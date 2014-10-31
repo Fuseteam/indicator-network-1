@@ -53,12 +53,17 @@ public:
 
     Private() = delete;
     Private(ModemManager::Ptr modemManager);
+    void ConstructL();
 
     void modemsChanged(const std::set<Modem::Ptr> &modems);
 };
 
 WwanSection::Private::Private(ModemManager::Ptr modemManager)
     : m_modemManager{modemManager}
+{}
+
+void
+WwanSection::Private::ConstructL()
 {
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menuMerger = std::make_shared<MenuMerger>();
@@ -85,6 +90,7 @@ WwanSection::Private::Private(ModemManager::Ptr modemManager)
     });
     m_actionGroupMerger->add(*m_openCellularSettings);
 
+    // already synced with GMainLoop
     m_modemManager->modems().changed().connect(std::bind(&Private::modemsChanged, this, std::placeholders::_1));
     modemsChanged(m_modemManager->modems());
 }
@@ -149,8 +155,9 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
 }
 
 WwanSection::WwanSection(ModemManager::Ptr modemManager)
+    : d{new Private(modemManager)}
 {
-    d.reset(new Private(modemManager));
+    d->ConstructL();
 }
 
 WwanSection::~WwanSection()

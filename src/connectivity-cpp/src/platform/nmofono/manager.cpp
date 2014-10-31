@@ -172,29 +172,11 @@ Manager::Manager() : p(new Manager::Private())
                                                        p->urfkill->switches[fdo::URfkill::Interface::Killswitch::Type::wlan]);
     p->m_wifiKillSwitch->state().changed().connect(std::bind(&Private::updateHasWifi, p.get()));
 
-    p->nm->device_added->connect([this](const dbus::types::ObjectPath &path){
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        std::cout << "Device Added:" << path.as_string() << std::endl;
-#endif
-        auto links = p->m_links.get();
-        for (const auto &dev : links) {
-            if (std::dynamic_pointer_cast<wifi::Link>(dev)->device_path() == path) {
-                // already in the list
-                return;
-            }
-        }
+    p->nm->device_added->connect(std::bind(&Manager::device_added, this, std::placeholders::_1));
+    for(const auto &path : p->nm->get_devices()) {
+        device_added(path);
+    }
 
-        NM::Interface::Device dev(p->nm->service,
-                                  p->nm->service->object_for_path(path));
-        if (dev.type() == NM::Interface::Device::Type::wifi) {
-            links.insert(std::make_shared<wifi::Link>(dev,
-                                                      *p->nm.get(),
-                                                       p->m_wifiKillSwitch));
-            p->m_links.set(links);
-        }
-
-        p->updateHasWifi();
-    });
     p->nm->device_removed->connect([this](const dbus::types::ObjectPath &path){
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
         std::cout << "Device Removed:" << path.as_string() << std::endl;
@@ -210,23 +192,6 @@ Manager::Manager() : p(new Manager::Private())
 
         p->updateHasWifi();
     });
-    std::set<std::shared_ptr<networking::Link> > links;
-    for(auto dev : p->nm->get_devices()) {
-        switch (dev.type()) {
-        case NM::Interface::Device::Type::wifi:
-        {
-            std::shared_ptr<networking::Link> link;
-            link.reset(new wifi::Link(dev,
-                                      *p->nm.get(),
-                                      p->m_wifiKillSwitch));
-            links.insert(link);
-            break;
-        }
-        default:
-            ;
-        }
-    }
-    p->m_links.set(links);
 
     updateNetworkingStatus(p->nm->state->get());
     p->nm->properties_changed->connect([this](NM::Interface::NetworkManager::Signal::PropertiesChanged::ArgumentType map) {
@@ -257,6 +222,46 @@ Manager::Manager() : p(new Manager::Private())
 
     p->updateHasWifi();
 }
+
+void
+Manager::device_added(const dbus::types::ObjectPath &path)
+{
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+    std::cout << "Device Added:" << path.as_string() << std::endl;
+#endif
+    auto links = p->m_links.get();
+
+    for (const auto &dev : links) {
+        if (std::dynamic_pointer_cast<wifi::Link>(dev)->device_path() == path) {
+            // already in the list
+            return;
+        }
+    }
+
+    connectivity::networking::Link::Ptr link;
+    try {
+        NM::Interface::Device dev(p->nm->service,
+                                  p->nm->service->object_for_path(path));
+        if (dev.type() == NM::Interface::Device::Type::wifi) {
+            link = std::make_shared<wifi::Link>(dev,
+                                                *p->nm.get(),
+                                                p->m_wifiKillSwitch);
+        }
+    } catch (const std::exception &e) {
+        std::cerr << __PRETTY_FUNCTION__ << ": failed to create Device proxy for "<< path.as_string() << ": " << std::endl
+                  << "\t" << e.what() << std::endl
+                  << "\tIgnoring." << std::endl;
+        return;
+    }
+
+    if (link) {
+        links.insert(link);
+        p->m_links.set(links);
+    }
+
+    p->updateHasWifi();
+}
+
 
 void
 Manager::enableFlightMode()

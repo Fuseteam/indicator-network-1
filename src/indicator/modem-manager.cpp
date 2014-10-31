@@ -19,6 +19,8 @@
 
 #include "modem-manager.h"
 
+#include <menumodel-cpp/gio-helpers/util.h>
+
 #include <notify-cpp/snapdecision/sim-unlock.h>
 
 #include "dbus-cpp/services/ofono.h"
@@ -30,7 +32,7 @@
 
 #include "sim-unlock-dialog.h"
 
-class ModemManager::Private
+class ModemManager::Private : public std::enable_shared_from_this<Private>
 {
 public:
 
@@ -47,6 +49,10 @@ public:
     std::list<Modem::Ptr> m_pendingUnlocks;
 
     Private()
+    {}
+
+    void
+    ConstructL()
     {
         m_bus = std::make_shared<core::dbus::Bus>(core::dbus::WellKnownBus::system);
 
@@ -83,8 +89,10 @@ public:
             ofono_disappeared();
         }
         m_watcher = m_dbus->make_service_watcher(org::ofono::Service::name());
-        m_watcher->service_registered().connect([this]()  { ofono_appeared();    });
-        m_watcher->service_unregistered().connect([this](){ ofono_disappeared(); });
+
+        auto that = shared_from_this();
+        m_watcher->service_registered().connect([that](){ GMainLoopDispatch([that](){ that->ofono_appeared(); }); });
+        m_watcher->service_unregistered().connect([that](){ GMainLoopDispatch([that](){ that->ofono_disappeared(); }); });
     }
 
     ~Private()
@@ -109,7 +117,10 @@ public:
             std::cerr << e.what() << std::endl;
         }
 
-        m_ofono->manager->modems.changed().connect(std::bind(&Private::modems_changed, this, std::placeholders::_1));
+        auto that = shared_from_this();
+        m_ofono->manager->modems.changed().connect(
+                    [that](std::map<core::dbus::types::ObjectPath, org::ofono::Interface::Modem::Ptr> modems)
+        { GMainLoopDispatch([that, modems]() { that->modems_changed(modems); }); });
         modems_changed(m_ofono->manager->modems.get());
     }
 
@@ -171,8 +182,9 @@ public:
 };
 
 ModemManager::ModemManager()
+    : d{new Private}
 {
-    d.reset(new Private);
+    d->ConstructL();
 }
 
 ModemManager::~ModemManager()

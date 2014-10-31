@@ -26,7 +26,7 @@
 class WwanSection : public Section
 {
     class Private;
-    std::unique_ptr<Private> d;
+    std::shared_ptr<Private> d;
 
 public:
     typedef std::shared_ptr<WwanSection> Ptr;

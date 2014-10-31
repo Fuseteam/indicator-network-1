@@ -19,7 +19,9 @@
 
 #include "modem.h"
 
-class Modem::Private
+#include <menumodel-cpp/gio-helpers/util.h>
+
+class Modem::Private : public std::enable_shared_from_this<Private>
 {
 public:
     core::Property<bool> m_online;
@@ -41,7 +43,59 @@ public:
     void simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr);
 
     void update();
+
+    Private() = delete;
+    Private(org::ofono::Interface::Modem::Ptr ofonoModem);
+    void ConstructL();
 };
+
+Modem::Private::Private(org::ofono::Interface::Modem::Ptr ofonoModem)
+    : m_ofonoModem{ofonoModem}
+{}
+
+void
+Modem::Private::ConstructL()
+{
+    auto that = shared_from_this();
+
+    m_online.set(m_ofonoModem->online.get());
+    m_ofonoModem->online.changed().connect([that](bool value){
+        GMainLoopDispatch([that, value]() {
+            that->m_online.set(value);
+        });
+    });
+
+    simManagerChanged(m_ofonoModem->simManager.get());
+    m_ofonoModem->simManager.changed().connect([that](org::ofono::Interface::SimManager::Ptr simmgr)
+    {
+        GMainLoopDispatch([that, simmgr](){
+            that->simManagerChanged(simmgr);
+        });
+    });
+
+    networkRegistrationChanged(m_ofonoModem->networkRegistration.get());
+    m_ofonoModem->networkRegistration.changed().connect([that](org::ofono::Interface::NetworkRegistration::Ptr netreg)
+    {
+        GMainLoopDispatch([that, netreg](){
+            that->networkRegistrationChanged(netreg);
+        });
+    });
+
+    /// @todo hook up with system-settings to allow changing the identifier.
+    ///       for now just provide the defaults
+    const auto path = m_ofonoModem->object->path().as_string();
+    if (path == "/ril_0") {
+        m_simIdentifier.set("SIM 1");
+        m_index = 1;
+    } else if (path == "/ril_1") {
+        m_simIdentifier.set("SIM 2");
+        m_index = 2;
+    } else {
+        m_simIdentifier.set(path);
+    }
+
+}
+
 
 void
 Modem::Private::update()
@@ -119,10 +173,38 @@ void
 Modem::Private::networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg)
 {
     if (netreg) {
-        netreg->operatorName.changed().connect(std::bind(&Private::update, this));
-        netreg->status.changed().connect(std::bind(&Private::update, this));
-        netreg->strength.changed().connect(std::bind(&Private::update, this));
-        netreg->technology.changed().connect(std::bind(&Private::update, this));
+        auto that = shared_from_this();
+        netreg->operatorName.changed().connect([that](const std::string &)
+        {
+            GMainLoopDispatch([that]()
+            {
+                that->update();
+            });
+        });
+        netreg->status.changed().connect([that](org::ofono::Interface::NetworkRegistration::Status)
+        {
+            GMainLoopDispatch([that]()
+            {
+                that->update();
+            });
+        });
+
+        netreg->strength.changed().connect([that](std::int8_t)
+        {
+            GMainLoopDispatch([that]()
+            {
+                that->update();
+            });
+        });
+
+        netreg->technology.changed().connect([that](org::ofono::Interface::NetworkRegistration::Technology)
+        {
+            GMainLoopDispatch([that]()
+            {
+                that->update();
+            });
+        });
+
     }
     update();
 }
@@ -132,41 +214,39 @@ void
 Modem::Private::simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr)
 {
     if (simmgr) {
-        simmgr->present.changed().connect(std::bind(&Private::update, this));
-        simmgr->pinRequired.changed().connect(std::bind(&Private::update, this));
-        simmgr->retries.changed().connect(std::bind(&Private::update, this));
+        auto that = shared_from_this();
+        simmgr->present.changed().connect([that](bool)
+        {
+            GMainLoopDispatch([that]()
+            {
+                that->update();
+            });
+        });
+
+        simmgr->pinRequired.changed().connect([that](org::ofono::Interface::SimManager::PinType)
+        {
+            GMainLoopDispatch([that]()
+            {
+                that->update();
+            });
+        });
+
+        simmgr->retries.changed().connect([that](std::map<org::ofono::Interface::SimManager::PinType, std::uint8_t>)
+        {
+            GMainLoopDispatch([that]()
+            {
+                that->update();
+            });
+        });
+
     }
     update();
 }
 
 Modem::Modem(org::ofono::Interface::Modem::Ptr ofonoModem)
+    : d{new Private(ofonoModem)}
 {
-    d.reset(new Private);
-    d->m_ofonoModem = ofonoModem;
-
-    d->m_online.set(d->m_ofonoModem->online.get());
-    d->m_ofonoModem->online.changed().connect([this](bool value){
-        d->m_online.set(value);
-    });
-
-    d->simManagerChanged(d->m_ofonoModem->simManager.get());
-    d->m_ofonoModem->simManager.changed().connect(std::bind(&Private::simManagerChanged, d.get(), std::placeholders::_1));
-
-    d->networkRegistrationChanged(d->m_ofonoModem->networkRegistration.get());
-    d->m_ofonoModem->networkRegistration.changed().connect(std::bind(&Private::networkRegistrationChanged, d.get(), std::placeholders::_1));
-
-    /// @todo hook up with system-settings to allow changing the identifier.
-    ///       for now just provide the defaults
-    const auto path = ofonoModem->object->path().as_string();
-    if (path == "/ril_0") {
-        d->m_simIdentifier.set("SIM 1");
-        d->m_index = 1;
-    } else if (path == "/ril_1") {
-        d->m_simIdentifier.set("SIM 2");
-        d->m_index = 2;
-    } else {
-        d->m_simIdentifier.set(path);
-    }
+    d->ConstructL();
 }
 
 Modem::~Modem()

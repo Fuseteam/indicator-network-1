@@ -23,6 +23,9 @@
 #include <memory>
 #include "modem.h"
 
+/**
+ * all signals and property changes dispatched from GMainLoop
+ */
 class SimUnlockDialog
 {
     class Private;

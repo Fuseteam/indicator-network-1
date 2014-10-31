@@ -34,11 +34,11 @@ AccessPoint::AccessPoint(const org::freedesktop::NetworkManager::Interface::Acce
 
     std::string ssid;
     // Note: raw_ssid is _not_ guaranteed to be null terminated.
-    const std::vector<std::int8_t> &raw_ssid = m_ap.ssid->get();
-    if(g_utf8_validate((const char*)(&raw_ssid[0]), raw_ssid.size(), nullptr)) {
-        ssid = std::string(raw_ssid.begin(), raw_ssid.end());
+    m_raw_ssid = m_ap.ssid->get();
+    if(g_utf8_validate((const char*)(&m_raw_ssid[0]), m_raw_ssid.size(), nullptr)) {
+        ssid = std::string(m_raw_ssid.begin(), m_raw_ssid.end());
     } else {
-        for (auto c : m_ap.ssid->get()) {
+        for (auto c : m_raw_ssid) {
             if (isprint(c)) {
                 ssid += (char)c;
             } else {
@@ -58,6 +58,15 @@ AccessPoint::AccessPoint(const org::freedesktop::NetworkManager::Interface::Acce
             }
         }
     });
+
+    m_flags = m_ap.flags->get();
+    /* NetworkManager seems to set the wpa and rns flags
+     * for AccessPoints on the same network in a total random manner.
+     * Sometimes only wpa_flags or rns_flags is set and sometimes
+     * they both are set but always to the same value
+     */
+    m_secflags = m_ap.wpa_flags->get()|m_ap.rsn_flags->get();
+    m_mode = m_ap.mode->get();
 }
 
 const core::dbus::types::ObjectPath AccessPoint::object_path() const {
@@ -79,6 +88,11 @@ const std::string& AccessPoint::ssid() const
     return m_ssid;
 }
 
+const std::vector<std::int8_t>& AccessPoint::raw_ssid() const
+{
+    return m_raw_ssid;
+}
+
 bool AccessPoint::secured() const
 {
     return m_secured;
@@ -93,14 +107,9 @@ bool AccessPoint::operator==(const platform::nmofono::wifi::AccessPoint &other) 
     if(this == &other)
         return true;
     return m_ssid == other.m_ssid &&
-            m_ap.flags->get() == other.m_ap.flags->get() &&
-            /* NetworkManager seems to set the wpa and rns flags
-             * for AccessPoints on the same network in a total random manner.
-             * Sometimes only wpa_flags or rns_flags is set and sometimes
-             * they both are set but always to the same value
-             */
-            (m_ap.wpa_flags->get()|m_ap.rsn_flags->get()) == (other.m_ap.wpa_flags->get()|other.m_ap.rsn_flags->get()) &&
-            m_ap.mode->get() == other.m_ap.mode->get();
+            m_flags == other.m_flags &&
+            m_secflags == other.m_secflags &&
+            m_mode == other.m_mode;
 }
 
 }

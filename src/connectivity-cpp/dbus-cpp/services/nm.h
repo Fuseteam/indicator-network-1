@@ -911,7 +911,7 @@ namespace NetworkManager
                 return result.value();
             }
 
-            std::vector<Device> get_devices()
+            std::vector<core::dbus::types::ObjectPath> get_devices()
             {
                 auto result =
                         object->invoke_method_synchronously<
@@ -921,16 +921,7 @@ namespace NetworkManager
                 if (result.is_error())
                     connectivity::throw_dbus_exception(result.error());
 
-                std::vector<Device> devices;
-                for (const auto& path : result.value())
-                {
-                    devices.emplace_back(
-                                Device(
-                                    service,
-                                    service->object_for_path(path)));
-                }
-
-                return devices;
+                return result.value();
             }
 
             NetworkManager(std::shared_ptr<core::dbus::Service> &service,

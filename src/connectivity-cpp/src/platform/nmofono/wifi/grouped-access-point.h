@@ -57,14 +57,13 @@ public:
     const core::Property<std::chrono::system_clock::time_point>& lastConnected() const;
 
     const std::string& ssid() const override;
+    const std::vector<std::int8_t>& raw_ssid() const;
 
     bool secured() const override;
 
     bool adhoc() const override;
 
     const core::dbus::types::ObjectPath object_path() const;
-
-    const org::freedesktop::NetworkManager::Interface::AccessPoint& get_ap() const;
 
     void add_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
     void remove_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);

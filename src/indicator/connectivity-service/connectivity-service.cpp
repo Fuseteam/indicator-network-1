@@ -20,6 +20,8 @@
 #include "connectivity-service.h"
 #include <dbus-cpp/services/connectivity.h>
 
+#include <menumodel-cpp/gio-helpers/util.h>
+
 #include <core/dbus/asio/executor.h>
 #include <core/dbus/helper/type_mapper.h>
 
@@ -81,7 +83,7 @@ struct Introspectable
 };
 }
 
-class ConnectivityService::Private
+class ConnectivityService::Private : public std::enable_shared_from_this<Private>
 {
 public:
     std::thread m_connectivityServiceWorker;
@@ -105,6 +107,7 @@ public:
 
     Private() = delete;
     Private(std::shared_ptr<networking::Manager> manager);
+    void ConstructL();
     ~Private();
 
     void updateNetworkingStatus();
@@ -114,9 +117,18 @@ public:
 
 ConnectivityService::Private::Private(std::shared_ptr<networking::Manager> manager)
     : m_manager{manager}
+{}
+
+void
+ConnectivityService::Private::ConstructL()
 {
-    m_manager->characteristics().changed().connect(std::bind(&Private::updateNetworkingStatus, this));
-    m_manager->status().changed().connect(std::bind(&Private::updateNetworkingStatus, this));
+    auto that = shared_from_this();
+    m_manager->characteristics().changed().connect(
+                [that](int){ GMainLoopDispatch([that](){ that->updateNetworkingStatus(); }); });
+
+    typedef connectivity::networking::Manager::NetworkingStatus NetworkingStatus;
+    m_manager->status().changed().connect(
+                [that](NetworkingStatus){ GMainLoopDispatch([that](){ that->updateNetworkingStatus(); }); });
 
     m_bus = std::make_shared<core::dbus::Bus>(core::dbus::WellKnownBus::session);
 
@@ -185,7 +197,9 @@ ConnectivityService::Private::Private(std::shared_ptr<networking::Manager> manag
     {
         auto reply = core::dbus::Message::make_method_return(msg);
         m_bus->send(reply);
-        m_unlockAllModems();
+
+        auto that = shared_from_this();
+        GMainLoopDispatch([that](){ that->m_unlockAllModems(); });
     });
 }
 
@@ -306,7 +320,9 @@ ConnectivityService::Private::introspectXml()
 
 ConnectivityService::ConnectivityService(std::shared_ptr<networking::Manager> manager)
     : d{new Private(manager)}
-{}
+{
+    d->ConstructL();
+}
 
 ConnectivityService::~ConnectivityService()
 {}

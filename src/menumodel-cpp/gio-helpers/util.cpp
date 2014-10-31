@@ -25,28 +25,28 @@ std::list<GMainLoopDispatch::Func *> GMainLoopDispatch::_funcs;
 gboolean
 GMainLoopDispatch::dispatch_cb(gpointer)
 {
-    std::lock_guard<std::mutex> lock(_lock);
+    std::unique_lock<std::mutex> lock(_lock);
     for (auto func : _funcs) {
+        lock.unlock();
         (*func)();
+        lock.lock();
         delete func;
     }
     _funcs.clear();
     return G_SOURCE_REMOVE;
 }
 
-GMainLoopDispatch::GMainLoopDispatch(std::function<void()> func)
+GMainLoopDispatch::GMainLoopDispatch(Func func)
 {
+    std::unique_lock<std::mutex> lock(_lock);
+
     if (g_main_context_acquire(g_main_context_default())) {
-        if (_funcs.empty())
-            func();
-        else {
-            std::function<void()> *funcPtr = new std::function<void()>(func);
-            _funcs.push_back(funcPtr);
-        }
+        // already running inside GMainLoop..
+        // free the lock and dispatch immediately.
+        lock.unlock();
+        func();
         g_main_context_release(g_main_context_default());
     } else {
-        std::lock_guard<std::mutex> lock(_lock);
-
         std::function<void()> *funcPtr = new std::function<void()>(func);
         if (_funcs.empty()) {
             g_idle_add_full(G_PRIORITY_HIGH,

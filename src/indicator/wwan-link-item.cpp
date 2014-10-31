@@ -23,7 +23,7 @@
 
 #include "menumodel-cpp/menu.h"
 
-class WwanLinkItem::Private
+class WwanLinkItem::Private : public std::enable_shared_from_this<Private>
 {
 public:
 
@@ -39,6 +39,7 @@ public:
 
     Private() = delete;
     Private(Modem::Ptr modem, ModemManager::Ptr modemManager);
+    void ConstructL();
 
     void update();
     void unlockSim();
@@ -47,6 +48,10 @@ public:
 WwanLinkItem::Private::Private(Modem::Ptr modem, ModemManager::Ptr modemManager)
     : m_modem{modem},
       m_modemManager{modemManager}
+{}
+
+void
+WwanLinkItem::Private::ConstructL()
 {
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menu = std::make_shared<Menu>();
@@ -60,6 +65,7 @@ WwanLinkItem::Private::Private(Modem::Ptr modem, ModemManager::Ptr modemManager)
     m_showIdentifier.set(false);
     m_showIdentifier.changed().connect(std::bind(&Private::update, this));
 
+    // already synced with GMainLoop
     m_modem->online().changed().connect(std::bind(&Private::update, this));
     m_modem->simStatus().changed().connect(std::bind(&Private::update, this));
     m_modem->operatorName().changed().connect(std::bind(&Private::update, this));
@@ -152,8 +158,10 @@ WwanLinkItem::Private::update()
 }
 
 WwanLinkItem::WwanLinkItem(Modem::Ptr modem, ModemManager::Ptr modemManager)
+    : d{new Private(modem, modemManager)}
+
 {
-    d.reset(new Private(modem, modemManager));
+    d->ConstructL();
 }
 
 WwanLinkItem::~WwanLinkItem()

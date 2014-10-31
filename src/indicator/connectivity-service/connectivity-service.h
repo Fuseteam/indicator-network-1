@@ -29,11 +29,14 @@ public:
     ConnectivityService(std::shared_ptr<connectivity::networking::Manager> manager);
     virtual ~ConnectivityService();
 
+    /**
+     * synced with GMainLoop
+     */
     core::Signal<> &unlockAllModems();
 
 private:
     class Private;
-    std::unique_ptr<Private> d;
+    std::shared_ptr<Private> d;
 };
 
 #endif

@@ -20,6 +20,7 @@
 #define PLATFORM_NMOFONO_MANAGER
 
 #include <connectivity/networking/manager.h>
+#include <core/dbus/types/object_path.h>
 
 namespace core {
 namespace dbus {
@@ -61,6 +62,9 @@ public:
     const core::Property<std::set<std::shared_ptr<connectivity::networking::Service>>>&services() const override;
     const core::Property<connectivity::networking::Manager::NetworkingStatus> & status() const override;
     const core::Property<std::uint32_t>& characteristics() const override;
+
+private:
+    void device_added(const core::dbus::types::ObjectPath &path);
 };
 
 #endif

@@ -23,7 +23,17 @@
 
 #include "url-dispatcher-cpp/url-dispatcher.h"
 
-class WifiSection::Private
+#include "menuitems/switch-item.h"
+#include "menuitems/text-item.h"
+
+#include "menumodel-cpp/action-group.h"
+#include "menumodel-cpp/action-group-merger.h"
+#include "menumodel-cpp/menu.h"
+#include "menumodel-cpp/menu-merger.h"
+
+using namespace connectivity;
+
+class WifiSection::Private : public std::enable_shared_from_this<Private>
 {
 public:
     std::shared_ptr<connectivity::networking::Manager> m_manager;
@@ -40,6 +50,10 @@ public:
     Private() = delete;
     Private(std::shared_ptr<connectivity::networking::Manager> manager)
         : m_manager{manager}
+    {}
+
+    void
+    ConstructL()
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
         m_menu = std::make_shared<Menu>();
@@ -56,9 +70,14 @@ public:
             m_settingsMenu->append(*m_switch);
         }
 
+        auto that = shared_from_this();
+
         m_switch->state().set(m_manager->wifiEnabled().get());
-        m_manager->wifiEnabled().changed().connect([this](bool value) {
-            m_switch->state().set(value);
+        m_manager->wifiEnabled().changed().connect([that](bool value) {
+            GMainLoopDispatch([that, value]()
+            {
+                that->m_switch->state().set(value);
+            });
         });
         m_switch->activated().connect([this](){
             if (m_switch->state().get()) {
@@ -73,8 +92,14 @@ public:
         });
 
 
-        m_manager->links().changed().connect(std::bind(&Private::updateLinks, this));
         updateLinks();
+        m_manager->links().changed().connect([that](std::set<networking::Link::Ptr>)
+        {
+            GMainLoopDispatch([that]()
+            {
+                    that->updateLinks();
+            });
+        });
 
         m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
         m_openWifiSettings->activated().connect([](){
@@ -115,14 +140,13 @@ public:
 };
 
 WifiSection::WifiSection(std::shared_ptr<connectivity::networking::Manager> manager)
+    : d{new Private(manager)}
 {
-    d.reset(new Private(manager));
+    d->ConstructL();
 }
 
 WifiSection::~WifiSection()
-{
-
-}
+{}
 
 ActionGroup::Ptr
 WifiSection::actionGroup()

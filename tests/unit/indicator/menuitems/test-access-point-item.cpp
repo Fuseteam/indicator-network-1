@@ -30,6 +30,8 @@ using namespace testing;
 using namespace QtDBusTest;
 using namespace testutils;
 
+using namespace connectivity;
+
 namespace
 {
 

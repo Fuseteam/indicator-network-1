@@ -86,6 +86,8 @@ main(int, char *[])
 
     std::shared_ptr<Service> menu {new Service(manager)};
     std::unique_ptr<ConnectivityService> connectivityService {new ConnectivityService(manager)};
+
+    // unlockAllModems is dispatched from GMainLoop
     connectivityService->unlockAllModems().connect([menu](){ menu->unlockAllModems(); });
 
     if (getenv("VALGRIND") != 0) {

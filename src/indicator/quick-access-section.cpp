@@ -26,7 +26,7 @@
 
 namespace networking = connectivity::networking;
 
-class QuickAccessSection::Private
+class QuickAccessSection::Private : public std::enable_shared_from_this<Private>
 {
 public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
@@ -36,14 +36,22 @@ public:
 
     SwitchItem::Ptr m_flightModeSwitch;
 
+    Private() = delete;
     Private(std::shared_ptr<networking::Manager> manager);
+    void ConstructL();
 };
 
 QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manager)
     : m_manager{manager}
+{}
+
+void
+QuickAccessSection::Private::ConstructL()
 {
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menu = std::make_shared<Menu>();
+
+    auto that = shared_from_this();
 
     m_flightModeSwitch = std::make_shared<SwitchItem>(_("Flight Mode"), "airplane", "enabled");
     switch (m_manager->flightMode().get()) {
@@ -54,15 +62,18 @@ QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manage
         m_flightModeSwitch->state().set(true);
         break;
     }
-    m_manager->flightMode().changed().connect([this](networking::Manager::FlightModeStatus value){
-        switch (value) {
-        case networking::Manager::FlightModeStatus::off:
-            m_flightModeSwitch->state().set(false);
-            break;
-        case networking::Manager::FlightModeStatus::on:
-            m_flightModeSwitch->state().set(true);
-            break;
-        }
+    m_manager->flightMode().changed().connect([that](networking::Manager::FlightModeStatus value){
+        GMainLoopDispatch([that, value]
+        {
+            switch (value) {
+            case networking::Manager::FlightModeStatus::off:
+                that->m_flightModeSwitch->state().set(false);
+                break;
+            case networking::Manager::FlightModeStatus::on:
+                that->m_flightModeSwitch->state().set(true);
+                break;
+            }
+        });
     });
     m_flightModeSwitch->activated().connect([this](){
         if (m_flightModeSwitch->state().get()) {
@@ -85,8 +96,9 @@ QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manage
 }
 
 QuickAccessSection::QuickAccessSection(std::shared_ptr<networking::Manager> manager)
+    : d{new Private(manager)}
 {
-    d.reset(new Private(manager));
+    d->ConstructL();
 }
 
 QuickAccessSection::~QuickAccessSection()

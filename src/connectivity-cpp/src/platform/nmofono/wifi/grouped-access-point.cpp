@@ -156,11 +156,6 @@ const core::dbus::types::ObjectPath GroupedAccessPoint::object_path() const {
     return p->aplist.at(0)->object_path();
 }
 
-const org::freedesktop::NetworkManager::Interface::AccessPoint& GroupedAccessPoint::get_ap() const {
-    std::lock_guard<std::mutex> l(p->m);
-    return p->aplist.at(0)->get_ap();
-}
-
 const core::Property<double>& GroupedAccessPoint::strength() const
 {
     std::lock_guard<std::mutex> l(p->m);
@@ -177,7 +172,12 @@ const std::string& GroupedAccessPoint::ssid() const
 {
     std::lock_guard<std::mutex> l(p->m);
     return p->aplist.at(0)->ssid();
+}
 
+const std::vector<std::int8_t>& GroupedAccessPoint::raw_ssid() const
+{
+    std::lock_guard<std::mutex> l(p->m);
+    return p->aplist.at(0)->raw_ssid();
 }
 
 bool GroupedAccessPoint::secured() const

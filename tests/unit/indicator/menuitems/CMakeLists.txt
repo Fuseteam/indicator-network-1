@@ -2,6 +2,7 @@
 set(
     MENUITEMS_CPP_UNIT_TESTS_SRC
     test-access-point-item.cpp
+    ${CMAKE_SOURCE_DIR}/src/indicator/menuitems/access-point-item.cpp
     test-switch-item.cpp
 )
 

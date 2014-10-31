@@ -27,10 +27,13 @@
 
 #include "dbus-cpp/services/ofono.h"
 
+/**
+ * all signals and property changes emitted from GMainLoop
+ */
 class Modem
 {
     class Private;
-    std::unique_ptr<Private> d;
+    std::shared_ptr<Private> d;
 
 public:
     enum class PinType

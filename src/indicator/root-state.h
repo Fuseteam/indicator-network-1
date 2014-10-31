@@ -25,10 +25,13 @@
 
 #include "menumodel-cpp/gio-helpers/variant.h"
 
+/**
+ * all signals and property changes emitted from GMainLoop
+ */
 class RootState
 {
     class Private;
-    std::unique_ptr<Private> d;
+    std::shared_ptr<Private> d;
 
 public:
     typedef std::shared_ptr<RootState> Ptr;

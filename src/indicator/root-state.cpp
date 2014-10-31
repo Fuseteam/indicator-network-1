@@ -24,9 +24,11 @@
 #include <connectivity/networking/wifi/link.h>
 #include <connectivity/networking/wifi/access-point.h>
 
+#include <menumodel-cpp/gio-helpers/util.h>
+
 namespace networking = connectivity::networking;
 
-class RootState::Private
+class RootState::Private : public std::enable_shared_from_this<Private>
 {
 public:
     std::shared_ptr<networking::Manager> m_manager;
@@ -43,6 +45,7 @@ public:
 
     Private() = delete;
     Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
+    void ConstructL();
 
     void modemsChanged(const std::set<Modem::Ptr> &modems);
 
@@ -57,14 +60,38 @@ public:
 RootState::Private::Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager)
     : m_manager{manager},
       m_modemManager{modemManager}
-{    
-    m_manager->flightMode().changed().connect(std::bind(&Private::updateRootState, this));
+{}
 
-    m_modemManager->modems().changed().connect(std::bind(&Private::modemsChanged, this, std::placeholders::_1));
+void
+RootState::Private::ConstructL()
+{
+    auto that = shared_from_this();
+
+    m_manager->flightMode().changed().connect([that](connectivity::networking::Manager::FlightModeStatus)
+    {
+        GMainLoopDispatch([that](){
+            that->updateRootState();
+        });
+    });
+
     modemsChanged(m_modemManager->modems().get());
+    // modem properties and signals already synced with GMainLoop
+    m_modemManager->modems().changed().connect(std::bind(&Private::modemsChanged, this, std::placeholders::_1));
 
-    m_manager->status().changed().connect(std::bind(&Private::updateNetworkingIcon, this));
-    m_manager->links().changed().connect(std::bind(&Private::updateNetworkingIcon, this));
+    m_manager->status().changed().connect([that](connectivity::networking::Manager::NetworkingStatus)
+    {
+        GMainLoopDispatch([that](){
+            that->updateNetworkingIcon();
+        });
+    });
+
+    m_manager->links().changed().connect([that](std::set<connectivity::networking::Link::Ptr>)
+    {
+        GMainLoopDispatch([that](){
+            that->updateNetworkingIcon();
+        });
+    });
+
 
     // will also call updateRootState()
     updateNetworkingIcon();
@@ -90,6 +117,7 @@ RootState::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
         m_cellularIcons.erase(modem);
 
     for (auto modem : added) {
+        // modem properties and signals already synced with GMainLoop
         modem->online().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
         modem->simStatus().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
         modem->status().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
@@ -319,8 +347,9 @@ RootState::Private::updateRootState()
 }
 
 RootState::RootState(std::shared_ptr<connectivity::networking::Manager> manager, ModemManager::Ptr modemManager)
+    : d{new Private(manager, modemManager)}
 {
-    d.reset(new Private(manager, modemManager));
+    d->ConstructL();
 }
 
 RootState::~RootState()

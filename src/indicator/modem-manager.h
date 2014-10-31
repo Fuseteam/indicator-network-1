@@ -28,7 +28,7 @@
 class ModemManager
 {
     class Private;
-    std::unique_ptr<Private> d;
+    std::shared_ptr<Private> d;
 
 public:
 
@@ -37,9 +37,19 @@ public:
     ModemManager();
     ~ModemManager();
 
+    /**
+     * must be called from GMainLoop
+     */
     void unlockModem(Modem::Ptr modem);
+
+    /**
+     * must be called from GMainLoop
+     */
     void unlockAllModems();
 
+    /**
+     * changed() emitted from GMainLoop
+     */
     const core::Property<std::set<Modem::Ptr>> &modems();
 };
 

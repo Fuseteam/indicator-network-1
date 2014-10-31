@@ -23,10 +23,13 @@
 #include "menuitems/section.h"
 #include <connectivity/networking/manager.h>
 
+/**
+ * all signals and property changes emitted from GMainLoop
+ */
 class QuickAccessSection : public Section
 {
     class Private;
-    std::unique_ptr<Private> d;
+    std::shared_ptr<Private> d;
 
 public:
     typedef std::shared_ptr<QuickAccessSection> Ptr;

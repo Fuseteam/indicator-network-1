@@ -7,19 +7,18 @@ set(NETWORK_SERVICE_SOURCES
     service.h
     indicator-menu.h
     modem.cpp
-    modem.h
     modem-manager.cpp
     quick-access-section.cpp
     sim-unlock-dialog.cpp
     root-state.cpp
-    wifi-link-item.h
+    wifi-link-item.cpp
     wifi-section.cpp
     wwan-link-item.cpp
     wwan-section.cpp
 
     connectivity-service/connectivity-service.cpp
 
-    menuitems/access-point-item.h
+    menuitems/access-point-item.cpp
     menuitems/item.h
     menuitems/modem-info-item.cpp
     menuitems/section.h
