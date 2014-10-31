@@ -1,3 +1,24 @@
+indicator-network (0.5.1+14.10.20141031.3~rtm-0ubuntu1) 14.09; urgency=low
+
+  [ Jussi Pakkanen ]
+  * Use std::quick_exit. (LP: #1381041)
+
+  [ Marcus Tomlinson ]
+  * Fix GMainLoopDispatch dispatching ordering when. called inside
+    GMainLoop already Fix GMainLoopDispatch locking. Force all signals
+    from external (dbus-cpp) threads through. GMainLoopDispatch (LP:
+    #1374419)
+
+  [ Antti Kaijanmäki ]
+  * Increase the default timeouts to match industry standards. (LP:
+    #1381041)
+  * Fix GMainLoopDispatch dispatching ordering when. called inside
+    GMainLoop already Fix GMainLoopDispatch locking. Force all signals
+    from external (dbus-cpp) threads through. GMainLoopDispatch (LP:
+    #1374419)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 31 Oct 2014 14:16:08 +0000
+
 indicator-network (0.5.1+14.10.20141030~rtm-0ubuntu1) 14.09; urgency=low
 
   [ CI bot ]
