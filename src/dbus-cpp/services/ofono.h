@@ -61,7 +61,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
         };
@@ -277,7 +277,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
             struct SetProperty
@@ -293,7 +293,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
 
@@ -310,7 +310,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
 
@@ -327,7 +327,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
 
@@ -344,7 +344,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
 
@@ -361,7 +361,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
 
@@ -378,7 +378,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
         };
@@ -814,7 +814,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
             struct SetProperty
@@ -830,7 +830,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
         };
@@ -1204,7 +1204,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{1};
+                    return std::chrono::seconds{30};
                 }
             };
         };

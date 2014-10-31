@@ -442,7 +442,7 @@ namespace NetworkManager
 
                     static std::chrono::milliseconds default_timeout()
                     {
-                        return std::chrono::seconds{1};
+                        return std::chrono::seconds{30};
                     }
                 };
             };
@@ -508,7 +508,7 @@ namespace NetworkManager
 
                         static std::chrono::milliseconds default_timeout()
                         {
-                            return std::chrono::seconds{1};
+                            return std::chrono::seconds{30};
                         }
                     };
                 };
@@ -655,7 +655,7 @@ namespace NetworkManager
 
                     static std::chrono::milliseconds default_timeout()
                     {
-                        return std::chrono::seconds{1};
+                        return std::chrono::seconds{30};
                     }
                 };
             };
@@ -752,7 +752,7 @@ namespace NetworkManager
 
                     static std::chrono::milliseconds default_timeout()
                     {
-                        return std::chrono::seconds{1};
+                        return std::chrono::seconds{30};
                     }
                 };
 
@@ -769,7 +769,7 @@ namespace NetworkManager
 
                     static std::chrono::milliseconds default_timeout()
                     {
-                        return std::chrono::seconds{1};
+                        return std::chrono::seconds{30};
                     }
                 };
 
@@ -786,7 +786,7 @@ namespace NetworkManager
 
                     static std::chrono::milliseconds default_timeout()
                     {
-                        return std::chrono::seconds{1};
+                        return std::chrono::seconds{30};
                     }
                 };
 

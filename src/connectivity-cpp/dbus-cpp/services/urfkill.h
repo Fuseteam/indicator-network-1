@@ -162,7 +162,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{15};
+                    return std::chrono::seconds{30};
                 }
             };
 
@@ -179,7 +179,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{15};
+                    return std::chrono::seconds{30};
                 }
             };
 
@@ -196,7 +196,7 @@ struct Interface
 
                 static std::chrono::milliseconds default_timeout()
                 {
-                    return std::chrono::seconds{5};
+                    return std::chrono::seconds{30};
                 }
             };
         };
