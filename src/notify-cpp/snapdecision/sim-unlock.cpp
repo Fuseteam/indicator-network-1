@@ -73,6 +73,16 @@ public:
         m_notification->closed().connect([this]()
         {
             resetNotification(m_title.get(), m_body.get());
+            m_popupAction->setState(TypedVariant<std::string>(""));
+            if (m_pendingPopupClosed)
+                m_pendingPopupClosed();
+            m_pendingPopupClosed = std::function<void()>();
+
+            m_errorAction->setState(TypedVariant<std::string>(""));
+            if (m_pendingErrorClosed)
+                m_pendingErrorClosed();
+            m_pendingErrorClosed = std::function<void()>();
+
             m_closed();
         });
     }
