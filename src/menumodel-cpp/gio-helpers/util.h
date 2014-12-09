@@ -77,7 +77,7 @@ public:
     static std::list<Func *> _funcs;
 
     //GMainLoopDispatch() = delete;
-    GMainLoopDispatch(Func func);
+    GMainLoopDispatch(Func func, int priority=G_PRIORITY_HIGH, bool force_delayed=false);
 };
 
 struct GObjectDeleter {
