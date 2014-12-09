@@ -48,6 +48,11 @@ public:
     void unlockAllModems();
 
     /**
+     * must be called from GMainLoop
+     */
+    void unlockModemByName(const std::string &name);
+
+    /**
      * changed() emitted from GMainLoop
      */
     const core::Property<std::set<Modem::Ptr>> &modems();

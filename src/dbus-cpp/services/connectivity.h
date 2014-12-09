@@ -129,6 +129,22 @@ struct Interface
                     return std::chrono::seconds{30};
                 }
             };
+
+            struct UnlockModem {
+                static const std::string& name()
+                {
+                    static const std::string s{"UnlockModem"};
+                    return s;
+                }
+
+                typedef Private Interface;
+                typedef void ValueType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{30};
+                }
+            };
         };
 
         Private(std::shared_ptr<core::dbus::Service> &service,

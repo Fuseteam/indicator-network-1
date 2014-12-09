@@ -90,6 +90,9 @@ main(int, char *[])
     // unlockAllModems is dispatched from GMainLoop
     connectivityService->unlockAllModems().connect([menu](){ menu->unlockAllModems(); });
 
+    // unlockModem is dispatched from GMainLoop
+    connectivityService->unlockModem().connect([menu](const std::string &name){ menu->unlockModem(name); });
+
     if (getenv("VALGRIND") != 0) {
         g_timeout_add(1000, (GSourceFunc)stop_main_loop, nullptr);
         mainloop.run();

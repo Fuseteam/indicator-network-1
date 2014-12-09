@@ -101,6 +101,8 @@ public:
     const core::Property<std::string> &simIdentifier();
     int index();
 
+    const std::string &name() const;
+
     static const std::string strengthIcon(int8_t strength)
     {
         /* Using same values as used by Android, not linear (LP: #1329945)*/

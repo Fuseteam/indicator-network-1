@@ -101,7 +101,8 @@ public:
     core::dbus::Object::Ptr m_privateObject;
     std::shared_ptr<com::ubuntu::connectivity::Interface::Private> m_private;
 
-    core::Signal<> m_unlockAllModems;
+    core::Signal<>            m_unlockAllModems;
+    core::Signal<std::string> m_unlockModem;
 
     std::shared_ptr<networking::Manager> m_manager;
 
@@ -200,6 +201,28 @@ ConnectivityService::Private::ConstructL()
 
         auto that = shared_from_this();
         GMainLoopDispatch([that](){ that->m_unlockAllModems(); });
+    });
+
+    m_privateObject->install_method_handler<com::ubuntu::connectivity::Interface::Private::Method::UnlockModem>([this](const core::dbus::Message::Ptr& msg)
+    {
+        core::dbus::Message::Reader reader;
+        try {
+            reader = msg->reader();
+        } catch(...) {
+            m_bus->send(core::dbus::Message::make_error(msg, "org.freedesktop.DBus.Error.InvalidArgs", "no modem name specified"));
+            return;
+        }
+        if (reader.type() != core::dbus::ArgumentType::string) {
+            m_bus->send(core::dbus::Message::make_error(msg, "org.freedesktop.DBus.Error.InvalidArgs", "modem name must be a string"));
+            return;
+        }
+        std::string name = reader.pop_string();
+
+        auto reply = core::dbus::Message::make_method_return(msg);
+        m_bus->send(reply);
+
+        auto that = shared_from_this();
+        GMainLoopDispatch([that, name](){ that->m_unlockModem(name); });
     });
 }
 
@@ -331,5 +354,11 @@ core::Signal<> &
 ConnectivityService::unlockAllModems()
 {
     return d->m_unlockAllModems;
+}
+
+core::Signal<std::string> &
+ConnectivityService::unlockModem()
+{
+    return d->m_unlockModem;
 }
 

@@ -383,3 +383,10 @@ Modem::index()
     return d->m_index;
 }
 
+const std::string &
+Modem::name() const
+{
+    return d->m_ofonoModem->object->path().as_string();
+}
+
+
