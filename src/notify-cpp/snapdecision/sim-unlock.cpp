@@ -62,6 +62,19 @@ public:
     std::function<void()> m_pendingErrorClosed;
     std::function<void()> m_pendingPopupClosed;
 
+    void resetActionStates()
+    {
+        m_popupAction->setState(TypedVariant<std::string>(""));
+        if (m_pendingPopupClosed)
+            m_pendingPopupClosed();
+        m_pendingPopupClosed = std::function<void()>();
+
+        m_errorAction->setState(TypedVariant<std::string>(""));
+        if (m_pendingErrorClosed)
+            m_pendingErrorClosed();
+        m_pendingErrorClosed = std::function<void()>();
+    }
+
     void resetNotification(const std::string &title,
                            const std::string &body)
     {
@@ -70,19 +83,10 @@ public:
         m_notification->setHintString("x-canonical-snap-decisions", "true");
         m_notification->setHint("x-canonical-snap-decisions-timeout", TypedVariant<std::int32_t>(std::numeric_limits<std::int32_t>::max()));
         m_notification->setHint("x-canonical-private-menu-model", TypedVariant<std::map<std::string, Variant>>(m_modelPaths));
+        resetActionStates();
         m_notification->closed().connect([this]()
         {
-            resetNotification(m_title.get(), m_body.get());
-            m_popupAction->setState(TypedVariant<std::string>(""));
-            if (m_pendingPopupClosed)
-                m_pendingPopupClosed();
-            m_pendingPopupClosed = std::function<void()>();
-
-            m_errorAction->setState(TypedVariant<std::string>(""));
-            if (m_pendingErrorClosed)
-                m_pendingErrorClosed();
-            m_pendingErrorClosed = std::function<void()>();
-
+            resetNotification(m_title.get(), m_body.get());            
             m_closed();
         });
     }
@@ -245,6 +249,7 @@ SimUnlock::show()
 void
 SimUnlock::close()
 {
+    d->resetActionStates();
     d->m_notification->close();
 }
 
