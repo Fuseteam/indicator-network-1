@@ -34,6 +34,11 @@ public:
      */
     core::Signal<> &unlockAllModems();
 
+    /**
+     * synced with GMainLoop
+     */
+    core::Signal<std::string> &unlockModem();
+
 private:
     class Private;
     std::shared_ptr<Private> d;

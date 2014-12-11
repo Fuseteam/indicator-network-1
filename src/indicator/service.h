@@ -167,6 +167,11 @@ public:
     {
         m_wwanSection->unlockAllModems();
     }
+
+    void unlockModem(const std::string &name)
+    {
+        m_wwanSection->unlockModem(name);
+    }
 };
 
 #endif

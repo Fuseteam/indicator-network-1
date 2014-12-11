@@ -234,6 +234,20 @@ ModemManager::unlockAllModems()
     }
 }
 
+void
+ModemManager::unlockModemByName(const std::string &name)
+{
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+#endif
+    for (auto const &m : d->m_modems.get()) {
+        if (m->name() == name) {
+            unlockModem(m);
+            return;
+        }
+    }
+}
+
 
 const core::Property<std::set<Modem::Ptr>> &
 ModemManager::modems()

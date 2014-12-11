@@ -182,3 +182,9 @@ WwanSection::unlockAllModems()
 {
     d->m_modemManager->unlockAllModems();
 }
+
+void
+WwanSection::unlockModem(const std::string &name)
+{
+    d->m_modemManager->unlockModemByName(name);
+}
