@@ -1,3 +1,12 @@
+indicator-network (0.5.1+15.04.20141211~rtm-0ubuntu1) 14.09; urgency=low
+
+  [ Antti Kaijanmäki ]
+  * add com.ubuntu.connectivity1.Private.UnlockModem (LP: #1374082)
+  * Clear pin unlock dialog error and popup when the dialog closes. (LP:
+    #1382033)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 11 Dec 2014 09:31:59 +0000
+
 indicator-network (0.5.1+14.10.20141031.3~rtm-0ubuntu1) 14.09; urgency=low
 
   [ Jussi Pakkanen ]
