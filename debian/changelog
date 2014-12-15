@@ -1,3 +1,10 @@
+indicator-network (0.5.1+15.04.20141215~rtm-0ubuntu1) 14.09; urgency=low
+
+  [ Antti Kaijanmäki ]
+  * fix flighmode switch bouncing on krillin. (LP: #1393488)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 15 Dec 2014 08:17:05 +0000
+
 indicator-network (0.5.1+15.04.20141211~rtm-0ubuntu1) 14.09; urgency=low
 
   [ Antti Kaijanmäki ]
