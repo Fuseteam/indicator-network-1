@@ -76,19 +76,23 @@ QuickAccessSection::Private::ConstructL()
         });
     });
     m_flightModeSwitch->activated().connect([this](){
-        if (m_flightModeSwitch->state().get()) {
-            try {
-                m_manager->enableFlightMode();
-            } catch (const std::exception &e) {
-                std::cerr << e.what() << std::endl;
+        bool state = m_flightModeSwitch->state().get();
+        auto manager = m_manager;
+        GMainLoopDispatch([manager, state](){
+            if (state) {
+                try {
+                    manager->enableFlightMode();
+                } catch (const std::exception &e) {
+                    std::cerr << e.what() << std::endl;
+                }
+            } else {
+                try {
+                    manager->disableFlightMode();
+                } catch (const std::exception &e) {
+                    std::cerr << e.what() << std::endl;
+                }
             }
-        } else {
-            try {
-                m_manager->disableFlightMode();
-            } catch (const std::exception &e) {
-                std::cerr << e.what() << std::endl;
-            }
-        }
+        }, G_PRIORITY_LOW, true);
     });
 
     m_actionGroupMerger->add(*m_flightModeSwitch);

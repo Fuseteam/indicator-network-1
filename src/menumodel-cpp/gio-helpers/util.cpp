@@ -36,11 +36,12 @@ GMainLoopDispatch::dispatch_cb(gpointer)
     return G_SOURCE_REMOVE;
 }
 
-GMainLoopDispatch::GMainLoopDispatch(Func func)
+GMainLoopDispatch::GMainLoopDispatch(Func func, int priority, bool force_delayed)
 {
     std::unique_lock<std::mutex> lock(_lock);
 
-    if (g_main_context_acquire(g_main_context_default())) {
+    if (!force_delayed &&
+         g_main_context_acquire(g_main_context_default())) {
         // already running inside GMainLoop..
         // free the lock and dispatch immediately.
         lock.unlock();
@@ -49,7 +50,7 @@ GMainLoopDispatch::GMainLoopDispatch(Func func)
     } else {
         std::function<void()> *funcPtr = new std::function<void()>(func);
         if (_funcs.empty()) {
-            g_idle_add_full(G_PRIORITY_HIGH,
+            g_idle_add_full(priority,
                             GSourceFunc(GMainLoopDispatch::dispatch_cb),
                             NULL,
                             NULL);
