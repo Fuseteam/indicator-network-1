@@ -74,7 +74,7 @@ public:
     typedef std::function<void()> Func;
     static std::mutex _lock;
     // list keeps the order of the functions
-    static std::list<Func *> _funcs;
+    static std::list<Func> __funcs;
 
     //GMainLoopDispatch() = delete;
     GMainLoopDispatch(Func func, int priority=G_PRIORITY_HIGH, bool force_delayed=false);
