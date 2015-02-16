@@ -98,6 +98,8 @@ public:
     const core::Property<std::int8_t> &strength();
     const core::Property<org::ofono::Interface::NetworkRegistration::Technology> &technology();
 
+    const core::Property<bool> &dataEnabled();
+
     const core::Property<std::string> &simIdentifier();
     int index();
 

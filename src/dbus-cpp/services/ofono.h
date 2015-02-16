@@ -791,6 +791,226 @@ struct Interface
         core::Property<std::string> subscriberIdentity;
     }; // Interface::SimManager
 
+    struct ConnectionManager
+    {
+        static const std::string& name()
+        {
+            static const std::string s{OFONO_CONNECTION_MANAGER_INTERFACE};
+            return s;
+        }
+
+        struct Method
+        {
+            struct GetProperties
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"GetProperties"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef std::map<std::string, core::dbus::types::Variant> ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{30};
+                }
+            };
+
+            struct SetProperty
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"SetProperty"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef void ResultType;
+                typedef std::tuple<std::string, core::dbus::types::Variant> ArgumentType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{30};
+                }
+            };
+
+            struct AddContext
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"AddContext"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef core::dbus::types::ObjectPath ResultType;
+                typedef std::string ArgumentType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{30};
+                }
+            };
+
+            struct RemoveContext
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"RemoveContext"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef void ResultType;
+                typedef core::dbus::types::ObjectPath ArgumentType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{30};
+                }
+            };
+
+            struct DeactivateAll
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"DeactivateAll"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef void ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{30};
+                }
+            };
+
+            struct GetContexts
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"GetContexts"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef std::tuple<core::dbus::types::ObjectPath, std::map<std::string, core::dbus::types::Variant>> ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{30};
+                }
+            };
+
+        };
+
+        struct Property
+        {
+            struct Powered
+            {
+                static const std::string &name()
+                {
+                    static const std::string s{"Powered"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef bool ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
+            };
+        };
+
+        struct Signal
+        {
+            struct PropertyChanged
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"PropertyChanged"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef std::tuple<std::string, core::dbus::types::Variant> ArgumentType;
+            };
+
+            struct ContextAdded
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"ContextAdded"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef std::tuple<core::dbus::types::ObjectPath, core::dbus::types::Variant> ArgumentType;
+            };
+
+            struct ContextRemoved
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"ContextRemoved"};
+                    return s;
+                }
+
+                typedef ConnectionManager Interface;
+                typedef core::dbus::types::ObjectPath ArgumentType;
+            };
+        };
+
+
+        std::map<std::string, core::dbus::types::Variant>
+        getProperties()
+        {
+            auto result =
+                    object->invoke_method_synchronously<
+                    ConnectionManager::Method::GetProperties, ConnectionManager::Method::GetProperties::ResultType>();
+
+            if (result.is_error()) {
+                throw std::runtime_error(result.error().print());
+            }
+
+            return result.value();
+        }
+
+        void _updateProperty(std::string property, core::dbus::types::Variant value)
+        {
+            if (property == Property::Powered::name()) {
+                powered.set(value.as<Property::Powered::ValueType>());
+            }
+        }
+
+        typedef std::shared_ptr<ConnectionManager> Ptr;
+        explicit ConnectionManager(const std::shared_ptr<core::dbus::Object>& object)
+            : object(object),
+              propertyChanged(object->get_signal<Signal::PropertyChanged>())
+        {
+            propertyChanged->connect([this](Signal::PropertyChanged::ArgumentType args){
+                _updateProperty(std::get<0>(args), std::get<1>(args));
+            });
+            auto result = getProperties();
+            for (auto element : result)
+            {
+                _updateProperty(element.first, element.second);
+            }
+        }
+
+        ~ConnectionManager()
+        {}
+
+        std::shared_ptr<core::dbus::Object> object;
+        std::shared_ptr<core::dbus::Signal<Signal::PropertyChanged, Signal::PropertyChanged::ArgumentType>> propertyChanged;
+
+        core::Property<bool> powered;
+
+    }; // Interface::ConnectionManager
+
     struct Modem
     {
         static const std::string& name()
@@ -1026,7 +1246,16 @@ struct Interface
                     case Property::Interfaces::Type::CallSettings:
                     case Property::Interfaces::Type::CallVolume:
                     case Property::Interfaces::Type::CellBroadcast:
+                        break;
                     case Property::Interfaces::Type::ConnectionManager:
+                    {
+                        std::unique_lock<std::mutex> lock(_lock);
+                        if (std::find(newInterfaces.begin(), newInterfaces.end(), known) == newInterfaces.end() &&
+                            connectionManager.get()) {
+                            connectionManager.set(std::shared_ptr<ConnectionManager>());
+                        }
+                        break;
+                    }
                     case Property::Interfaces::Type::Handsfree:
                     case Property::Interfaces::Type::LocationReporting:
                     case Property::Interfaces::Type::MessageManager:
@@ -1074,7 +1303,15 @@ struct Interface
                     case Property::Interfaces::Type::CallSettings:
                     case Property::Interfaces::Type::CallVolume:
                     case Property::Interfaces::Type::CellBroadcast:
+                        break;
                     case Property::Interfaces::Type::ConnectionManager:
+                    {
+                        std::unique_lock<std::mutex> lock(_lock);
+                        if (!connectionManager.get()) {
+                            connectionManager.set(std::make_shared<ConnectionManager>(this->object));
+                        }
+                        break;
+                    }
                     case Property::Interfaces::Type::Handsfree:
                     case Property::Interfaces::Type::LocationReporting:
                     case Property::Interfaces::Type::MessageManager:
@@ -1180,6 +1417,7 @@ struct Interface
 
         // this lock must be acquired for any access to networkRegistration or simManager
         std::mutex _lock;
+        core::Property<ConnectionManager::Ptr> connectionManager;
         core::Property<NetworkRegistration::Ptr> networkRegistration;
         core::Property<SimManager::Ptr>          simManager;
 

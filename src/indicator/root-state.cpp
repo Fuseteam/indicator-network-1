@@ -43,6 +43,8 @@ public:
     std::map<Modem::Ptr, std::string> m_cellularIcons;
     std::map<int, std::string>        m_modemTechIcons;
 
+    int m_activeModem = -1;
+
     Private() = delete;
     Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
     void ConstructL();
@@ -116,6 +118,7 @@ RootState::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
     for (auto modem : removed)
         m_cellularIcons.erase(modem);
 
+    m_activeModem = -1;
     for (auto modem : added) {
         // modem properties and signals already synced with GMainLoop
         modem->online().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
@@ -123,6 +126,7 @@ RootState::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
         modem->status().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
         modem->technology().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
         modem->strength().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
+        modem->dataEnabled().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
         updateModem(modem);
     }
 }
@@ -136,6 +140,10 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         return;
     }
 
+    if (modem->dataEnabled().get())
+    {
+        m_activeModem = modem->index();
+    }
     m_modemTechIcons.erase(modem->index());
     m_cellularIcons[modem] = "";
 
@@ -249,11 +257,13 @@ RootState::Private::updateNetworkingIcon()
         }
 
         if (m_networkingIcon.empty()) {
-            // seems we don't have an active wifi connection..
-            // it must be a cellular one then.
-            /// @todo need to revise this once the modems are part of the connectivity-api
-            ///       this might get us wrong results on dual-sim
-            m_networkingIcon = m_modemTechIcons[1];
+            if (m_activeModem != -1) {
+                auto it = m_modemTechIcons.find(m_activeModem);
+                if (it != m_modemTechIcons.end())
+                {
+                    m_networkingIcon = it->second;
+                }
+            }
         }
         break;
     }

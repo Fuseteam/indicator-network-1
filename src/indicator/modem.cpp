@@ -36,9 +36,12 @@ public:
     core::Property<std::int8_t> m_strength;
     core::Property<org::ofono::Interface::NetworkRegistration::Technology> m_technology;
 
+    core::Property<bool> m_dataEnabled;
+
     core::Property<std::string> m_simIdentifier;
     int m_index = -1;
 
+    void connectionManagerChanged(org::ofono::Interface::ConnectionManager::Ptr conmgr);
     void networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg);
     void simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr);
 
@@ -68,6 +71,7 @@ Modem::Private::ConstructL()
     std::unique_lock<std::mutex> lock(m_ofonoModem->_lock);
     auto simmgr = m_ofonoModem->simManager.get();
     auto netreg = m_ofonoModem->networkRegistration.get();
+    auto conmgr = m_ofonoModem->connectionManager.get();
     lock.unlock();
 
     simManagerChanged(simmgr);
@@ -80,6 +84,12 @@ Modem::Private::ConstructL()
     m_ofonoModem->networkRegistration.changed().connect([that](org::ofono::Interface::NetworkRegistration::Ptr netreg)
     {
         that->networkRegistrationChanged(netreg);
+    });
+
+    connectionManagerChanged(conmgr);
+    m_ofonoModem->connectionManager.changed().connect([that](org::ofono::Interface::ConnectionManager::Ptr conmgr)
+    {
+        that->connectionManagerChanged(conmgr);
     });
 
     /// @todo hook up with system-settings to allow changing the identifier.
@@ -103,6 +113,7 @@ Modem::Private::update()
     std::unique_lock<std::mutex> lock(m_ofonoModem->_lock);
     auto simmgr = m_ofonoModem->simManager.get();
     auto netreg = m_ofonoModem->networkRegistration.get();
+    auto conmgr = m_ofonoModem->connectionManager.get();
     lock.unlock();
 
     if (simmgr) {
@@ -170,6 +181,12 @@ Modem::Private::update()
         m_strength.set(-1);
         m_technology.set(org::ofono::Interface::NetworkRegistration::Technology::notAvailable);
     }
+
+    if (conmgr) {
+        m_dataEnabled.set(conmgr->powered.get());
+    } else {
+        m_dataEnabled.set(false);
+    }
 }
 
 void
@@ -196,6 +213,20 @@ Modem::Private::networkRegistrationChanged(org::ofono::Interface::NetworkRegistr
             GMainLoopDispatch([that]() { that->update(); });
         });
 
+    }
+
+    GMainLoopDispatch([that]() { that->update(); });
+}
+
+void
+Modem::Private::connectionManagerChanged(org::ofono::Interface::ConnectionManager::Ptr conmgr)
+{
+    auto that = shared_from_this();
+    if (conmgr) {
+        conmgr->powered.changed().connect([that](bool)
+        {
+            GMainLoopDispatch([that]() { that->update(); });
+        });
     }
 
     GMainLoopDispatch([that]() { that->update(); });
@@ -370,6 +401,12 @@ const core::Property<std::string> &
 Modem::simIdentifier()
 {
     return d->m_simIdentifier;
+}
+
+const core::Property<bool> &
+Modem::dataEnabled()
+{
+    return d->m_dataEnabled;
 }
 
 int
