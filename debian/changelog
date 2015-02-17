@@ -1,3 +1,16 @@
+indicator-network (0.5.1+15.04.20150217~rtm-0ubuntu1) 14.09; urgency=medium
+
+  [ Pete Woods ]
+  * Listen to connection manager powered flag to determine the active
+    modem (LP: #1366014)
+
+  [ Antti Kaijanmäki  ]
+  * Guard access to ofono::Modem properties that have a. shared_ptr
+    inside them with a mutex. simplify GMainLoopDispatcher (LP:
+    #1411714)
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Tue, 17 Feb 2015 10:13:55 +0000
+
 indicator-network (0.5.1+15.04.20141215~rtm-0ubuntu1) 14.09; urgency=low
 
   [ Antti Kaijanmäki ]
