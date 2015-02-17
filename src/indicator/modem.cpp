@@ -65,20 +65,21 @@ Modem::Private::ConstructL()
         });
     });
 
-    simManagerChanged(m_ofonoModem->simManager.get());
+    std::unique_lock<std::mutex> lock(m_ofonoModem->_lock);
+    auto simmgr = m_ofonoModem->simManager.get();
+    auto netreg = m_ofonoModem->networkRegistration.get();
+    lock.unlock();
+
+    simManagerChanged(simmgr);
     m_ofonoModem->simManager.changed().connect([that](org::ofono::Interface::SimManager::Ptr simmgr)
     {
-        GMainLoopDispatch([that, simmgr](){
-            that->simManagerChanged(simmgr);
-        });
+        that->simManagerChanged(simmgr);
     });
 
-    networkRegistrationChanged(m_ofonoModem->networkRegistration.get());
+    networkRegistrationChanged(netreg);
     m_ofonoModem->networkRegistration.changed().connect([that](org::ofono::Interface::NetworkRegistration::Ptr netreg)
     {
-        GMainLoopDispatch([that, netreg](){
-            that->networkRegistrationChanged(netreg);
-        });
+        that->networkRegistrationChanged(netreg);
     });
 
     /// @todo hook up with system-settings to allow changing the identifier.
@@ -93,14 +94,17 @@ Modem::Private::ConstructL()
     } else {
         m_simIdentifier.set(path);
     }
-
 }
 
 
 void
 Modem::Private::update()
 {
+    std::unique_lock<std::mutex> lock(m_ofonoModem->_lock);
     auto simmgr = m_ofonoModem->simManager.get();
+    auto netreg = m_ofonoModem->networkRegistration.get();
+    lock.unlock();
+
     if (simmgr) {
         // update requiredPin
         switch(simmgr->pinRequired.get())
@@ -155,7 +159,6 @@ Modem::Private::update()
         m_simStatus.set(SimStatus::not_available);
     }
 
-    auto netreg = m_ofonoModem->networkRegistration.get();
     if (netreg) {
         m_operatorName.set(netreg->operatorName.get());
         m_status.set(netreg->status.get());
@@ -172,75 +175,55 @@ Modem::Private::update()
 void
 Modem::Private::networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg)
 {
+    auto that = shared_from_this();
     if (netreg) {
-        auto that = shared_from_this();
         netreg->operatorName.changed().connect([that](const std::string &)
         {
-            GMainLoopDispatch([that]()
-            {
-                that->update();
-            });
+            GMainLoopDispatch([that]() { that->update(); });
         });
         netreg->status.changed().connect([that](org::ofono::Interface::NetworkRegistration::Status)
         {
-            GMainLoopDispatch([that]()
-            {
-                that->update();
-            });
+            GMainLoopDispatch([that]() { that->update(); });
         });
 
         netreg->strength.changed().connect([that](std::int8_t)
         {
-            GMainLoopDispatch([that]()
-            {
-                that->update();
-            });
+            GMainLoopDispatch([that]() { that->update(); });
         });
 
         netreg->technology.changed().connect([that](org::ofono::Interface::NetworkRegistration::Technology)
         {
-            GMainLoopDispatch([that]()
-            {
-                that->update();
-            });
+            GMainLoopDispatch([that]() { that->update(); });
         });
 
     }
-    update();
+
+    GMainLoopDispatch([that]() { that->update(); });
 }
 
 
 void
 Modem::Private::simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr)
 {
+    auto that = shared_from_this();
     if (simmgr) {
-        auto that = shared_from_this();
         simmgr->present.changed().connect([that](bool)
         {
-            GMainLoopDispatch([that]()
-            {
-                that->update();
-            });
+            GMainLoopDispatch([that]() { that->update(); });
         });
 
         simmgr->pinRequired.changed().connect([that](org::ofono::Interface::SimManager::PinType)
         {
-            GMainLoopDispatch([that]()
-            {
-                that->update();
-            });
+            GMainLoopDispatch([that]() { that->update(); });
         });
 
         simmgr->retries.changed().connect([that](std::map<org::ofono::Interface::SimManager::PinType, std::uint8_t>)
         {
-            GMainLoopDispatch([that]()
-            {
-                that->update();
-            });
+            GMainLoopDispatch([that]() { that->update(); });
         });
 
     }
-    update();
+    GMainLoopDispatch([that]() { that->update(); });
 }
 
 Modem::Modem(org::ofono::Interface::Modem::Ptr ofonoModem)
@@ -261,7 +244,11 @@ Modem::ofonoModem() const
 bool
 Modem::enterPin(PinType type, const std::string &pin)
 {
-    if (!d->m_ofonoModem->simManager.get()) {
+    std::unique_lock<std::mutex> lock(d->m_ofonoModem->_lock);
+    auto simmgr = d->m_ofonoModem->simManager.get();
+    lock.unlock();
+
+    if (!simmgr) {
         throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": no simManager.");
     }
 
@@ -269,11 +256,11 @@ Modem::enterPin(PinType type, const std::string &pin)
     case PinType::none:
         return true;
     case PinType::pin:
-        return d->m_ofonoModem->simManager.get()->enterPin(org::ofono::Interface::SimManager::PinType::pin,
-                                                           pin);
+        return simmgr->enterPin(org::ofono::Interface::SimManager::PinType::pin,
+                                pin);
     case PinType::puk:
-        return d->m_ofonoModem->simManager.get()->enterPin(org::ofono::Interface::SimManager::PinType::puk,
-                                                           pin);
+        return simmgr->enterPin(org::ofono::Interface::SimManager::PinType::puk,
+                                pin);
         break;
     }
 
@@ -284,7 +271,11 @@ Modem::enterPin(PinType type, const std::string &pin)
 bool
 Modem::resetPin(PinType type, const std::string &puk, const std::string &pin)
 {
-    if (!d->m_ofonoModem->simManager.get()) {
+    std::unique_lock<std::mutex> lock(d->m_ofonoModem->_lock);
+    auto simmgr = d->m_ofonoModem->simManager.get();
+    lock.unlock();
+
+    if (!simmgr) {
         throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": no simManager.");
     }
 
@@ -292,9 +283,9 @@ Modem::resetPin(PinType type, const std::string &puk, const std::string &pin)
     case PinType::none:
         return true;
     case PinType::puk:
-        return d->m_ofonoModem->simManager.get()->resetPin(org::ofono::Interface::SimManager::PinType::puk,
-                                                           puk,
-                                                           pin);
+        return simmgr->resetPin(org::ofono::Interface::SimManager::PinType::puk,
+                                puk,
+                                pin);
     default:
         throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": Not Supported.");
     }
@@ -303,7 +294,11 @@ Modem::resetPin(PinType type, const std::string &puk, const std::string &pin)
 bool
 Modem::changePin(PinType type, const std::string &oldPin, const std::string &newPin)
 {
-    if (!d->m_ofonoModem->simManager.get()) {
+    std::unique_lock<std::mutex> lock(d->m_ofonoModem->_lock);
+    auto simmgr = d->m_ofonoModem->simManager.get();
+    lock.unlock();
+
+    if (!simmgr) {
         throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": no simManager.");
     }
 
@@ -311,13 +306,13 @@ Modem::changePin(PinType type, const std::string &oldPin, const std::string &new
     case PinType::none:
         return true;
     case PinType::pin:
-        return d->m_ofonoModem->simManager.get()->changePin(org::ofono::Interface::SimManager::PinType::pin,
-                                                            oldPin,
-                                                            newPin);
+        return simmgr->changePin(org::ofono::Interface::SimManager::PinType::pin,
+                                 oldPin,
+                                 newPin);
     case PinType::puk:
-        return d->m_ofonoModem->simManager.get()->changePin(org::ofono::Interface::SimManager::PinType::puk,
-                                                            oldPin,
-                                                            newPin);
+        return simmgr->changePin(org::ofono::Interface::SimManager::PinType::puk,
+                                 oldPin,
+                                 newPin);
         break;
     }
 

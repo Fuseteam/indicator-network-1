@@ -1034,8 +1034,9 @@ struct Interface
                         break;
                     case Property::Interfaces::Type::NetworkRegistration:
                     {
+                        std::unique_lock<std::mutex> lock(_lock);
                         if (std::find(newInterfaces.begin(), newInterfaces.end(), known) == newInterfaces.end() &&
-                            networkRegistration->get()) {
+                            networkRegistration.get()) {
                             networkRegistration.set(std::shared_ptr<NetworkRegistration>());
                         }
                         break;
@@ -1046,8 +1047,9 @@ struct Interface
                         break;
                     case Property::Interfaces::Type::SimManager:
                     {
+                        std::unique_lock<std::mutex> lock(_lock);
                         if (std::find(newInterfaces.begin(), newInterfaces.end(), known) == newInterfaces.end() &&
-                            simManager->get()) {
+                            simManager.get()) {
                             simManager.set(std::shared_ptr<SimManager>());
                         }
                         break;
@@ -1080,7 +1082,8 @@ struct Interface
                         break;
                     case Property::Interfaces::Type::NetworkRegistration:
                     {
-                        if (!networkRegistration->get()) {
+                        std::unique_lock<std::mutex> lock(_lock);
+                        if (!networkRegistration.get()) {
                             networkRegistration.set(std::make_shared<NetworkRegistration>(this->object));
                         }
                         break;
@@ -1091,7 +1094,8 @@ struct Interface
                         break;
                     case Property::Interfaces::Type::SimManager:
                     {
-                        if (!simManager->get()) {
+                        std::unique_lock<std::mutex> lock(_lock);
+                        if (!simManager.get()) {
                             simManager.set(std::make_shared<SimManager>(this->object));
                         }
                         break;
@@ -1174,6 +1178,8 @@ struct Interface
 
         std::shared_ptr<core::dbus::Signal<Signal::PropertyChanged, Signal::PropertyChanged::ArgumentType>> propertyChanged;
 
+        // this lock must be acquired for any access to networkRegistration or simManager
+        std::mutex _lock;
         core::Property<NetworkRegistration::Ptr> networkRegistration;
         core::Property<SimManager::Ptr>          simManager;
 

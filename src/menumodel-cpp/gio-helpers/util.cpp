@@ -19,43 +19,40 @@
 
 #include "util.h"
 
+// guards access to __funcs
 std::mutex GMainLoopDispatch::_lock;
-std::list<GMainLoopDispatch::Func *> GMainLoopDispatch::_funcs;
+std::list<GMainLoopDispatch::Func> GMainLoopDispatch::__funcs;
 
 gboolean
 GMainLoopDispatch::dispatch_cb(gpointer)
 {
     std::unique_lock<std::mutex> lock(_lock);
-    for (auto func : _funcs) {
-        lock.unlock();
-        (*func)();
-        lock.lock();
-        delete func;
+    auto funcs = __funcs;
+    __funcs.clear();
+    lock.unlock();
+
+    for (auto &func : funcs) {
+        func();
     }
-    _funcs.clear();
     return G_SOURCE_REMOVE;
 }
 
 GMainLoopDispatch::GMainLoopDispatch(Func func, int priority, bool force_delayed)
 {
-    std::unique_lock<std::mutex> lock(_lock);
-
     if (!force_delayed &&
          g_main_context_acquire(g_main_context_default())) {
-        // already running inside GMainLoop..
-        // free the lock and dispatch immediately.
-        lock.unlock();
+        // already running inside GMainLoop.
         func();
         g_main_context_release(g_main_context_default());
     } else {
-        std::function<void()> *funcPtr = new std::function<void()>(func);
-        if (_funcs.empty()) {
+        std::unique_lock<std::mutex> lock(_lock);
+        if (__funcs.empty()) {
             g_idle_add_full(priority,
                             GSourceFunc(GMainLoopDispatch::dispatch_cb),
                             NULL,
                             NULL);
         }
-        _funcs.push_back(funcPtr);
+        __funcs.push_back(func);
     }
 }
 
