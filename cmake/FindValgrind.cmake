@@ -14,10 +14,7 @@ if(VALGRIND_PROGRAM)
 	set(VALGRIND_PROGRAM_OPTIONS
 		"--suppressions=${CMAKE_SOURCE_DIR}/tests/data/valgrind.suppression"
 		"--error-exitcode=1"
-		"--trace-children=yes"
-		"--trace-children-skip=*/python*,python*"
 		"--leak-check=full"
-		"--leak-resolution=high"
 		"--gen-suppressions=all"
 		"--quiet"
 	)
@@ -28,14 +25,17 @@ find_package_handle_standard_args(
 	VALGRIND_PROGRAM
 )
 
-function(add_valgrind_test NAME EXECUTABLE)
-	if(ENABLE_MEMCHECK_OPTION)
-		add_test(${NAME} ${VALGRIND_PROGRAM} ${VALGRIND_PROGRAM_OPTIONS} "${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE}")
-		set_tests_properties(
-			${NAME}
-			PROPERTIES ENVIRONMENT "G_SLICE=always-malloc G_DEBUG=gc-friendly"
-		)
-	else()
-		add_test(${NAME} ${EXECUTABLE})
-	endif()
+function(add_valgrind_test)
+        foreach(_arg ${ARGN})
+                if ("VALGRIND" STREQUAL ${_arg})
+                        if(ENABLE_MEMCHECK_OPTION AND VALGRIND_PROGRAM)
+                                list(APPEND _vgargs ${VALGRIND_PROGRAM} ${VALGRIND_PROGRAM_OPTIONS})
+                        endif()
+                else()
+                        list(APPEND _vgargs ${_arg})
+                endif()
+        endforeach()
+
+        add_test(${_vgargs})
 endfunction()
+

@@ -1,4 +1,3 @@
-set(CMAKE_AUTOMOC ON)
 
 include_directories("${CMAKE_SOURCE_DIR}/src/secret-agent")
 include_directories("${CMAKE_BINARY_DIR}/src/secret-agent")

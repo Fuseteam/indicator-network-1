@@ -56,18 +56,15 @@ class MenuMerger : public MenuModel
                       gint        added)
     {
         int offset = m_startPositions[model] + position;
-        auto menu = m_gmenu;
 
-        GMainLoopDispatch([=](){
-            for (int i = 0; i < removed; ++i) {
-                g_menu_remove(menu.get(), offset);
-            }
-            for (int i = added-1; i >= 0; --i) {
-                auto item = g_menu_item_new_from_model(model, position + i);
-                g_menu_insert_item(menu.get(), offset, item);
-                g_object_unref(item);
-            }
-        });
+        for (int i = 0; i < removed; ++i) {
+            g_menu_remove(m_gmenu.get(), offset);
+        }
+        for (int i = added-1; i >= 0; --i) {
+            auto item = g_menu_item_new_from_model(model, position + i);
+            g_menu_insert_item(m_gmenu.get(), offset, item);
+            g_object_unref(item);
+        }
 
         int delta = added - removed;
         bool update = false;
@@ -95,7 +92,7 @@ public:
     ~MenuMerger()
     {
         clear();
-        GMainLoopSync([]{});
+//        GMainLoopSync([]{});
     }
 
     void append(MenuModel::Ptr menu)

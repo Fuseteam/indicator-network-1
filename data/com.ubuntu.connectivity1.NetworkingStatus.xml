@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/com/ubuntu/connectivity1/NetworkingStatus" xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+    <interface name="com.ubuntu.connectivity1.NetworkingStatus">
+
+        <property name="Limitations" type="as" access="read"/>
+        <property name="Status" type="s" access="read"/>
+
+    </interface>
+</node>
+

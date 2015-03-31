@@ -306,13 +306,13 @@
     <set name="CGSMS" value="3"/>
 
     <!-- TTY (hearing impared) state -->
-    <set name="PTTY" value="1" />
+    <set name="PTTY" value="1"/>
 
     <!-- Positioning reporting state -->
-    <set name="CPOSR" value="0" />
+    <set name="CPOSR" value="0"/>
 
     <!-- SIM insertion state -->
-    <set name="SIMSTATE" value="1" />
+    <set name="SIMSTATE" value="1"/>
 
 <!-- Time -->
 <!-- Enable for testing

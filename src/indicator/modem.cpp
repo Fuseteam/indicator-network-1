@@ -17,92 +17,389 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "modem.h"
+#include <modem.h>
 
-#include <menumodel-cpp/gio-helpers/util.h>
+#include <ofono/dbus.h>
 
-class Modem::Private : public std::enable_shared_from_this<Private>
+#define slots
+#include <qofono-qt5/qofonomodem.h>
+#include <qofono-qt5/qofonosimmanager.h>
+#include <qofono-qt5/qofononetworkregistration.h>
+#include <qofono-qt5/qofonoconnectionmanager.h>
+#undef slots
+
+using namespace std;
+
+namespace
 {
+
+static Modem::Status str2status(const QString& str)
+{
+    if (str == "unregistered")
+        return Modem::Status::unregistered;
+    if (str == "registered")
+        return Modem::Status::registered;
+    if (str == "searching")
+        return Modem::Status::searching;
+    if (str == "denied")
+        return Modem::Status::denied;
+    if (str == "unknown" || str.isEmpty())
+        return Modem::Status::unknown;
+    if (str == "roaming")
+        return Modem::Status::roaming;
+
+    qWarning() << __PRETTY_FUNCTION__ << ": Unknown status" << str;
+    return Modem::Status::unknown;
+}
+
+static Modem::Bearer str2technology(const QString& str)
+{
+    if (str.isEmpty() || str == "none")
+        return Modem::Bearer::notAvailable;
+    if (str == "gprs")
+        return Modem::Bearer::gprs;
+    if (str == "edge")
+        return Modem::Bearer::edge;
+    if (str == "umts")
+        return Modem::Bearer::umts;
+    if (str == "hspa" || str == "hsupa" || str == "hsdpa")
+        return Modem::Bearer::hspa;
+    if (str == "hspap")
+        return Modem::Bearer::hspa_plus;
+    if (str == "lte")
+        return Modem::Bearer::lte;
+
+    qWarning() << __PRETTY_FUNCTION__  << ": Unknown techonology" << str;
+    return Modem::Bearer::notAvailable;
+}
+}
+
+class Modem::Private : public QObject, public std::enable_shared_from_this<Private>
+{
+    Q_OBJECT
+
 public:
-    core::Property<bool> m_online;
+    Modem& p;
 
-    org::ofono::Interface::Modem::Ptr m_ofonoModem;
-    core::Property<Modem::SimStatus> m_simStatus;
-    core::Property<Modem::PinType> m_requiredPin;
-    core::Property<std::map<Modem::PinType, std::uint8_t>> m_retries;
+    bool m_online;
 
-    core::Property<std::string> m_operatorName;
-    core::Property<org::ofono::Interface::NetworkRegistration::Status> m_status;
-    core::Property<std::int8_t> m_strength;
-    core::Property<org::ofono::Interface::NetworkRegistration::Technology> m_technology;
+    shared_ptr<QOfonoModem> m_ofonoModem;
+    Modem::SimStatus m_simStatus;
+    Modem::PinType m_requiredPin;
+    RetriesType m_retries;
 
-    core::Property<bool> m_dataEnabled;
+    QString m_operatorName;
+    Modem::Status m_status;
+    int8_t m_strength;
+    Modem::Bearer m_bearer;
 
-    core::Property<std::string> m_simIdentifier;
+    bool m_dataEnabled;
+
+    QString m_simIdentifier;
     int m_index = -1;
 
-    void connectionManagerChanged(org::ofono::Interface::ConnectionManager::Ptr conmgr);
-    void networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg);
-    void simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr);
+    QSet<QString> m_interfaces;
+
+    shared_ptr<QOfonoConnectionManager> m_connectionManager;
+    shared_ptr<QOfonoNetworkRegistration> m_networkRegistration;
+    shared_ptr<QOfonoSimManager> m_simManager;
+
+    Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem);
+
+public Q_SLOTS:
+
+    void connectionManagerChanged(shared_ptr<QOfonoConnectionManager> conmgr)
+    {
+        if (conmgr == m_connectionManager)
+        {
+            return;
+        }
+
+        m_connectionManager = conmgr;
+        if (m_connectionManager)
+        {
+            connect(m_connectionManager.get(),
+                    &QOfonoConnectionManager::poweredChanged, this,
+                    &Private::update);
+
+            connect(m_connectionManager.get(),
+                    &QOfonoConnectionManager::bearerChanged, this,
+                    &Private::update);
+        }
+
+        update();
+    }
+
+    void networkRegistrationChanged(shared_ptr<QOfonoNetworkRegistration> netreg)
+    {
+        if (m_networkRegistration == netreg)
+        {
+            return;
+        }
+
+        m_networkRegistration = netreg;
+        if (m_networkRegistration)
+        {
+            connect(m_networkRegistration.get(),
+                    &QOfonoNetworkRegistration::nameChanged, this,
+                    &Private::update);
+
+            connect(m_networkRegistration.get(),
+                    &QOfonoNetworkRegistration::statusChanged, this,
+                    &Private::update);
+
+            connect(m_networkRegistration.get(),
+                    &QOfonoNetworkRegistration::strengthChanged, this,
+                    &Private::update);
+        }
+
+        update();
+    }
+
+    void simManagerChanged(shared_ptr<QOfonoSimManager> simmgr)
+    {
+        if (m_simManager == simmgr)
+        {
+            return;
+        }
+
+        m_simManager = simmgr;
+        if (m_simManager)
+        {
+            connect(m_simManager.get(),
+                    &QOfonoSimManager::presenceChanged, this,
+                    &Private::update);
+
+            connect(m_simManager.get(),
+                    &QOfonoSimManager::pinRequiredChanged, this,
+                    &Private::update);
+
+            connect(m_simManager.get(),
+                    &QOfonoSimManager::pinRetriesChanged, this,
+                    &Private::update);
+
+            connect(m_simManager.get(),
+                    &QOfonoSimManager::enterPinComplete, this,
+                    &Private::enterPinComplete);
+
+            connect(m_simManager.get(),
+                    &QOfonoSimManager::resetPinComplete, this,
+                    &Private::resetPinComplete);
+        }
+
+        update();
+    }
 
     void update();
 
-    Private() = delete;
-    Private(org::ofono::Interface::Modem::Ptr ofonoModem);
-    void ConstructL();
+    void enterPinComplete(QOfonoSimManager::Error error, const QString &errorString)
+    {
+        if (error == QOfonoSimManager::Error::NoError)
+        {
+            Q_EMIT p.enterPinSuceeded();
+        }
+        else
+        {
+            Q_EMIT p.enterPinFailed(errorString);
+        }
+    }
+
+    void resetPinComplete(QOfonoSimManager::Error error, const QString &errorString)
+    {
+        if (error == QOfonoSimManager::Error::NoError)
+        {
+            Q_EMIT p.resetPinSuceeded();
+        }
+        else
+        {
+            Q_EMIT p.resetPinFailed(errorString);
+        }
+    }
+
+    void setOnline(bool online)
+    {
+        if (m_online == online)
+        {
+            return;
+        }
+
+        m_online = online;
+        Q_EMIT p.onlineUpdated(m_online);
+    }
+
+    void setSimIdentifier(const QString& simIdentifier)
+    {
+        if (m_simIdentifier == simIdentifier)
+        {
+            return;
+        }
+
+        m_simIdentifier = simIdentifier;
+        Q_EMIT p.simIdentifierUpdated(m_simIdentifier);
+    }
+
+    void setRequiredPin(Modem::PinType requiredPin)
+    {
+        if (m_requiredPin == requiredPin)
+        {
+            return;
+        }
+
+        m_requiredPin = requiredPin;
+        Q_EMIT p.requiredPinUpdated(m_requiredPin);
+    }
+
+    void setRetries(const RetriesType& retries)
+    {
+        if (m_retries == retries)
+        {
+            return;
+        }
+
+        m_retries = retries;
+        Q_EMIT p.retriesUpdated();
+    }
+
+    void setSimStatus(Modem::SimStatus simStatus)
+    {
+        if (m_simStatus == simStatus)
+        {
+            return;
+        }
+
+        m_simStatus = simStatus;
+        Q_EMIT p.simStatusUpdated(m_simStatus);
+    }
+
+    void setOperatorName(const QString& operatorName)
+    {
+        if (m_operatorName == operatorName)
+        {
+            return;
+        }
+
+        m_operatorName = operatorName;
+        Q_EMIT p.operatorNameUpdated(m_operatorName);
+    }
+
+    void setStatus(Modem::Status status)
+    {
+        if (m_status == status)
+        {
+            return;
+        }
+
+        m_status = status;
+        Q_EMIT p.statusUpdated(m_status);
+    }
+
+    void setStrength(int8_t strength)
+    {
+        if (m_strength == strength)
+        {
+            return;
+        }
+
+        m_strength = strength;
+        Q_EMIT p.strengthUpdated(m_strength);
+    }
+
+    void setBearer(Modem::Bearer bearer)
+    {
+        if (m_bearer == bearer)
+        {
+            return;
+        }
+
+        m_bearer = bearer;
+        Q_EMIT p.bearerUpdated(m_bearer);
+    }
+
+    void setDataEnabled(bool dataEnabled)
+    {
+        if (m_dataEnabled == dataEnabled)
+        {
+            return;
+        }
+
+        m_dataEnabled = dataEnabled;
+        Q_EMIT p.dataEnabledUpdated(m_dataEnabled);
+    }
+
+    void interfacesChanged(const QStringList& values)
+    {
+        QSet<QString> interfaces(values.toSet());
+
+        auto toRemove = m_interfaces;
+        toRemove.subtract(interfaces);
+
+        auto toAdd = interfaces;
+        toAdd.subtract(m_interfaces);
+
+        m_interfaces = interfaces;
+
+        for(const auto& interface: toRemove)
+        {
+            if (interface == OFONO_CONNECTION_MANAGER_INTERFACE)
+            {
+                connectionManagerChanged(
+                        shared_ptr<QOfonoConnectionManager>());
+            }
+            else if (interface == OFONO_NETWORK_REGISTRATION_INTERFACE)
+            {
+                networkRegistrationChanged(
+                        shared_ptr<QOfonoNetworkRegistration>());
+            }
+            else if (interface == OFONO_SIM_MANAGER_INTERFACE)
+            {
+                simManagerChanged(shared_ptr<QOfonoSimManager>());
+            }
+        }
+
+        for (const auto& interface: toAdd)
+        {
+            if (interface == OFONO_CONNECTION_MANAGER_INTERFACE)
+            {
+                auto connmgr = make_shared<QOfonoConnectionManager>();
+                connmgr->setModemPath(m_ofonoModem->modemPath());
+                connectionManagerChanged(connmgr);
+            }
+            else if (interface == OFONO_NETWORK_REGISTRATION_INTERFACE)
+            {
+                auto netreg = make_shared<QOfonoNetworkRegistration>();
+                netreg->setModemPath(m_ofonoModem->modemPath());
+                networkRegistrationChanged(netreg);
+            }
+            else if (interface == OFONO_SIM_MANAGER_INTERFACE)
+            {
+                auto simmgr = make_shared<QOfonoSimManager>();
+                simmgr->setModemPath(m_ofonoModem->modemPath());
+                simManagerChanged(simmgr);
+            }
+        }
+    }
 };
 
-Modem::Private::Private(org::ofono::Interface::Modem::Ptr ofonoModem)
-    : m_ofonoModem{ofonoModem}
-{}
-
-void
-Modem::Private::ConstructL()
+Modem::Private::Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
+    : p(parent), m_ofonoModem{ofonoModem}
 {
-    auto that = shared_from_this();
+    connect(m_ofonoModem.get(), &QOfonoModem::onlineChanged, this, &Private::update);
+    setOnline(m_ofonoModem->online());
 
-    m_online.set(m_ofonoModem->online.get());
-    m_ofonoModem->online.changed().connect([that](bool value){
-        GMainLoopDispatch([that, value]() {
-            that->m_online.set(value);
-        });
-    });
-
-    std::unique_lock<std::mutex> lock(m_ofonoModem->_lock);
-    auto simmgr = m_ofonoModem->simManager.get();
-    auto netreg = m_ofonoModem->networkRegistration.get();
-    auto conmgr = m_ofonoModem->connectionManager.get();
-    lock.unlock();
-
-    simManagerChanged(simmgr);
-    m_ofonoModem->simManager.changed().connect([that](org::ofono::Interface::SimManager::Ptr simmgr)
-    {
-        that->simManagerChanged(simmgr);
-    });
-
-    networkRegistrationChanged(netreg);
-    m_ofonoModem->networkRegistration.changed().connect([that](org::ofono::Interface::NetworkRegistration::Ptr netreg)
-    {
-        that->networkRegistrationChanged(netreg);
-    });
-
-    connectionManagerChanged(conmgr);
-    m_ofonoModem->connectionManager.changed().connect([that](org::ofono::Interface::ConnectionManager::Ptr conmgr)
-    {
-        that->connectionManagerChanged(conmgr);
-    });
+    connect(m_ofonoModem.get(), &QOfonoModem::interfacesChanged, this, &Private::interfacesChanged);
+    interfacesChanged(m_ofonoModem->interfaces());
 
     /// @todo hook up with system-settings to allow changing the identifier.
     ///       for now just provide the defaults
-    const auto path = m_ofonoModem->object->path().as_string();
+    auto path = m_ofonoModem->modemPath();
     if (path == "/ril_0") {
-        m_simIdentifier.set("SIM 1");
+        setSimIdentifier("SIM 1");
         m_index = 1;
     } else if (path == "/ril_1") {
-        m_simIdentifier.set("SIM 2");
+        setSimIdentifier("SIM 2");
         m_index = 2;
     } else {
-        m_simIdentifier.set(path);
+        setSimIdentifier(path);
     }
 }
 
@@ -110,315 +407,263 @@ Modem::Private::ConstructL()
 void
 Modem::Private::update()
 {
-    std::unique_lock<std::mutex> lock(m_ofonoModem->_lock);
-    auto simmgr = m_ofonoModem->simManager.get();
-    auto netreg = m_ofonoModem->networkRegistration.get();
-    auto conmgr = m_ofonoModem->connectionManager.get();
-    lock.unlock();
+    setOnline(m_ofonoModem->online());
 
-    if (simmgr) {
+    if (m_simManager) {
         // update requiredPin
-        switch(simmgr->pinRequired.get())
+        switch(m_simManager->pinRequired())
         {
-        case org::ofono::Interface::SimManager::PinType::none:
-            m_requiredPin.set(PinType::none);
+        case QOfonoSimManager::PinType::NoPin:
+            setRequiredPin(PinType::none);
             break;
-        case org::ofono::Interface::SimManager::PinType::pin:
-            m_requiredPin.set(PinType::pin);
+        case QOfonoSimManager::PinType::SimPin:
+            setRequiredPin(PinType::pin);
             break;
-        case org::ofono::Interface::SimManager::PinType::puk:
-            m_requiredPin.set(PinType::puk);
+        case QOfonoSimManager::PinType::SimPuk:
+            setRequiredPin(PinType::puk);
             break;
         default:
             throw std::runtime_error("Ofono requires a PIN we have not been prepared to handle (" +
-                                     org::ofono::Interface::SimManager::pin2str(simmgr->pinRequired.get()) +
+                                     to_string(m_simManager->pinRequired()) +
                                      "). Bailing out.");
         }
 
         // update retries
-        std::map<Modem::PinType, std::uint8_t> tmp;
-        for (auto element : simmgr->retries.get()) {
-            switch(element.first) {
-            case org::ofono::Interface::SimManager::PinType::pin:
-                tmp[Modem::PinType::pin] = element.second;
-                break;
-            case org::ofono::Interface::SimManager::PinType::puk:
-                tmp[Modem::PinType::puk] = element.second;
-                break;
-            default:
-                // don't care
-                break;
+        RetriesType tmp;
+        QVariantMap retries = m_simManager->pinRetries();
+        QMapIterator<QString, QVariant> i(retries);
+        while (i.hasNext()) {
+            i.next();
+            QOfonoSimManager::PinType type = (QOfonoSimManager::PinType) i.key().toInt();
+            int count = i.value().toInt();
+            switch(type)
+            {
+                case QOfonoSimManager::PinType::SimPin:
+                    tmp[Modem::PinType::pin] = count;
+                    break;
+                case QOfonoSimManager::PinType::SimPuk:
+                    tmp[Modem::PinType::puk] = count;
+                    break;
+                default:
+                    break;
             }
         }
-        m_retries.set(tmp);
+        setRetries(tmp);
 
         // update simStatus
-        if (!simmgr->present.get()) {
-            m_simStatus.set(SimStatus::missing);
-        } else if (m_requiredPin == PinType::none){
-            m_simStatus.set(SimStatus::ready);
-        } else {
-            if (m_retries->count(PinType::puk) != 0 && m_retries->at(PinType::puk) == 0)
-                m_simStatus.set(SimStatus::permanentlyLocked);
+        bool present = m_simManager->present();
+        if (!present)
+        {
+            setSimStatus(SimStatus::missing);
+        }
+        else if (m_requiredPin == PinType::none)
+        {
+            setSimStatus(SimStatus::ready);
+        }
+        else
+        {
+            if (m_retries.count(PinType::puk) != 0
+                    && m_retries.at(PinType::puk) == 0)
+            {
+                setSimStatus(SimStatus::permanentlyLocked);
+            }
             else
-                m_simStatus.set(SimStatus::locked);
+            {
+                setSimStatus(SimStatus::locked);
+            }
         }
 
     } else {
-        m_requiredPin.set(PinType::none);
-        m_retries.set({});
-        m_simStatus.set(SimStatus::not_available);
+        setRequiredPin(PinType::none);
+        setRetries({});
+        setSimStatus(SimStatus::not_available);
     }
 
-    if (netreg) {
-        m_operatorName.set(netreg->operatorName.get());
-        m_status.set(netreg->status.get());
-        m_strength.set(netreg->strength.get());
-        m_technology.set(netreg->technology.get());
-    } else {
-        m_operatorName.set("");
-        m_status.set(org::ofono::Interface::NetworkRegistration::Status::unknown);
-        m_strength.set(-1);
-        m_technology.set(org::ofono::Interface::NetworkRegistration::Technology::notAvailable);
+    if (m_networkRegistration)
+    {
+        setOperatorName(m_networkRegistration->name());
+        setStatus(str2status(m_networkRegistration->status()));
+        setStrength(m_networkRegistration->strength());
+    }
+    else
+    {
+        setOperatorName("");
+        setStatus(Modem::Status::unknown);
+        setStrength(-1);
     }
 
-    if (conmgr) {
-        m_dataEnabled.set(conmgr->powered.get());
-    } else {
-        m_dataEnabled.set(false);
+    if (m_connectionManager)
+    {
+        setDataEnabled(m_connectionManager->powered());
+        setBearer(str2technology(m_connectionManager->bearer()));
     }
+    else
+    {
+        setDataEnabled(false);
+        setBearer(Modem::Bearer::notAvailable);
+    }
+
+    Q_EMIT p.updated(p.shared_from_this());
 }
 
-void
-Modem::Private::networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg)
+QString Modem::strengthIcon(int8_t strength)
 {
-    auto that = shared_from_this();
-    if (netreg) {
-        netreg->operatorName.changed().connect([that](const std::string &)
-        {
-            GMainLoopDispatch([that]() { that->update(); });
-        });
-        netreg->status.changed().connect([that](org::ofono::Interface::NetworkRegistration::Status)
-        {
-            GMainLoopDispatch([that]() { that->update(); });
-        });
-
-        netreg->strength.changed().connect([that](std::int8_t)
-        {
-            GMainLoopDispatch([that]() { that->update(); });
-        });
-
-        netreg->technology.changed().connect([that](org::ofono::Interface::NetworkRegistration::Technology)
-        {
-            GMainLoopDispatch([that]() { that->update(); });
-        });
-
-    }
-
-    GMainLoopDispatch([that]() { that->update(); });
+    /* Using same values as used by Android, not linear (LP: #1329945)*/
+    if (strength >= 39)
+        return "gsm-3g-full";
+    else if (strength >= 26)
+        return "gsm-3g-high";
+    else if (strength >= 16)
+        return "gsm-3g-medium";
+    else if (strength >= 6)
+        return "gsm-3g-low";
+    else
+        return "gsm-3g-none";
 }
 
-void
-Modem::Private::connectionManagerChanged(org::ofono::Interface::ConnectionManager::Ptr conmgr)
+QString Modem::technologyIcon(Modem::Bearer tech)
 {
-    auto that = shared_from_this();
-    if (conmgr) {
-        conmgr->powered.changed().connect([that](bool)
-        {
-            GMainLoopDispatch([that]() { that->update(); });
-        });
+    switch (tech)
+    {
+    case Modem::Bearer::notAvailable:
+    case Modem::Bearer::gprs:
+        return "network-cellular-pre-edge";
+    case Modem::Bearer::edge:
+        return "network-cellular-edge";
+    case Modem::Bearer::umts:
+        return "network-cellular-3g";
+    case Modem::Bearer::hspa:
+        return "network-cellular-hspa";
+    case Modem::Bearer::hspa_plus:
+        return "network-cellular-hspa-plus";
+    case Modem::Bearer::lte:
+        return "network-cellular-lte";
     }
-
-    GMainLoopDispatch([that]() { that->update(); });
+    // shouldn't be reached
+    return "";
 }
 
-
-void
-Modem::Private::simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr)
+Modem::Modem(shared_ptr<QOfonoModem> ofonoModem)
+    : d{new Private(*this, ofonoModem)}
 {
-    auto that = shared_from_this();
-    if (simmgr) {
-        simmgr->present.changed().connect([that](bool)
-        {
-            GMainLoopDispatch([that]() { that->update(); });
-        });
-
-        simmgr->pinRequired.changed().connect([that](org::ofono::Interface::SimManager::PinType)
-        {
-            GMainLoopDispatch([that]() { that->update(); });
-        });
-
-        simmgr->retries.changed().connect([that](std::map<org::ofono::Interface::SimManager::PinType, std::uint8_t>)
-        {
-            GMainLoopDispatch([that]() { that->update(); });
-        });
-
-    }
-    GMainLoopDispatch([that]() { that->update(); });
-}
-
-Modem::Modem(org::ofono::Interface::Modem::Ptr ofonoModem)
-    : d{new Private(ofonoModem)}
-{
-    d->ConstructL();
 }
 
 Modem::~Modem()
 {}
 
-org::ofono::Interface::Modem::Ptr
-Modem::ofonoModem() const
+void
+Modem::enterPin(PinType type, const QString &pin)
 {
-    return d->m_ofonoModem;
-}
-
-bool
-Modem::enterPin(PinType type, const std::string &pin)
-{
-    std::unique_lock<std::mutex> lock(d->m_ofonoModem->_lock);
-    auto simmgr = d->m_ofonoModem->simManager.get();
-    lock.unlock();
-
-    if (!simmgr) {
+    if (!d->m_simManager)
+    {
         throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": no simManager.");
     }
 
     switch(type) {
     case PinType::none:
-        return true;
+        break;
     case PinType::pin:
-        return simmgr->enterPin(org::ofono::Interface::SimManager::PinType::pin,
+        d->m_simManager->enterPin(QOfonoSimManager::PinType::SimPin,
                                 pin);
+        break;
     case PinType::puk:
-        return simmgr->enterPin(org::ofono::Interface::SimManager::PinType::puk,
+        d->m_simManager->enterPin(QOfonoSimManager::PinType::SimPuk,
                                 pin);
         break;
     }
-
-    throw std::logic_error("code should not be reached.");
 }
 
 
-bool
-Modem::resetPin(PinType type, const std::string &puk, const std::string &pin)
+void
+Modem::resetPin(PinType type, const QString &puk, const QString &pin)
 {
-    std::unique_lock<std::mutex> lock(d->m_ofonoModem->_lock);
-    auto simmgr = d->m_ofonoModem->simManager.get();
-    lock.unlock();
-
-    if (!simmgr) {
+    if (!d->m_simManager) {
         throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": no simManager.");
     }
 
     switch(type) {
     case PinType::none:
-        return true;
+        break;
     case PinType::puk:
-        return simmgr->resetPin(org::ofono::Interface::SimManager::PinType::puk,
+        d->m_simManager->resetPin(QOfonoSimManager::PinType::SimPuk,
                                 puk,
                                 pin);
+        break;
     default:
         throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": Not Supported.");
     }
 }
 
 bool
-Modem::changePin(PinType type, const std::string &oldPin, const std::string &newPin)
-{
-    std::unique_lock<std::mutex> lock(d->m_ofonoModem->_lock);
-    auto simmgr = d->m_ofonoModem->simManager.get();
-    lock.unlock();
-
-    if (!simmgr) {
-        throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": no simManager.");
-    }
-
-    switch(type) {
-    case PinType::none:
-        return true;
-    case PinType::pin:
-        return simmgr->changePin(org::ofono::Interface::SimManager::PinType::pin,
-                                 oldPin,
-                                 newPin);
-    case PinType::puk:
-        return simmgr->changePin(org::ofono::Interface::SimManager::PinType::puk,
-                                 oldPin,
-                                 newPin);
-        break;
-    }
-
-    throw std::logic_error("code should not be reached.");
-}
-
-const core::Property<bool> &
-Modem::online()
+Modem::online() const
 {
     return d->m_online;
 }
 
-const core::Property<Modem::SimStatus> &
-Modem::simStatus()
+Modem::SimStatus
+Modem::simStatus() const
 {
     return d->m_simStatus;
 }
 
-const core::Property<Modem::PinType> &
-Modem::requiredPin()
+Modem::PinType
+Modem::requiredPin() const
 {
     return d->m_requiredPin;
 }
 
-const core::Property<std::map<Modem::PinType, std::uint8_t> > &
-Modem::retries()
+const Modem::RetriesType&
+Modem::retries() const
 {
     return d->m_retries;
 }
 
-const core::Property<std::string> &
-Modem::operatorName()
+const QString&
+Modem::operatorName()  const
 {
     return d->m_operatorName;
 }
 
-const core::Property<org::ofono::Interface::NetworkRegistration::Status> &
-Modem::status()
+Modem::Status
+Modem::status() const
 {
     return d->m_status;
 }
 
-const core::Property<std::int8_t> &
-Modem::strength()
+std::int8_t
+Modem::strength() const
 {
     return d->m_strength;
 }
 
-const core::Property<org::ofono::Interface::NetworkRegistration::Technology> &
-Modem::technology()
+Modem::Bearer
+Modem::bearer() const
 {
-    return d->m_technology;
+    return d->m_bearer;
 }
-const core::Property<std::string> &
-Modem::simIdentifier()
+
+const QString&
+Modem::simIdentifier() const
 {
     return d->m_simIdentifier;
 }
 
-const core::Property<bool> &
-Modem::dataEnabled()
+bool
+Modem::dataEnabled() const
 {
     return d->m_dataEnabled;
 }
 
 int
-Modem::index()
+Modem::index() const
 {
     return d->m_index;
 }
 
-const std::string &
+QString
 Modem::name() const
 {
-    return d->m_ofonoModem->object->path().as_string();
+    return d->m_ofonoModem->modemPath();
 }
 
-
+#include "modem.moc"

@@ -18,6 +18,10 @@ if(${trace_messages})
   add_definitions(-DINDICATOR_NETWORK_TRACE_MESSAGES)
 endif()
 
+add_definitions(
+  -DQT_NO_KEYWORDS=1
+)
+
 find_package(PkgConfig REQUIRED)
 include(EnableCoverageReport)
 include(GNUInstallDirs)
@@ -43,14 +47,6 @@ pkg_check_modules(
   url-dispatcher-1
 )
 include_directories(${GLIB_INCLUDE_DIRS})
-
-set(NM_REQUIRED_VERSION 0.9)
-pkg_check_modules(
-  NM REQUIRED
-  libnm-glib>=${NM_REQUIRED_VERSION}
-  libnm-util>=${NM_REQUIRED_VERSION}
-)
-include_directories(${NM_INCLUDE_DIRS})
 
 set(OFONO_REQUIRED_VERSION 1.12)
 pkg_check_modules(
@@ -85,15 +81,11 @@ include_directories(${QTDBUSTEST_INCLUDE_DIRS})
 pkg_check_modules(QTDBUSMOCK REQUIRED libqtdbusmock-1 REQUIRED)
 include_directories(${QTDBUSMOCK_INCLUDE_DIRS})
 
-pkg_check_modules(QMENUMODEL REQUIRED qmenumodel REQUIRED)
-include_directories(${QMENUMODEL_INCLUDE_DIRS})
-
 pkg_check_modules(GIO REQUIRED gio-2.0>=${GLIB_REQUIRED_VERSION})
 include_directories(${GIO_INCLUDE_DIRS})
 
+set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-find_package(GObjectIntrospection 0.9.12)
 
 include_directories(${CMAKE_BINARY_DIR})
 
@@ -102,7 +94,7 @@ set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive -fPIC -fvisibility=hi
 # "nice bug" in cmake... http://www.cmake.org/Bug/view.php?id=15058
 # let's not set C_FLAGS as it will break pthreads detection \o/
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 ${COMMON_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${COMMON_FLAGS} -fno-strict-aliasing -fvisibility-inlines-hidden")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 ${COMMON_FLAGS} -fno-strict-aliasing -fvisibility-inlines-hidden")
 
 configure_file(
   "config.h.in"
@@ -136,5 +128,6 @@ ADD_CUSTOM_TARGET(
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 )
 
-enable_coverage_report(TARGETS menumodel_cpp connectivity-cpp indicator-secret-agent
+#///! TODO: The following needs to be updated once this project takes form again and new unit tests are written
+enable_coverage_report(TARGETS menumodel_cpp indicator-secret-agent
                        FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)

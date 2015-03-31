@@ -3,13 +3,11 @@ set(CONNECTIVITY_CPP_VERSION_MAJOR 0)
 set(CONNECTIVITY_CPP_VERSION_MINOR 0)
 set(CONNECTIVITY_CPP_VERSION_PATCH 1)
 
-include(CTest)
-
-find_package(PkgConfig REQUIRED)
-
-include_directories(include)
-include_directories(dbus-cpp)
-
+include_directories(
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/backend"
+    "${CMAKE_CURRENT_BINARY_DIR}/backend"
+)
 pkg_check_modules(
     PROPERTIESCPP REQUIRED
     properties-cpp
@@ -45,15 +43,7 @@ set(CONNECTIVITY_INTERFACES
 )
 add_custom_target(QtCreatorHeaderHack SOURCES ${CONNECTIVITY_INTERFACES})
 
-# list these here to have them visible in Qt Creator
-set(DBUS_INTERFACES
-    dbus-cpp/services/nm.h
-    dbus-cpp/services/ofono.h
-    dbus-cpp/services/urfkill.h
-)
-add_custom_target(QtCreatorHeaderHack2 SOURCES ${DBUS_INTERFACES})
-
 add_subdirectory(data)
 #add_subdirectory(doc)
-add_subdirectory(examples)
+#add_subdirectory(examples)
 add_subdirectory(src)

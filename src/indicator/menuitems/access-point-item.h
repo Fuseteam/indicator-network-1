@@ -20,11 +20,13 @@
 #ifndef ACCESS_POINT_ITEM_H
 #define ACCESS_POINT_ITEM_H
 
-#include <connectivity/networking/wifi/access-point.h>
+#include <nmofono/wifi/access-point.h>
 #include "item.h"
 
 class AccessPointItem : public Item
 {
+    Q_OBJECT
+
     class Private;
     std::shared_ptr<Private> d;
 
@@ -38,7 +40,9 @@ public:
     void setActive(bool value);
 
     virtual MenuItem::Ptr menuItem();
-    core::Signal<void> &activated();
+
+Q_SIGNALS:
+    void activated();
 };
 
 #endif // ACCESS_POINT_ITEM_H

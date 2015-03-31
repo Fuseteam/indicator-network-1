@@ -20,24 +20,40 @@
 #include <config.h>
 
 #include <QCoreApplication>
+#include <QTimer>
 #include <gtest/gtest.h>
 
 #include <libqtdbusmock/DBusMock.h>
 
 using namespace QtDBusMock;
 
-int main(int argc, char **argv) {
-	qputenv("LANG", "C.UTF-8");
-	unsetenv("LC_ALL");
+class Runner: public QObject
+{
+    Q_OBJECT
+public Q_SLOTS:
+    void run()
+    {
+        QCoreApplication::exit(RUN_ALL_TESTS());
+    }
+};
 
-	setlocale(LC_ALL, "");
-	bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
-	textdomain(GETTEXT_PACKAGE);
+int main(int argc, char **argv)
+{
+    qputenv("LANG", "C.UTF-8");
+    unsetenv("LC_ALL");
 
-	QCoreApplication application(argc, argv);
+    setlocale(LC_ALL, "");
+    bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
+    textdomain(GETTEXT_PACKAGE);
 
-	DBusMock::registerMetaTypes();
+    QCoreApplication application(argc, argv);
+    DBusMock::registerMetaTypes();
+    ::testing::InitGoogleTest(&argc, argv);
 
-	::testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+    Runner runner;
+    QTimer::singleShot(0, &runner, SLOT(run()));
+
+    return application.exec();
 }
+
+#include "main.moc"

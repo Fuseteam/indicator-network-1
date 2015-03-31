@@ -19,40 +19,22 @@
 
 #include "util.h"
 
-// guards access to __funcs
-std::mutex GMainLoopDispatch::_lock;
-std::list<GMainLoopDispatch::Func> GMainLoopDispatch::__funcs;
+#include <unity/util/ResourcePtr.h>
+#include <glib.h>
 
-gboolean
-GMainLoopDispatch::dispatch_cb(gpointer)
+using namespace std;
+namespace util = unity::util;
+
+void runGMainloop(guint ms)
 {
-    std::unique_lock<std::mutex> lock(_lock);
-    auto funcs = __funcs;
-    __funcs.clear();
-    lock.unlock();
-
-    for (auto &func : funcs) {
-        func();
-    }
-    return G_SOURCE_REMOVE;
+    shared_ptr<GMainLoop> loop(g_main_loop_new(nullptr, false), &g_main_loop_unref);
+    util::ResourcePtr<guint, function<void(guint)>> timer(g_timeout_add(ms,
+        [](gpointer user_data) -> gboolean
+        {
+            g_main_loop_quit((GMainLoop *)user_data);
+            return G_SOURCE_CONTINUE;
+        },
+        loop.get()),
+        &g_source_remove);
+    g_main_loop_run(loop.get());
 }
-
-GMainLoopDispatch::GMainLoopDispatch(Func func, int priority, bool force_delayed)
-{
-    if (!force_delayed &&
-         g_main_context_acquire(g_main_context_default())) {
-        // already running inside GMainLoop.
-        func();
-        g_main_context_release(g_main_context_default());
-    } else {
-        std::unique_lock<std::mutex> lock(_lock);
-        if (__funcs.empty()) {
-            g_idle_add_full(priority,
-                            GSourceFunc(GMainLoopDispatch::dispatch_cb),
-                            NULL,
-                            NULL);
-        }
-        __funcs.push_back(func);
-    }
-}
-

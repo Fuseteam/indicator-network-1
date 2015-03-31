@@ -27,22 +27,24 @@
 #include "menumodel-cpp/action-group.h"
 #include "menumodel-cpp/action-group-exporter.h"
 
+#include <string>
+#include <QDebug>
+
 using namespace notify::snapdecision;
 
-class SimUnlock::Private
+class SimUnlock::Private: public QObject
 {
+    Q_OBJECT
+
 public:
+    SimUnlock& p;
 
     Notification::Ptr m_notification;
     Notification::Ptr m_pending;
 
-    core::Property<std::string> m_title;
-    core::Property<std::string> m_body;
-    core::Property<std::pair<std::uint8_t, std::uint8_t>> m_pinMinMax;
-
-    core::Signal<std::string> m_pinEntered;
-    core::Signal<void> m_cancelled;
-    core::Signal<void> m_closed;
+    QString m_title;
+    QString m_body;
+    std::pair<std::uint8_t, std::uint8_t> m_pinMinMax;
 
     std::shared_ptr<SessionBus> m_sessionBus;
 
@@ -62,6 +64,13 @@ public:
     std::function<void()> m_pendingErrorClosed;
     std::function<void()> m_pendingPopupClosed;
 
+public Q_SLOTS:
+    void notificationClosed()
+    {
+        resetNotification(m_title, m_body);
+        Q_EMIT p.closed();
+    }
+
     void resetActionStates()
     {
         m_popupAction->setState(TypedVariant<std::string>(""));
@@ -75,8 +84,8 @@ public:
         m_pendingErrorClosed = std::function<void()>();
     }
 
-    void resetNotification(const std::string &title,
-                           const std::string &body)
+    void resetNotification(const QString &title,
+                           const QString &body)
     {
         m_pending = m_notification;
         m_notification = std::make_shared<notify::Notification>(title, body, "");
@@ -84,20 +93,56 @@ public:
         m_notification->setHint("x-canonical-snap-decisions-timeout", TypedVariant<std::int32_t>(std::numeric_limits<std::int32_t>::max()));
         m_notification->setHint("x-canonical-private-menu-model", TypedVariant<std::map<std::string, Variant>>(m_modelPaths));
         resetActionStates();
-        m_notification->closed().connect([this]()
-        {
-            resetNotification(m_title.get(), m_body.get());            
-            m_closed();
-        });
+        connect(m_notification.get(), &Notification::closed, this, &Private::notificationClosed);
     }
 
-    Private(const std::string &title,
-            const std::string &body,
-            std::pair<std::uint8_t, std::uint8_t> pinMinMax)
+    void pinEntered(const Variant& state)
     {
-        m_title.set(title);
-        m_body.set(body);
-        m_pinMinMax.set(pinMinMax);
+        Q_EMIT p.pinEntered(QString::fromStdString(state.as<std::string>()));
+    }
+
+    void notifyActivated(const Variant& parameter)
+    {
+        if (!parameter.as<bool>())
+        {
+            Q_EMIT p.cancelled();
+        }
+    }
+
+    void popupActivated(const Variant&)
+    {
+        m_popupAction->setState(TypedVariant<std::string>(""));
+        if (m_pendingPopupClosed)
+        {
+            m_pendingPopupClosed();
+        }
+        m_pendingPopupClosed = std::function<void()>();
+    }
+
+    void errorActivated(const Variant&)
+    {
+        m_errorAction->setState(TypedVariant<std::string>(""));
+        if (m_pendingErrorClosed)
+        {
+            m_pendingErrorClosed();
+        }
+        m_pendingErrorClosed = std::function<void()>();
+    }
+
+    void pinMinMaxChanged(std::pair<std::uint8_t, uint8_t> value) {
+        m_pinMinMaxAction->setState(TypedVariant<std::vector<std::int32_t>>({value.first, value.second}));
+    }
+
+public:
+    Private(SimUnlock& parent,
+            const QString &title,
+            const QString &body,
+            std::pair<std::uint8_t, std::uint8_t> pinMinMax)
+        : p(parent)
+    {
+        m_title = title;
+        m_body = body;
+        m_pinMinMax = pinMinMax;
 
         m_sessionBus.reset(new SessionBus());
 
@@ -125,48 +170,26 @@ public:
         m_actionGroup = std::make_shared<ActionGroup>();
         m_notifyAction = std::make_shared<Action>("simunlock",
                                                   G_VARIANT_TYPE_BOOLEAN,
-                                                  TypedVariant<std::string>(""),
-                                                  [this](Variant state)
-        {
-                m_pinEntered(state.as<std::string>());
-        });
-        m_notifyAction->activated().connect([this](Variant parameter){
-            if (!parameter.as<bool>())
-                m_cancelled();
-        });
+                                                  TypedVariant<std::string>(""));
+        connect(m_notifyAction.get(), &Action::stateUpdated, this, &Private::pinEntered);
+        connect(m_notifyAction.get(), &Action::activated, this, &Private::notifyActivated);
         m_actionGroup->add(m_notifyAction);
 
         m_pinMinMaxAction = std::make_shared<Action>("pinMinMax",
                                                      nullptr,
-                                                     TypedVariant<std::vector<std::int32_t>>({m_pinMinMax.get().first, m_pinMinMax.get().second}),
-                                                     [this](Variant)
-        {});
+                                                     TypedVariant<std::vector<std::int32_t>>({m_pinMinMax.first, m_pinMinMax.second}));
         m_actionGroup->add(m_pinMinMaxAction);
 
         m_popupAction = std::make_shared<Action>("popup",
                                                   nullptr,
-                                                  TypedVariant<std::string>(""),
-                                                  [this](Variant)
-        {});
-        m_popupAction->activated().connect([this](Variant){
-            m_popupAction->setState(TypedVariant<std::string>(""));
-            if (m_pendingPopupClosed)
-                m_pendingPopupClosed();
-            m_pendingPopupClosed = std::function<void()>();
-        });
+                                                  TypedVariant<std::string>(""));
+        connect(m_popupAction.get(), &Action::activated, this, &Private::popupActivated);
         m_actionGroup->add(m_popupAction);
 
         m_errorAction = std::make_shared<Action>("error",
                                                   nullptr,
-                                                  TypedVariant<std::string>(""),
-                                                  [this](Variant)
-        {});
-        m_errorAction->activated().connect([this](Variant){
-            m_errorAction->setState(TypedVariant<std::string>(""));
-            if (m_pendingErrorClosed)
-                m_pendingErrorClosed();
-            m_pendingErrorClosed = std::function<void()>();
-        });
+                                                  TypedVariant<std::string>(""));
+        connect(m_errorAction.get(), &Action::activated, this, &Private::errorActivated);
         m_actionGroup->add(m_errorAction);
 
         m_menuExporter = std::make_shared<MenuExporter>(m_sessionBus, menuPath, m_menu);
@@ -174,23 +197,17 @@ public:
 
         resetNotification(title, body);
 
-        m_title.changed().connect([this](const std::string &value){
-            m_notification->summary().set(value);
-        });
-        m_body.changed().connect([this](const std::string &value){
-            m_notification->body().set(value);
-        });
-        m_pinMinMax.changed().connect([this](std::pair<std::uint8_t, uint8_t> value) {
-            m_pinMinMaxAction->setState(TypedVariant<std::vector<std::int32_t>>({value.first, value.second}));
-        });
+        connect(&p, &SimUnlock::titleUpdated, m_notification.get(), &Notification::setSummary);
+        connect(&p, &SimUnlock::bodyUpdated, m_notification.get(), &Notification::setBody);
+        connect(&p, &SimUnlock::pinMinMaxUpdated, this, &Private::pinMinMaxChanged);
     }
 };
 
-SimUnlock::SimUnlock(const std::string &title,
-                                 const std::string &body,
+SimUnlock::SimUnlock(const QString &title,
+                                 const QString &body,
                                  std::pair<std::uint8_t, std::uint8_t> pinMinMax)
 {
-    d.reset(new Private(title, body, pinMinMax));
+    d.reset(new Private(*this, title, body, pinMinMax));
 }
 
 SimUnlock::~SimUnlock()
@@ -198,37 +215,19 @@ SimUnlock::~SimUnlock()
 
 }
 
-core::Signal<std::string> &
-SimUnlock::pinEntered()
-{
-    return d->m_pinEntered;
-}
-
-core::Signal<void> &
-SimUnlock::cancelled()
-{
-    return d->m_cancelled;
-}
-
-core::Signal<void> &
-SimUnlock::closed()
-{
-    return d->m_closed;
-}
-
-core::Property<std::string> &
+QString
 SimUnlock::title()
 {
     return d->m_title;
 }
 
-core::Property<std::string> &
+QString
 SimUnlock::body()
 {
     return d->m_body;
 }
 
-core::Property<std::pair<std::uint8_t, std::uint8_t>> &
+std::pair<std::uint8_t, std::uint8_t>
 SimUnlock::pinMinMax()
 {
     return d->m_pinMinMax;
@@ -270,3 +269,41 @@ SimUnlock::showPopup(std::string message, std::function<void()> closed)
         d->m_pendingPopupClosed();
     d->m_pendingPopupClosed = closed;
 }
+
+void
+SimUnlock::setTitle(const QString& title)
+{
+    if (d->m_title == title)
+    {
+        return;
+    }
+
+    d->m_title = title;
+    Q_EMIT titleUpdated(d->m_title);
+}
+
+void
+SimUnlock::setBody(const QString& body)
+{
+    if (d->m_body == body)
+    {
+        return;
+    }
+
+    d->m_body = body;
+    Q_EMIT bodyUpdated(d->m_body);
+}
+
+void
+SimUnlock::setPinMinMax(const std::pair<std::uint8_t, std::uint8_t>& pinMinMax)
+{
+    if (d->m_pinMinMax == pinMinMax)
+    {
+        return;
+    }
+
+    d->m_pinMinMax = pinMinMax;
+    Q_EMIT pinMinMaxUpdated(d->m_pinMinMax);
+}
+
+#include "sim-unlock.moc"

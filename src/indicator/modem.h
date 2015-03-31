@@ -20,18 +20,22 @@
 #ifndef MODEM_H
 #define MODEM_H
 
-#include <string>
+#include <map>
 #include <memory>
+#include <string>
 
-#include <core/property.h>
+#include <QString>
+#include <QObject>
 
-#include "dbus-cpp/services/ofono.h"
+class QOfonoModem;
 
 /**
  * all signals and property changes emitted from GMainLoop
  */
-class Modem
+class Modem: public QObject, public std::enable_shared_from_this<Modem>
 {
+    Q_OBJECT
+
     class Private;
     std::shared_ptr<Private> d;
 
@@ -53,6 +57,27 @@ public:
         not_available
     };
 
+    enum class Status
+    {
+        unregistered,
+        registered,
+        searching,
+        denied,
+        unknown,
+        roaming
+    };
+
+    enum class Bearer
+    {
+        notAvailable,
+        gprs,
+        edge,
+        umts,
+        hspa,
+        hspa_plus,
+        lte
+    };
+
     typedef std::shared_ptr<Modem> Ptr;
     typedef std::weak_ptr<Modem> WeakPtr;
 
@@ -71,76 +96,87 @@ public:
     };
 
     Modem() = delete;
-    explicit Modem(org::ofono::Interface::Modem::Ptr ofonoModem);
+
+    explicit Modem(std::shared_ptr<QOfonoModem> ofonoModem);
+
     virtual ~Modem();
 
-    org::ofono::Interface::Modem::Ptr ofonoModem() const;
+    void enterPin(PinType type,
+                  const QString &pin);
 
-    bool enterPin(PinType type,
-                  const std::string &pin);
+    void resetPin(PinType type,
+                  const QString &puk,
+                  const QString &pin);
 
-    bool resetPin(PinType type,
-                  const std::string &puk,
-                  const std::string &pin);
+    Q_PROPERTY(bool online READ online NOTIFY onlineUpdated)
+    bool online() const;
 
-    bool changePin(PinType type,
-                   const std::string &oldPin,
-                   const std::string &newPin);
+    Q_PROPERTY(Modem::SimStatus simStatus READ simStatus NOTIFY simStatusUpdated)
+    SimStatus simStatus() const;
 
-    const core::Property<bool> &online();
+    Q_PROPERTY(Modem::PinType requiredPin READ requiredPin NOTIFY requiredPinUpdated)
+    PinType requiredPin() const;
 
-    const core::Property<SimStatus> &simStatus();
-    const core::Property<PinType> &requiredPin();
-    const core::Property<std::map<PinType, std::uint8_t>> &retries();
+    typedef std::map<Modem::PinType, int> RetriesType;
+    Q_PROPERTY(RetriesType retries READ retries NOTIFY retriesUpdated)
+    const RetriesType &retries() const;
 
-    const core::Property<std::string> &operatorName();
-    const core::Property<org::ofono::Interface::NetworkRegistration::Status> &status();
-    const core::Property<std::int8_t> &strength();
-    const core::Property<org::ofono::Interface::NetworkRegistration::Technology> &technology();
+    Q_PROPERTY(QString operatorName READ operatorName NOTIFY operatorNameUpdated)
+    const QString &operatorName() const;
 
-    const core::Property<bool> &dataEnabled();
+    Q_PROPERTY(Modem::Status status READ status NOTIFY statusUpdated)
+    Status status() const;
 
-    const core::Property<std::string> &simIdentifier();
-    int index();
+    Q_PROPERTY(std::int8_t strength READ strength NOTIFY strengthUpdated)
+    std::int8_t strength() const;
 
-    const std::string &name() const;
+    Q_PROPERTY(Modem::Bearer bearer READ bearer NOTIFY bearerUpdated)
+    Bearer bearer() const;
 
-    static const std::string strengthIcon(int8_t strength)
-    {
-        /* Using same values as used by Android, not linear (LP: #1329945)*/
-        if (strength >= 39)
-            return "gsm-3g-full";
-        else if (strength >= 26)
-            return "gsm-3g-high";
-        else if (strength >= 16)
-            return "gsm-3g-medium";
-        else if (strength >= 6)
-            return "gsm-3g-low";
-        else
-            return "gsm-3g-none";
-    }
+    Q_PROPERTY(bool dataEnabled READ dataEnabled NOTIFY dataEnabledUpdated)
+    bool dataEnabled() const;
 
-    static const std::string technologyIcon(org::ofono::Interface::NetworkRegistration::Technology tech)
-    {
-        switch (tech){
-        case org::ofono::Interface::NetworkRegistration::Technology::notAvailable:
-        case org::ofono::Interface::NetworkRegistration::Technology::gsm:
-            return "network-cellular-pre-edge";
-        case org::ofono::Interface::NetworkRegistration::Technology::edge:
-            return "network-cellular-edge";
-        case org::ofono::Interface::NetworkRegistration::Technology::umts:
-            return "network-cellular-3g";
-        case org::ofono::Interface::NetworkRegistration::Technology::hspa:
-            return "network-cellular-hspa";
-        /// @todo oFono can't tell us about hspa+ yet
-        //case org::ofono::Interface::NetworkRegistration::Technology::hspaplus:
-        //    break;
-        case org::ofono::Interface::NetworkRegistration::Technology::lte:
-            return "network-cellular-lte";
-        }
-        // shouldn't be reached
-        return "";
-    }
+    Q_PROPERTY(QString simIdentifier READ simIdentifier NOTIFY simIdentifierUpdated)
+    const QString &simIdentifier() const;
+
+    int index() const;
+
+    QString name() const;
+
+    static QString strengthIcon(int8_t strength);
+
+    static QString technologyIcon(Bearer tech);
+
+Q_SIGNALS:
+    void onlineUpdated(bool);
+
+    void simStatusUpdated(SimStatus);
+
+    void requiredPinUpdated(PinType);
+
+    void retriesUpdated();
+
+    void operatorNameUpdated(const QString &);
+
+    void statusUpdated(Status);
+
+    void strengthUpdated(std::int8_t);
+
+    void bearerUpdated(Bearer);
+
+    void dataEnabledUpdated(bool);
+
+    void simIdentifierUpdated(const QString &);
+
+    void updated(Modem::Ptr);
+
+    void enterPinSuceeded();
+
+    void enterPinFailed(const QString& error);
+
+    void resetPinSuceeded();
+
+    void resetPinFailed(const QString& error);
 };
 
 #endif

@@ -25,47 +25,27 @@
 #include "menumodel-cpp/menu-item.h"
 #include "menumodel-cpp/action.h"
 
-#include <core/signal.h>
-
 class TextItem : public Item
 {
+    Q_OBJECT
+
 public:
     typedef std::shared_ptr<TextItem> Ptr;
 
     TextItem() = delete;
     virtual ~TextItem() = default;
-    TextItem(const std::string &label, const std::string &prefix, const std::string &name)
-    {
-        std::string action_name = prefix + "." + name;
-
-        m_action = std::make_shared<Action>(action_name, nullptr);
-        m_actionGroup->add(m_action);
-        m_action->activated().connect([this](Variant){
-            m_activated();
-        });
-        m_item = std::make_shared<MenuItem>(label, std::string("indicator.") + action_name);
-    }
+    TextItem(const std::string &label, const std::string &prefix, const std::string &name);
 
     void
-    setLabel(const std::string &label)
-    {
-        m_item->setLabel(label);
-    }
+    setLabel(const std::string &label);
 
     virtual MenuItem::Ptr
-    menuItem() {
-        return m_item;
-    }
+    menuItem();
 
-    core::Signal<void> &
-    activated()
-    {
-        return m_activated;
-    }
+Q_SIGNALS:
+    void activated();
 
 private:
-    core::Signal<void> m_activated;
-
     Action::Ptr m_action;
     MenuItem::Ptr m_item;
 };

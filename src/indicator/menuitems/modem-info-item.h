@@ -25,13 +25,13 @@
 #include "menumodel-cpp/menu-item.h"
 #include "menumodel-cpp/gio-helpers/variant.h"
 
-#include <core/signal.h>
-
 #include <functional>
 #include <vector>
 
 class ModemInfoItem : public Item
 {
+    Q_OBJECT
+
     class Private;
     std::unique_ptr<Private> d;
 
@@ -41,16 +41,18 @@ public:
     ModemInfoItem();
     virtual ~ModemInfoItem();
 
-    void setStatusIcon(const std::string &name);
-    void setStatusText(const std::string &value);
-    void setConnectivityIcon(const std::string &name);
-    void setSimIdentifierText(const std::string &value);
+    virtual MenuItem::Ptr menuItem();
+
+public Q_SLOTS:
+    void setStatusIcon(const QString &name);
+    void setStatusText(const QString &value);
+    void setConnectivityIcon(const QString &name);
+    void setSimIdentifierText(const QString &value);
     void setLocked(bool value);
     void setRoaming(bool value);
 
-    virtual MenuItem::Ptr menuItem();
-
-    core::Signal<void> &unlock();
+Q_SIGNALS:
+    void unlock();
 };
 
 #endif // MODEM_INFO_ITEM_H

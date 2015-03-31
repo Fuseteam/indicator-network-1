@@ -17,31 +17,67 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_SERVICE_H
-#define CONNECTIVITY_SERVICE_H
+#pragma once
 
-#include <connectivity/networking/manager.h>
-#include<core/signal.h>
+#include <nmofono/manager.h>
 
-class ConnectivityService
+#include <QDBusContext>
+#include <QDBusConnection>
+#include <QObject>
+
+class NetworkingStatusAdaptor;
+class PrivateAdaptor;
+
+namespace connectivity_service
 {
+class PrivateService;
+
+class ConnectivityService: public QObject, protected QDBusContext
+{
+    Q_OBJECT
+
+    friend NetworkingStatusAdaptor;
+    friend PrivateService;
+
 public:
-    ConnectivityService(std::shared_ptr<connectivity::networking::Manager> manager);
+    ConnectivityService(std::shared_ptr<connectivity::networking::Manager> manager, const QDBusConnection& connection);
     virtual ~ConnectivityService();
 
-    /**
-     * synced with GMainLoop
-     */
-    core::Signal<> &unlockAllModems();
+public:
+    Q_PROPERTY(QStringList Limitations READ limitations)
+    QStringList limitations() const;
 
-    /**
-     * synced with GMainLoop
-     */
-    core::Signal<std::string> &unlockModem();
+    Q_PROPERTY(QString Status READ status)
+    QString status() const;
+
+Q_SIGNALS:
+    void unlockAllModems();
+
+    void unlockModem(const QString& modem);
 
 private:
     class Private;
     std::shared_ptr<Private> d;
 };
 
-#endif
+class PrivateService : public QObject, protected QDBusContext
+{
+    Q_OBJECT
+
+    friend PrivateAdaptor;
+
+public:
+    PrivateService(ConnectivityService& parent);
+
+    ~PrivateService() = default;
+
+protected Q_SLOTS:
+    void UnlockAllModems();
+
+    void UnlockModem(const QString &modem);
+
+protected:
+    ConnectivityService& p;
+};
+
+}
