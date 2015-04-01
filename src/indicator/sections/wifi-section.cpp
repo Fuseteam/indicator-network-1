@@ -68,14 +68,16 @@ public:
         connect(m_manager.get(), &networking::Manager::wifiEnabledUpdated, m_switch.get(), &SwitchItem::setState);
         connect(m_switch.get(), &SwitchItem::stateUpdated, this, &Private::switchActivated);
 
-        updateLinks();
-        connect(m_manager.get(), &networking::Manager::linksUpdated, this, &Private::updateLinks);
-
         m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
         connect(m_openWifiSettings.get(), &TextItem::activated, this, &Private::openWiFiSettings);
 
         m_actionGroupMerger->add(*m_openWifiSettings);
         m_menu->append(*m_openWifiSettings);
+
+        // We have this last because the menu item insertion location
+        // depends on the presence of the WiFi settings item.
+        updateLinks();
+        connect(m_manager.get(), &networking::Manager::linksUpdated, this, &Private::updateLinks);
     }
 
 public Q_SLOTS:
@@ -102,8 +104,12 @@ public Q_SLOTS:
             m_wifiLink = std::make_shared<WifiLinkItem>(wifi_link);
 
             m_actionGroupMerger->add(*m_wifiLink);
-            m_menu->append(*m_wifiLink);
-            m_settingsMenu->append(*m_wifiLink);
+            auto comp = [this](MenuItem::Ptr, MenuItem::Ptr other)
+            {
+                return other == m_openWifiSettings->menuItem();
+            };
+            m_menu->insert(*m_wifiLink, comp);
+            m_settingsMenu->insert(*m_wifiLink, comp);
 
             // just take the first one
             break;
