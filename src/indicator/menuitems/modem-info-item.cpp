@@ -22,10 +22,6 @@
 class ModemInfoItem::Private
 {
 public:
-    core::Signal<void> m_unlock;
-
-    std::vector<core::Connection> m_connections;
-
     Action::Ptr m_actionStatusLabel;
     Action::Ptr m_actionStatusIcon;
     Action::Ptr m_actionConnectivityIcon;
@@ -89,7 +85,7 @@ ModemInfoItem::ModemInfoItem()
     m_actionGroup->add(d->m_actionRoaming);
     m_actionGroup->add(d->m_actionLocked);
 
-    d->m_actionLocked->activated().connect([this](Variant){ d->m_unlock(); });
+    connect(d->m_actionLocked.get(), &Action::activated, this, &ModemInfoItem::unlock);
 }
 
 ModemInfoItem::~ModemInfoItem()
@@ -98,28 +94,28 @@ ModemInfoItem::~ModemInfoItem()
 }
 
 void
-ModemInfoItem::setStatusIcon(const std::string &name)
+ModemInfoItem::setStatusIcon(const QString &name)
 {
-    d->m_actionStatusIcon->setState(TypedVariant<std::string>(name));
+    d->m_actionStatusIcon->setState(TypedVariant<std::string>(name.toStdString()));
 }
 
 void
-ModemInfoItem::setStatusText(const std::string &value)
+ModemInfoItem::setStatusText(const QString &value)
 {
-    d->m_actionStatusLabel->setState(TypedVariant<std::string>(value));
+    d->m_actionStatusLabel->setState(TypedVariant<std::string>(value.toStdString()));
 }
 
 void
-ModemInfoItem::setConnectivityIcon(const std::string &name)
+ModemInfoItem::setConnectivityIcon(const QString &name)
 {
-    d->m_actionConnectivityIcon->setState(TypedVariant<std::string>(name));
+    d->m_actionConnectivityIcon->setState(TypedVariant<std::string>(name.toStdString()));
 }
 
 void
-ModemInfoItem::setSimIdentifierText(const std::string &value)
+ModemInfoItem::setSimIdentifierText(const QString &value)
 
 {
-    d->m_actionSimIdentifier->setState(TypedVariant<std::string>(value));
+    d->m_actionSimIdentifier->setState(TypedVariant<std::string>(value.toStdString()));
 }
 
 void
@@ -138,11 +134,5 @@ MenuItem::Ptr
 ModemInfoItem::menuItem()
 {
     return d->m_item;
-}
-
-core::Signal<void> &
-ModemInfoItem::unlock()
-{
-    return d->m_unlock;
 }
 

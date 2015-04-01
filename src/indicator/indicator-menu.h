@@ -20,10 +20,10 @@
 #ifndef INDICATOR_MENU_H
 #define INDICATOR_MENU_H
 
-#include "menuitems/section.h"
-#include "menumodel-cpp/menu-merger.h"
-#include "menumodel-cpp/action-group-merger.h"
-#include "root-state.h"
+#include <menumodel-cpp/action-group.h>
+#include <menumodel-cpp/menu.h>
+#include <menuitems/section.h>
+#include <root-state.h>
 
 #include <vector>
 
@@ -33,69 +33,20 @@ public:
     typedef std::shared_ptr<IndicatorMenu> Ptr;
 
     IndicatorMenu() = delete;
+
     virtual ~IndicatorMenu() = default;
 
-    IndicatorMenu(RootState::Ptr rootState, const std::string &prefix)
-        : m_rootState{rootState},
-          m_prefix{prefix}
-    {
-        m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
-        m_actionGroup = std::make_shared<ActionGroup>();
+    IndicatorMenu(RootState::Ptr rootState, const std::string &prefix);
 
-        m_actionGroupMerger->add(m_actionGroup);
+    virtual void addSection(Section::Ptr section);
 
-        m_rootAction = std::make_shared<Action>(prefix + ".network-status",
-                                                nullptr,
-                                                rootState->state().get());
-        rootState->state().changed().connect([this](const Variant &state){
-            m_rootAction->setState(state);
-        });
-        m_actionGroup->add(m_rootAction);
+    Menu::Ptr menu() const;
 
-        m_rootMenu = std::make_shared<Menu>();
-        m_subMenuMerger = std::make_shared<MenuMerger>();
-
-        m_rootItem = MenuItem::newSubmenu(m_subMenuMerger);
-
-        m_rootItem->setAction("indicator." + prefix + ".network-status");
-        m_rootItem->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.indicator.root"));
-        m_rootMenu->append(m_rootItem);
-    }
-
-    virtual void
-    addSection(Section::Ptr section)
-    {
-        m_sections.push_back(section);
-        m_actionGroupMerger->add(*section);
-        m_subMenuMerger->append(*section);
-    }
-
-    Menu::Ptr
-    menu() const
-    {
-        return m_rootMenu;
-    }
-
-    ActionGroup::Ptr
-    actionGroup() const
-    {
-        return m_actionGroupMerger->actionGroup();
-    }
+    ActionGroup::Ptr actionGroup() const;
 
 private:
-    RootState::Ptr m_rootState;
-    std::string m_prefix;
-
-    Action::Ptr m_rootAction;
-    MenuItem::Ptr m_rootItem;
-
-    Menu::Ptr m_rootMenu;
-    MenuMerger::Ptr m_subMenuMerger;
-
-    ActionGroupMerger::Ptr m_actionGroupMerger;
-    ActionGroup::Ptr m_actionGroup;
-
-    std::vector<Section::Ptr> m_sections;
+    struct Private;
+    std::shared_ptr<Private> d;
 };
 
 #endif // INDICATOR_MENU_H

@@ -25,34 +25,27 @@
 
 namespace networking = connectivity::networking;
 
-#include <functional>
 #include <vector>
 
-class AccessPointItem::Private : public std::enable_shared_from_this<Private>
+class AccessPointItem::Private : public QObject
 {
+    Q_OBJECT
+
 public:
-    AccessPointItem *q;
+    AccessPointItem& q;
 
     networking::wifi::AccessPoint::Ptr m_accessPoint;
     bool m_isActive;
-
-    core::Signal<void> m_activated;
-
-    std::vector<core::Connection> m_connections;
 
     Action::Ptr m_actionActivate;
     Action::Ptr m_actionStrength;
     MenuItem::Ptr m_item;
 
-
     Private() = delete;
-    explicit Private(AccessPointItem *parent, networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false)
+    explicit Private(AccessPointItem& parent, networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false)
         : q{parent},
           m_accessPoint{accessPoint},
           m_isActive{isActive}
-    {}
-
-    void ConstructL()
     {
         static int id = 0;
         ++id; /// @todo guard me.
@@ -60,7 +53,7 @@ public:
         std::string actionId = "accesspoint." + std::to_string(id);
         std::string strengthActionId = actionId + "::strength";
 
-        m_item = std::make_shared<MenuItem>(m_accessPoint->ssid(),
+        m_item = std::make_shared<MenuItem>(m_accessPoint->ssid().toStdString(),
                                             "indicator." + actionId);
 
 
@@ -72,41 +65,24 @@ public:
 
         m_actionStrength = std::make_shared<Action>(strengthActionId,
                                                     nullptr,
-                                                    TypedVariant<std::uint8_t>(m_accessPoint->strength().get()));
+                                                    TypedVariant<std::uint8_t>(m_accessPoint->strength()));
 
-        auto weak = std::weak_ptr<Private>(shared_from_this());
-        auto con = m_accessPoint->strength().changed().connect([weak](double value)
-        {
-            auto that = weak.lock();
-            if (!that)
-                return;
-            GMainLoopDispatch([that, value]()
-            {
-               that->setStrength(value);
-            });
-        });
-        m_connections.push_back(con);
+        connect(m_accessPoint.get(), &networking::wifi::AccessPoint::strengthUpdated, this, &Private::setStrength);
 
         m_actionActivate = std::make_shared<Action>(actionId,
                                                     nullptr,
-                                                    TypedVariant<bool>(m_isActive),
-                                                    [this](Variant){
-                ///@ todo something weird is happening as the unity8 side is not changing the state..
-        });
-        m_actionActivate->activated().connect([this](Variant){
-            m_activated();
-        });
+                                                    TypedVariant<bool>(m_isActive));
+        connect(m_actionActivate.get(), &Action::activated, &q, &AccessPointItem::activated);
 
-        q->actionGroup()->add(m_actionActivate);
-        q->actionGroup()->add(m_actionStrength);
+        q.actionGroup()->add(m_actionActivate);
+        q.actionGroup()->add(m_actionStrength);
     }
 
     virtual ~Private()
     {
-        for (auto con : m_connections)
-            con.disconnect();
     }
 
+public Q_SLOTS:
     void setStrength(double value)
     {
         /// @todo narrow_cast<>;
@@ -115,9 +91,8 @@ public:
 };
 
 AccessPointItem::AccessPointItem(networking::wifi::AccessPoint::Ptr accessPoint, bool isActive)
-    : d{new Private(this, accessPoint, isActive)}
+    : d{new Private(*this, accessPoint, isActive)}
 {
-    d->ConstructL();
 }
 
 AccessPointItem::~AccessPointItem()
@@ -136,8 +111,4 @@ AccessPointItem::menuItem()
     return d->m_item;
 }
 
-core::Signal<void> &
-AccessPointItem::activated()
-{
-    return d->m_activated;
-}
+#include "access-point-item.moc"

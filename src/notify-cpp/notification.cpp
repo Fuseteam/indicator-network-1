@@ -20,94 +20,135 @@
 #include "notification.h"
 
 #include <libnotify/notify.h>
+#include <QDebug>
 
 using namespace notify;
 
 class notify::Notification::Private
 {
 public:
-    core::Property<std::string> summary;
-    core::Property<std::string> body;
-    core::Property<std::string> icon;
+    Private(Notification& parent) :
+        p(parent)
+    {
+    }
 
-    core::Signal<void> closed;
+    Notification& p;
 
-    std::unique_ptr<NotifyNotification, GObjectDeleter> notification;
+    QString m_summary;
+    QString m_body;
+    QString m_icon;
+
+    std::unique_ptr<NotifyNotification, GObjectDeleter> m_notification;
 
     static void closed_cb(NotifyNotification *,
                           gpointer user_data)
     {
         Private *that = static_cast<Private *>(user_data);
-        that->closed();
+        Q_EMIT that->p.closed();
     }
 
-    gulong disconnectId;
+    gulong disconnectId = 0;
 };
 
-Notification::Notification(const std::string &summary,
-                           const std::string &body,
-                           const std::string &icon)
+Notification::Notification(const QString &summary,
+                           const QString &body,
+                           const QString &icon)
 {
-    d.reset(new Private);
-    d->summary.set(summary);
-    d->body.set(body);
-    d->icon.set(icon);
+    d.reset(new Private(*this));
+    d->m_summary = summary;
+    d->m_body = body;
+    d->m_icon = icon;
 
-    d->notification.reset(notify_notification_new(summary.c_str(), body.c_str(), icon.c_str()));
-    d->disconnectId = g_signal_connect(d->notification.get(), "closed", G_CALLBACK(Private::closed_cb), d.get());
-
-    d->summary.changed().connect([this](const std::string &value){
-        g_object_set(d->notification.get(), "summary", value.c_str(), nullptr);
-    });
-    d->body.changed().connect([this](const std::string &value){
-        g_object_set(d->notification.get(), "body", value.c_str(), nullptr);
-    });
-    d->icon.changed().connect([this](const std::string &value){
-        g_object_set(d->notification.get(), "icon", value.c_str(), nullptr);
-    });
-
+    d->m_notification.reset(notify_notification_new(summary.toUtf8().constData(), body.toUtf8().constData(), icon.toUtf8().constData()));
+    d->disconnectId = g_signal_connect(d->m_notification.get(), "closed", G_CALLBACK(Private::closed_cb), d.get());
 }
 
 Notification::~Notification()
 {
-    g_signal_handler_disconnect(d->notification.get(), d->disconnectId);
+    g_signal_handler_disconnect(d->m_notification.get(), d->disconnectId);
 }
 
-core::Property<std::string> &
+QString
 Notification::summary()
 {
-    return d->summary;
+    return d->m_summary;
 }
 
-core::Property<std::string> &
+QString
 Notification::body()
 {
-    return d->body;
+    return d->m_body;
 }
 
-core::Property<std::string> &
+QString
 Notification::icon()
 {
-    return d->icon;
+    return d->m_icon;
 }
 
 void
-Notification::setHint(const std::string &key, Variant value)
+Notification::setHint(const QString &key, Variant value)
 {
-    notify_notification_set_hint(d->notification.get(), key.c_str(), value);
+    notify_notification_set_hint(d->m_notification.get(), key.toUtf8().constData(), value);
 }
 
 void
-Notification::setHintString(const std::string &key, const std::string &value)
+Notification::setHintString(const QString &key, const QString &value)
 {
-    notify_notification_set_hint_string(d->notification.get(), key.c_str(), value.c_str());
+    notify_notification_set_hint_string(d->m_notification.get(), key.toUtf8().constData(), value.toUtf8().constData());
+}
+
+void
+Notification::setSummary(const QString& summary)
+{
+    if (d->m_summary == summary)
+    {
+        return;
+    }
+
+    d->m_summary = summary;
+    g_object_set(d->m_notification.get(), "summary", d->m_summary.toUtf8().constData(), nullptr);
+    Q_EMIT summaryUpdated(d->m_summary);
+}
+
+void
+Notification::setBody(const QString& body)
+{
+    if (d->m_body == body)
+    {
+        return;
+    }
+
+    d->m_body = body;
+    g_object_set(d->m_notification.get(), "body", d->m_body.toUtf8().constData(), nullptr);
+    Q_EMIT bodyUpdated(d->m_body);
+}
+
+void
+Notification::setIcon(const QString& icon)
+{
+    if (d->m_icon == icon)
+    {
+        return;
+    }
+
+    d->m_icon = icon;
+    g_object_set(d->m_notification.get(), "icon", d->m_icon.toUtf8().constData(), nullptr);
+    Q_EMIT iconUpdated(d->m_icon);
+}
+
+void
+Notification::update()
+{
+    notify_notification_update(d->m_notification.get(), d->m_summary.toUtf8().constData(),
+                               d->m_body.toUtf8().constData(), d->m_icon.toUtf8().constData());
 }
 
 void
 Notification::show()
 {
     GError *error = nullptr;
-    notify_notification_show(d->notification.get(), &error);
+    notify_notification_show(d->m_notification.get(), &error);
     if (error) {
         std::string message {error->message};
         g_error_free(error);
@@ -119,17 +160,10 @@ void
 Notification::close()
 {
     GError *error = nullptr;
-    notify_notification_close(d->notification.get(), &error);
+    notify_notification_close(d->m_notification.get(), &error);
     if (error) {
         std::string message {error->message};
         g_error_free(error);
         throw std::runtime_error(message);
     }
-}
-
-
-core::Signal<void> &
-Notification::closed()
-{
-    return d->closed;
 }

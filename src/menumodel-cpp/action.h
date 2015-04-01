@@ -22,28 +22,24 @@
 
 #include <memory>
 #include <functional>
-#include <mutex>
 
-#include <core/signal.h>
 #include <gio/gio.h>
 
-#include "gio-helpers/util.h"
 #include "gio-helpers/variant.h"
 
+#include <QObject>
 
-class Action
+class Action: public QObject
 {
+    Q_OBJECT
+
     typedef std::shared_ptr<GAction> GActionPtr;
     GActionPtr make_gaction_ptr(GSimpleAction *action) { return std::shared_ptr<GAction>(G_ACTION(action), GObjectDeleter()); }
 
     GActionPtr m_gaction;
     std::string m_name;
-    Variant m_state;
-    core::Signal<Variant> m_activated;
     gulong m_activateHandlerId;
     gulong m_changeStateHandlerId;
-    std::function<void(Variant)> m_changeStateHandler;
-    std::recursive_mutex m_mutex;
 
     static void activate_cb(GSimpleAction *,
                             GVariant      *parameter,
@@ -57,20 +53,26 @@ public:
 
     Action(const std::string &name, const
            GVariantType *parameterType = nullptr,
-           const Variant &state = Variant(),
-           std::function<void(Variant)> changeStateHandler = std::function<void(Variant)>());
+           const Variant &state = Variant());
 
     ~Action();
 
     std::string name();
 
-    void setState(const Variant &value);
-
+    Q_PROPERTY(Variant state READ state WRITE setState NOTIFY stateUpdated)
     Variant state();
 
     GActionPtr gaction();
 
-    core::Signal<Variant> &activated();
+public Q_SLOTS:
+    void setState(const Variant &value);
+
+    void setEnabled(bool enabled);
+
+Q_SIGNALS:
+    void activated(const Variant&);
+
+    void stateUpdated(const Variant&);
 };
 
 #endif // ACTION_H

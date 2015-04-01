@@ -25,60 +25,11 @@
 
 #include <gio/gio.h>
 #include <memory>
-#include <condition_variable>
 #include <iostream>
 #include <vector>
 #include <list>
 
-struct GMainLoopSync
-{
-    std::condition_variable m_cv;
-    std::mutex m_mutex;
-    std::function<void()> m_func;
-
-    static gboolean dispatch_cb(gpointer user_data)
-    {
-        GMainLoopSync *that = static_cast<GMainLoopSync *>(user_data);
-        std::lock_guard<std::mutex> lk(that->m_mutex);
-        that->m_func();
-        that->m_cv.notify_all();
-        return G_SOURCE_REMOVE;
-    }
-
-public:
-    GMainLoopSync(std::function<void()> func)
-        : m_func(func)
-    {
-        if (g_main_context_acquire(g_main_context_default())) {
-            func();
-            g_main_context_release(g_main_context_default());
-        } else {
-            std::unique_lock<std::mutex> lk(m_mutex);
-            g_idle_add_full(G_PRIORITY_HIGH + 1,
-                            GSourceFunc(GMainLoopSync::dispatch_cb),
-                            this,
-                            nullptr);
-            if (m_cv.wait_for(lk, std::chrono::seconds(3)) == std::cv_status::timeout) {
-                std::cerr << "Timeout when waiting for GMainLoop sync." << std::endl;
-            }
-            lk.unlock();
-        }
-    }
-};
-
-struct GMainLoopDispatch
-{
-    static gboolean dispatch_cb(gpointer);
-
-public:
-    typedef std::function<void()> Func;
-    static std::mutex _lock;
-    // list keeps the order of the functions
-    static std::list<Func> __funcs;
-
-    //GMainLoopDispatch() = delete;
-    GMainLoopDispatch(Func func, int priority=G_PRIORITY_HIGH, bool force_delayed=false);
-};
+void runGMainloop(guint ms = 50);
 
 struct GObjectDeleter {
     GObjectDeleter() noexcept {}
@@ -141,6 +92,7 @@ class SessionBus
 
 public:
     typedef std::shared_ptr<SessionBus> Ptr;
+    typedef std::unique_ptr<SessionBus> UPtr;
 
     SessionBus()
     {
@@ -222,6 +174,8 @@ class BusName
     }
 
 public:
+    typedef std::unique_ptr<BusName> UPtr;
+
     BusName(std::string name,
             std::function<void(std::string)> acquired,
             std::function<void(std::string)> lost,

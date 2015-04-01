@@ -20,14 +20,18 @@
 #ifndef SIM_UNLOCK_DIALOG
 #define SIM_UNLOCK_DIALOG
 
-#include <memory>
 #include "modem.h"
+
+#include <memory>
+#include <QObject>
 
 /**
  * all signals and property changes dispatched from GMainLoop
  */
-class SimUnlockDialog
+class SimUnlockDialog: public QObject
 {
+    Q_OBJECT
+
     class Private;
     std::unique_ptr<Private> d;
 
@@ -49,9 +53,16 @@ public:
     Modem::Ptr modem();
 
     State state() const;
-    core::Signal<void> &ready();
 
-    core::Property<bool> &showSimIdentifiers();
+    Q_PROPERTY(bool showSimIdentifiers READ showSimIdentifiers WRITE setShowSimIdentifiers NOTIFY showSimIdentifiersUpdated)
+    bool showSimIdentifiers() const;
+
+    void setShowSimIdentifiers(bool showSimIdentifiers);
+
+Q_SIGNALS:
+    void ready();
+
+    void showSimIdentifiersUpdated(bool showSimIdentifiers);
 };
 
 #endif

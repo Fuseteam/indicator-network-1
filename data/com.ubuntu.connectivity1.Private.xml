@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/com/ubuntu/connectivity1/Private" xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+    <interface name="com.ubuntu.connectivity1.Private">
+
+        <method name="UnlockAllModems">
+        </method>
+
+        <method name="UnlockModem">
+            <arg type="s" direction="in" name="modem"/>
+        </method>
+
+    </interface>
+</node>
+

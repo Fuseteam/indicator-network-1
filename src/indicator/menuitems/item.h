@@ -24,8 +24,9 @@
 #include <menumodel-cpp/menu-item.h>
 
 #include <memory>
+#include <QObject>
 
-class Item
+class Item: public QObject
 {
 public:
     typedef std::shared_ptr<Item> Ptr;

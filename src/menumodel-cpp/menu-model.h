@@ -19,7 +19,10 @@
 #ifndef MENU_MODEL_H
 #define MENU_MODEL_H
 
-class MenuModel
+#include <memory>
+#include <QObject>
+
+class MenuModel: public QObject
 {
 public:
     typedef std::shared_ptr<MenuModel> Ptr;

@@ -22,125 +22,42 @@
 
 #include <memory>
 #include <gio/gio.h>
-#include <core/connection.h>
 
 #include "gio-helpers/util.h"
 #include "action-group.h"
 #include <set>
 #include <map>
+#include <QObject>
 
-class ActionGroupMerger
+class ActionGroupMerger: public QObject
 {
-    struct Connections
-    {
-        core::ScopedConnection actionAdded;
-        core::ScopedConnection actionRemoved;
-
-        Connections() = delete;
-        Connections(core::ScopedConnection added, core::ScopedConnection removed)
-            : actionAdded {std::move(added)},
-              actionRemoved {std::move(removed)}
-        {}
-    };
+    Q_OBJECT
 
     std::string m_prefix;
     ActionGroup::Ptr m_actionGroup;
 
-    std::map<ActionGroup::Ptr, std::shared_ptr<Connections>> m_groups;
+    std::map<ActionGroup::Ptr, std::pair<QMetaObject::Connection, QMetaObject::Connection>> m_groups;
 
     std::map<Action::Ptr, int> m_count;
     std::map<std::string, Action::Ptr> m_names;
 
-    void addAction(Action::Ptr action)
-    {
-        auto name_iter = m_names.find(action->name());
-        if (name_iter != m_names.end()) {
-            // we have two actions with the same name.
-            // If they are from the same shared pointer, everything is OK and
-            // count is incremented below, but if they have different pointer
-            // then they will override each other in GActionGroup so let's catch that
-            // early on.
-            if (name_iter->second != action) {
-                std::cerr << __PRETTY_FUNCTION__ << ": Conflicting action names. \"" << action->name() << "\"" << std::endl;
-                /// @todo thow something.
-                return;
-            }
-        } else {
-            m_names[action->name()] = action;
-        }
+private Q_SLOTS:
+    void addAction(Action::Ptr action);
 
-        auto count_iter = m_count.find(action);
-        if (count_iter != m_count.end()) {
-            count_iter->second += 1;
-        } else {
-            m_count[action] = 1;
-            m_actionGroup->add(action);
-        }
-    }
-
-    void removeAction(Action::Ptr action)
-    {
-        auto count_iter = m_count.find(action);
-        // it should not be possible for this function to be called for an action that
-        // was not added before
-        assert(count_iter != m_count.end());
-        count_iter->second -= 1;
-        if (count_iter->second == 0) {
-            m_actionGroup->remove(action);
-            m_names.erase(action->name());
-            m_count.erase(count_iter);
-        }
-    }
-
+    void removeAction(Action::Ptr action);
 
 public:
     typedef std::shared_ptr<ActionGroupMerger> Ptr;
+    typedef std::unique_ptr<ActionGroupMerger> UPtr;
 
-    explicit ActionGroupMerger(const std::string &prefix = "")
-        : m_prefix {prefix}
-    {
-        m_actionGroup = std::make_shared<ActionGroup>(m_prefix);
-    }
+    explicit ActionGroupMerger(const std::string &prefix = "");
 
-    void add(ActionGroup::Ptr group)
-    {
-        auto iter = m_groups.find(group);
-        if (iter != m_groups.end()) {
-            /// @todo throw something.
-            std::cerr << __PRETTY_FUNCTION__ << ": Trying to add action group which was already added before." << std::endl;
-            return;
-        }
+    void add(ActionGroup::Ptr group);
 
-        for (auto action : group->actions()) {
-            addAction(action);
-        }
-        auto added = group->actionAdded().connect([this, group](Action::Ptr action){
-            addAction(action);
-        });
-        auto removed = group->actionRemoved().connect([this, group](Action::Ptr action){
-            removeAction(action);
-        });
-        m_groups[group] = std::make_shared<Connections>(added, removed);;
-    }
+    void remove(ActionGroup::Ptr group);
 
-    void remove(ActionGroup::Ptr group)
-    {
-        auto iter = m_groups.find(group);
-        if (iter == m_groups.end()) {
-            /// @todo throw something.
-            std::cerr << __PRETTY_FUNCTION__ << ": Trying to remove action group which was not added before." << std::endl;
-            return;
-        }
-        m_groups.erase(group);
-        for (auto action : group->actions()) {
-            removeAction(action);
-        }
-    }
+    ActionGroup::Ptr actionGroup();
 
-    ActionGroup::Ptr actionGroup()
-    {
-        return m_actionGroup;
-    }
     operator ActionGroup::Ptr() { return actionGroup(); }
 };
 

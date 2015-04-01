@@ -20,15 +20,18 @@
 #ifndef SIM_UNLOCK_DIALOG_H
 #define SIM_UNLOCK_DIALOG_H
 
-#include <core/property.h>
-
 #include <memory>
+
+#include <QObject>
+#include <QString>
 
 namespace notify {
 namespace snapdecision {
 
-class SimUnlock
+class SimUnlock: public QObject
 {
+    Q_OBJECT
+
     class Private;
     std::unique_ptr<Private> d;
 
@@ -36,29 +39,28 @@ public:
 
     typedef std::shared_ptr<SimUnlock> Ptr;
 
-    explicit SimUnlock(const std::string &title = "",
-              const std::string &body = "",
+    explicit SimUnlock(const QString &title = "",
+              const QString &body = "",
               std::pair<std::uint8_t, std::uint8_t> pinMinMax = {0, 0});
     ~SimUnlock();
 
-    core::Signal<std::string> &pinEntered();
-    core::Signal<void> &cancelled();
-    core::Signal<void> &closed();
+    /**
+     * To update the value in the dialog, call update().
+     */
+    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleUpdated)
+    QString title();
 
     /**
      * To update the value in the dialog, call update().
      */
-    core::Property<std::string> &title();
+    Q_PROPERTY(QString body READ body WRITE setBody NOTIFY bodyUpdated)
+    QString body();
 
     /**
      * To update the value in the dialog, call update().
      */
-    core::Property<std::string> &body();
-
-    /**
-     * To update the value in the dialog, call update().
-     */
-    core::Property<std::pair<std::uint8_t, std::uint8_t>> &pinMinMax();
+//    Q_PROPERTY(std::pair<std::uint8_t, std::uint8_t> pinMinMax READ pinMinMax WRITE setPinMinMax NOTIFY pinMinMaxUpdated)
+    std::pair<std::uint8_t, std::uint8_t> pinMinMax();
 
     /**
      * Update the dialog.
@@ -71,6 +73,26 @@ public:
 
     void showError(std::string message, std::function<void()> closed = std::function<void()>());
     void showPopup(std::string message, std::function<void()> closed = std::function<void()>());
+
+public Q_SLOTS:
+    void setTitle(const QString& title);
+
+    void setBody(const QString& body);
+
+    void setPinMinMax(const std::pair<std::uint8_t, std::uint8_t>& pinMinMax);
+
+Q_SIGNALS:
+    void pinEntered(const QString&);
+
+    void cancelled();
+
+    void closed();
+
+    void titleUpdated(const QString&);
+
+    void bodyUpdated(const QString&);
+
+    void pinMinMaxUpdated(const std::pair<std::uint8_t, std::uint8_t>&);
 };
 
 }

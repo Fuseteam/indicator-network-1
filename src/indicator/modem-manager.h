@@ -23,10 +23,14 @@
 #include "modem.h"
 
 #include <memory>
-#include <core/property.h>
 
-class ModemManager
+#include <QList>
+#include <QObject>
+
+class ModemManager: public QObject
 {
+    Q_OBJECT
+
     class Private;
     std::shared_ptr<Private> d;
 
@@ -35,6 +39,7 @@ public:
     typedef std::shared_ptr<ModemManager> Ptr;
 
     ModemManager();
+
     ~ModemManager();
 
     /**
@@ -50,12 +55,13 @@ public:
     /**
      * must be called from GMainLoop
      */
-    void unlockModemByName(const std::string &name);
+    void unlockModemByName(const QString &name);
 
-    /**
-     * changed() emitted from GMainLoop
-     */
-    const core::Property<std::set<Modem::Ptr>> &modems();
+    Q_PROPERTY(QList<Modem::Ptr> modems READ modems NOTIFY modemsUpdated)
+    QList<Modem::Ptr> modems();
+
+Q_SIGNALS:
+    void modemsUpdated(QList<Modem::Ptr> modems);
 };
 
 #endif

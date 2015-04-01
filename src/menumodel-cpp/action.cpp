@@ -29,7 +29,7 @@ Action::activate_cb(GSimpleAction *,
         param = Variant::fromGVariant(g_variant_ref(parameter));
     }
     Action *that = static_cast<Action *>(user_data);
-    that->m_activated(param);
+    Q_EMIT that->activated(param);
 }
 
 void
@@ -40,20 +40,13 @@ Action::change_state_cb(GSimpleAction *,
     Variant new_value = Variant::fromGVariant(g_variant_ref(value));
 
     Action *that =  static_cast<Action *>(user_data);
-    if (that->m_changeStateHandler)
-        that->m_changeStateHandler(new_value);
-    /// @todo probably should assert if reached here.
-    ///       this callback should never be set up if no
-    ///       changeStateHandler is provided.
+    Q_EMIT that->stateUpdated(new_value);
 }
 
 Action::Action(const std::string &name, const
        GVariantType *parameterType,
-       const Variant &state,
-       std::function<void(Variant)> changeStateHandler)
-    : m_name {name},
-      m_state {state},
-      m_changeStateHandler {changeStateHandler}
+       const Variant &state)
+    : m_name {name}
 {
     /// @todo validate that name is valid.
 
@@ -71,61 +64,60 @@ Action::Action(const std::string &name, const
                                            G_CALLBACK(Action::activate_cb),
                                            this);
     m_changeStateHandlerId = 0;
-    if (m_changeStateHandler) {
-        m_changeStateHandlerId = g_signal_connect(m_gaction.get(),
-                                                  "change-state",
-                                                  G_CALLBACK(Action::change_state_cb),
-                                                  this);
-    }
+    m_changeStateHandlerId = g_signal_connect(m_gaction.get(),
+                                              "change-state",
+                                              G_CALLBACK(Action::change_state_cb),
+                                              this);
 }
 
 Action::~Action()
 {
-    std::lock_guard<std::recursive_mutex> lg(m_mutex);
     g_signal_handler_disconnect(m_gaction.get(), m_activateHandlerId);
     if (m_changeStateHandlerId)
+    {
         g_signal_handler_disconnect(m_gaction.get(), m_changeStateHandlerId);
-    GMainLoopSync([]{});
+    }
 }
 
 std::string
 Action::name()
 {
-    std::lock_guard<std::recursive_mutex> lg(m_mutex);
     return m_name;
+}
+
+void
+Action::setEnabled(bool enabled)
+{
+    if (g_action_get_enabled(m_gaction.get()) == enabled)
+    {
+        return;
+    }
+
+    g_simple_action_set_enabled(G_SIMPLE_ACTION(m_gaction.get()), enabled);
 }
 
 void
 Action::setState(const Variant &value)
 {
-    std::lock_guard<std::recursive_mutex> lg(m_mutex);
-    m_state = value;
-    auto action = m_gaction;
-    GMainLoopDispatch([=](){
-      g_simple_action_set_state(G_SIMPLE_ACTION(action.get()), value);
-    });
-    /// @todo state changes don't work properly. We probably need to make the
-    ///       state a Property to be able to get signals on change.
-    ///       or alternatively call changeStateHandler here
+    if (value == state())
+    {
+        return;
+    }
+
+    g_simple_action_set_state(G_SIMPLE_ACTION(m_gaction.get()), value);
+
+    Q_EMIT stateUpdated(state());
 }
 
 Variant
 Action::state()
 {
-    std::lock_guard<std::recursive_mutex> lg(m_mutex);
-    return m_state;
+    return Variant::fromGVariant(
+            g_action_get_state(G_ACTION(m_gaction.get())));
 }
 
 Action::GActionPtr
 Action::gaction()
 {
-    std::lock_guard<std::recursive_mutex> lg(m_mutex);
     return m_gaction;
-}
-
-core::Signal<Variant> &
-Action::activated()
-{
-    std::lock_guard<std::recursive_mutex> lg(m_mutex);
-    return m_activated;
 }

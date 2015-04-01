@@ -22,14 +22,16 @@
 
 #include <memory>
 
-#include <core/property.h>
-
 #include "menumodel-cpp/gio-helpers/variant.h"
+
+#include <QObject>
 
 namespace notify {
 
-class Notification
+class Notification: public QObject
 {
+    Q_OBJECT
+
     class Private;
     std::unique_ptr<Private> d;
 
@@ -38,27 +40,47 @@ public:
     typedef std::shared_ptr<Notification> Ptr;
 
     Notification() = delete;
-    Notification(const std::string &summary,
-                 const std::string &body,
-                 const std::string &icon);
+    Notification(const QString &summary,
+                 const QString &body,
+                 const QString &icon);
     virtual ~Notification();
 
     /// @todo remember show() after set().
-    core::Property<std::string> &summary();
+    Q_PROPERTY(QString summary READ summary NOTIFY summaryUpdated)
+    QString summary();
 
     /// @todo remember show() after set().
-    core::Property<std::string> &body();
+    Q_PROPERTY(QString body READ body NOTIFY bodyUpdated)
+    QString body();
 
     /// @todo remember show() after set().
-    core::Property<std::string> &icon();
+    Q_PROPERTY(QString icon READ icon NOTIFY iconUpdated)
+    QString icon();
 
-    void setHint(const std::string &key, Variant value);
-    void setHintString(const std::string &key, const std::string &value);
+    void update();
 
     void show();
     void close();
 
-    core::Signal<void> &closed();
+public Q_SLOTS:
+    void setHint(const QString &key, Variant value);
+
+    void setHintString(const QString &key, const QString &value);
+
+    void setSummary(const QString& summary);
+
+    void setBody(const QString& body);
+
+    void setIcon(const QString& icon);
+
+Q_SIGNALS:
+    void closed();
+
+    void summaryUpdated(const QString&);
+
+    void bodyUpdated(const QString&);
+
+    void iconUpdated(const QString&);
 };
 }
 
