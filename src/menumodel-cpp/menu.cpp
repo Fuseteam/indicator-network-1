@@ -27,13 +27,11 @@ Menu::Menu()
 Menu::~Menu()
 {
     clear();
-//    GMainLoopSync([]{});
 }
 
 void Menu::append(MenuItem::Ptr item)
 {
     m_items.push_back(item);
-    // prevent this-> from being captured
     g_menu_append_item(m_gmenu.get(), item->gmenuitem());
     if (std::count(m_items.begin(), m_items.end(), item) == 1) {
         connect(item.get(), &MenuItem::changed, this, &Menu::itemChanged);
@@ -51,8 +49,6 @@ void Menu::insert(MenuItem::Ptr item, iterator position)
         ++iter;
     }
 
-    // prevent this-> from being captured
-    auto menu = m_gmenu;
     g_menu_insert_item(m_gmenu.get(), index, item->gmenuitem());
     m_items.insert(position, item);
 }
