@@ -101,12 +101,12 @@ std::chrono::system_clock::time_point AccessPoint::lastConnected() const
     return m_lastConnected;
 }
 
-const QString& AccessPoint::ssid() const
+QString AccessPoint::ssid() const
 {
     return m_ssid;
 }
 
-const QByteArray& AccessPoint::raw_ssid() const
+QByteArray AccessPoint::raw_ssid() const
 {
     return m_raw_ssid;
 }

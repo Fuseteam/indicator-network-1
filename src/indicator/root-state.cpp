@@ -213,6 +213,10 @@ RootState::Private::updateNetworkingIcon()
                                 &networking::wifi::AccessPoint::strengthUpdated,
                                 this,
                                 &Private::updateNetworkingIcon);
+                        if (m_activeAP_conn)
+                        {
+                            disconnect(*m_activeAP_conn);
+                        }
                         m_activeAP_conn.reset(new QMetaObject::Connection(c));
                     }
                     else

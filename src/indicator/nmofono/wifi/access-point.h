@@ -50,7 +50,7 @@ public:
     Q_PROPERTY(double strength READ strength NOTIFY strengthUpdated)
     virtual double strength() const = 0;
 
-    virtual const QString& ssid()     const = 0;
+    virtual QString ssid()     const = 0;
     virtual bool secured()            const = 0;
     virtual bool adhoc()              const = 0;
 
