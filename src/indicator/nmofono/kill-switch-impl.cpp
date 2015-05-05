@@ -133,7 +133,15 @@ bool KillSwitch::flightMode(bool enable)
         return true;
     }
 
-    return utils::getOrThrow(d->urfkill->FlightMode(enable));
+    try
+    {
+        return utils::getOrThrow(d->urfkill->FlightMode(enable));
+    }
+    catch (std::runtime_error& e)
+    {
+        qWarning() << __PRETTY_FUNCTION__ << ": " << QString::fromStdString(e.what());
+        return false;
+    }
 }
 
 bool KillSwitch::isFlightMode()

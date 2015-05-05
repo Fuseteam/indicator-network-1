@@ -51,8 +51,8 @@ public:
     Q_PROPERTY(std::chrono::system_clock::time_point lastConnected READ lastConnected NOTIFY lastConnectedUpdated)
     std::chrono::system_clock::time_point lastConnected() const;
 
-    const QString& ssid() const override;
-    const QByteArray& raw_ssid() const;
+    QString ssid() const override;
+    QByteArray raw_ssid() const;
 
     bool secured() const override;
 

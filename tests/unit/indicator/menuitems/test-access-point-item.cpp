@@ -38,7 +38,7 @@ namespace
 class MockAccessPoint : public networking::wifi::AccessPoint
 {
 public:
-    MOCK_CONST_METHOD0(ssid, const QString&());
+    MOCK_CONST_METHOD0(ssid, QString());
 
     MOCK_CONST_METHOD0(secured, bool());
 
@@ -57,8 +57,7 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
 {
     shared_ptr<MockAccessPoint> accessPoint = make_shared<
             NiceMock<MockAccessPoint>>();
-    static QString ssidtext("the ssid");
-    ON_CALL(*accessPoint, ssid()).WillByDefault(ReturnRef(ssidtext));
+    ON_CALL(*accessPoint, ssid()).WillByDefault(Return(QString("the ssid")));
     ON_CALL(*accessPoint, secured()).WillByDefault(Return(true));
     ON_CALL(*accessPoint, adhoc()).WillByDefault(Return(false));
     ON_CALL(*accessPoint, strength()).WillByDefault(Return(70.0));

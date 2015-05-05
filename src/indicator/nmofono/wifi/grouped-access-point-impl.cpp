@@ -147,6 +147,11 @@ GroupedAccessPoint::~GroupedAccessPoint() {
 }
 
 QDBusObjectPath GroupedAccessPoint::object_path() const {
+    if (p->aplist.empty())
+    {
+        return QDBusObjectPath("/");
+    }
+
     return p->aplist.at(0)->object_path();
 }
 
@@ -160,23 +165,43 @@ std::chrono::system_clock::time_point GroupedAccessPoint::lastConnected() const
     return p->m_lastTime;
 }
 
-const QString& GroupedAccessPoint::ssid() const
+QString GroupedAccessPoint::ssid() const
 {
+    if (p->aplist.empty())
+    {
+        return QString();
+    }
+
     return p->aplist.at(0)->ssid();
 }
 
-const QByteArray& GroupedAccessPoint::raw_ssid() const
+QByteArray GroupedAccessPoint::raw_ssid() const
 {
+    if (p->aplist.empty())
+    {
+        return QByteArray();
+    }
+
     return p->aplist.at(0)->raw_ssid();
 }
 
 bool GroupedAccessPoint::secured() const
 {
+    if (p->aplist.empty())
+    {
+        return false;
+    }
+
     return p->aplist.at(0)->secured();
 }
 
 bool GroupedAccessPoint::adhoc() const
 {
+    if (p->aplist.empty())
+    {
+        return false;
+    }
+
     return p->aplist.at(0)->adhoc();
 }
 
