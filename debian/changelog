@@ -1,3 +1,10 @@
+indicator-network (0.5.1+15.04.20150505~rtm-0ubuntu1) 14.09; urgency=medium
+
+  [ Pete Woods ]
+  * Handle mesh networks without crashing
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Tue, 05 May 2015 08:35:36 +0000
+
 indicator-network (0.5.1+15.04.20150401~rtm-0ubuntu1) 14.09; urgency=medium
 
   [ Pete Woods ]
