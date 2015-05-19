@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef MODEM_INFO_ITEM_H
-#define MODEM_INFO_ITEM_H
+#pragma once
 
 #include "item.h"
 #include "menumodel-cpp/action.h"
@@ -54,5 +53,3 @@ public Q_SLOTS:
 Q_SIGNALS:
     void unlock();
 };
-
-#endif // MODEM_INFO_ITEM_H

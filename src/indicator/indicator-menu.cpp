@@ -22,6 +22,8 @@
 #include <menumodel-cpp/menu-merger.h>
 #include <menumodel-cpp/action-group-merger.h>
 
+using namespace std;
+
 struct IndicatorMenu::Private: public QObject
 {
     Q_OBJECT
@@ -30,7 +32,7 @@ public:
     Private() = default;
 
     RootState::Ptr m_rootState;
-    std::string m_prefix;
+    string m_prefix;
 
     Action::Ptr m_rootAction;
     MenuItem::Ptr m_rootItem;
@@ -41,7 +43,7 @@ public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
     ActionGroup::Ptr m_actionGroup;
 
-    std::vector<Section::Ptr> m_sections;
+    vector<Section::Ptr> m_sections;
 
 public Q_SLOTS:
     void setState(const Variant &state)
@@ -50,29 +52,29 @@ public Q_SLOTS:
     }
 };
 
-IndicatorMenu::IndicatorMenu(RootState::Ptr rootState, const std::string &prefix)
+IndicatorMenu::IndicatorMenu(RootState::Ptr rootState, const string &prefix)
     : d(new Private)
 {
     d->m_rootState = rootState;
     d->m_prefix = prefix;
-    d->m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
-    d->m_actionGroup = std::make_shared<ActionGroup>();
+    d->m_actionGroupMerger = make_shared<ActionGroupMerger>();
+    d->m_actionGroup = make_shared<ActionGroup>();
 
     d->m_actionGroupMerger->add(d->m_actionGroup);
 
-    d->m_rootAction = std::make_shared<Action>(prefix + ".network-status",
+    d->m_rootAction = make_shared<Action>(prefix + ".network-status",
                                             nullptr,
                                             rootState->state());
     QObject::connect(d->m_rootState.get(), &RootState::stateUpdated, d.get(), &Private::setState);
     d->m_actionGroup->add(d->m_rootAction);
 
-    d->m_rootMenu = std::make_shared<Menu>();
-    d->m_subMenuMerger = std::make_shared<MenuMerger>();
+    d->m_rootMenu = make_shared<Menu>();
+    d->m_subMenuMerger = make_shared<MenuMerger>();
 
     d->m_rootItem = MenuItem::newSubmenu(d->m_subMenuMerger);
 
     d->m_rootItem->setAction("indicator." + prefix + ".network-status");
-    d->m_rootItem->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.indicator.root"));
+    d->m_rootItem->setAttribute("x-canonical-type", TypedVariant<string>("com.canonical.indicator.root"));
     d->m_rootMenu->append(d->m_rootItem);
 }
 
@@ -80,8 +82,8 @@ void
 IndicatorMenu::addSection(Section::Ptr section)
 {
     d->m_sections.push_back(section);
-    d->m_actionGroupMerger->add(*section);
-    d->m_subMenuMerger->append(*section);
+    d->m_actionGroupMerger->add(section->actionGroup());
+    d->m_subMenuMerger->append(section->menuModel());
 }
 
 Menu::Ptr

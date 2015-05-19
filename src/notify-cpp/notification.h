@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef NOTIFY_NOTIFICATION_H
-#define NOTIFY_NOTIFICATION_H
+#pragma once
 
 #include <memory>
 
@@ -83,5 +82,3 @@ Q_SIGNALS:
     void iconUpdated(const QString&);
 };
 }
-
-#endif // NOTIFY_NOTIFICATION_H

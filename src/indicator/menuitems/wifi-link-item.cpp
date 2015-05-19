@@ -27,7 +27,10 @@
 #include "menumodel-cpp/menu.h"
 #include "menumodel-cpp/menu-merger.h"
 
-namespace networking = connectivity::networking;
+#include <util/qhash-sharedptr.h>
+#include <util/localisation.h>
+
+using namespace nmofono;
 
 #include <algorithm>
 #include <locale>
@@ -39,13 +42,13 @@ class WifiLinkItem::Private : public QObject
 public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
 
-    networking::wifi::Link::Ptr m_link;
+    wifi::WifiLink::Ptr m_link;
 
     /// @todo do something with me...
     Action::Ptr m_actionBusy;
 
-    networking::wifi::AccessPoint::Ptr m_activeAccessPoint;
-    std::map<networking::wifi::AccessPoint::Ptr, AccessPointItem::Ptr> m_accessPoints;
+    wifi::AccessPoint::Ptr m_activeAccessPoint;
+    QMap<wifi::AccessPoint::Ptr, AccessPointItem::Ptr> m_accessPoints;
 
     Menu::Ptr m_topMenu;
 
@@ -70,7 +73,7 @@ public:
 
     Private() = delete;
     ~Private() {}
-    Private(networking::wifi::Link::Ptr link)
+    Private(wifi::WifiLink::Ptr link)
         : m_link {link}
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
@@ -106,10 +109,10 @@ public:
         };
 
         updateAccessPoints(m_link->accessPoints());
-        connect(m_link.get(), &networking::wifi::Link::accessPointsUpdated, this, &Private::updateAccessPoints);
+        connect(m_link.get(), &wifi::WifiLink::accessPointsUpdated, this, &Private::updateAccessPoints);
 
         updateActiveAccessPoint(m_link->activeAccessPoint());
-        connect(m_link.get(), &networking::wifi::Link::activeAccessPointUpdated, this, &Private::updateActiveAccessPoint);
+        connect(m_link.get(), &wifi::WifiLink::activeAccessPointUpdated, this, &Private::updateActiveAccessPoint);
 
         m_otherNetwork = std::make_shared<TextItem>(_("Other network…"), "wifi", "othernetwork");
         //m_actionGroupMerger->add(*m_otherNetwork);
@@ -127,25 +130,19 @@ public:
     }
 
 public Q_SLOTS:
-    void updateAccessPoints(const std::set<networking::wifi::AccessPoint::Ptr>& accessPoints)
+    void updateAccessPoints(const QSet<wifi::AccessPoint::Ptr>& accessPoints)
     {
         /// @todo previously connected
         /// @todo apply visibility policy.
 
-        std::set<networking::wifi::AccessPoint::Ptr> old;
-        for (auto pair: m_accessPoints) {
-            old.insert(pair.first);
-        }
+        auto old(m_accessPoints.keys().toSet());
 
-        std::set<networking::wifi::AccessPoint::Ptr> added;
-        std::set_difference(accessPoints.begin(), accessPoints.end(),
-                            old.begin(), old.end(),
-                            std::inserter(added, added.begin()));
+        auto added(accessPoints);
+        added.subtract(old);
 
-        std::set<networking::wifi::AccessPoint::Ptr> removed;
-        std::set_difference(old.begin(), old.end(),
-                            accessPoints.begin(), accessPoints.end(),
-                            std::inserter(removed, removed.begin()));
+        auto removed(old);
+        removed.subtract(accessPoints);
+
 
         for (auto ap: removed) {
             bool isActive = (ap == m_activeAccessPoint);
@@ -155,7 +152,7 @@ public Q_SLOTS:
                 m_neverConnectedApsMenu->removeAll(m_accessPoints[ap]->menuItem());
             /// @todo disconnect activated...
             m_actionGroupMerger->remove(m_accessPoints[ap]->actionGroup());
-            m_accessPoints.erase(ap);
+            m_accessPoints.remove(ap);
         }
 
         for (auto ap : added) {
@@ -180,7 +177,7 @@ public Q_SLOTS:
         }
     }
 
-    void updateActiveAccessPoint(networking::wifi::AccessPoint::Ptr ap)
+    void updateActiveAccessPoint(wifi::AccessPoint::Ptr ap)
     {
         m_activeAccessPoint = ap;
 
@@ -191,21 +188,24 @@ public Q_SLOTS:
             m_connectedBeforeApsMenu->clear();
         }
 
-        for (auto pair : m_accessPoints) {
-            if (ap && ap == pair.first) {
-                m_connectedBeforeApsMenu->insert(pair.second->menuItem(), m_connectedBeforeApsMenu->begin());
-                pair.second->setActive(true);
-                m_neverConnectedApsMenu->removeAll(pair.second->menuItem());
+        QMapIterator<wifi::AccessPoint::Ptr, AccessPointItem::Ptr> i(m_accessPoints);
+        while (i.hasNext()) {
+            i.next();
+            auto menuItem = i.value();
+            if (ap && ap == i.key()) {
+                m_connectedBeforeApsMenu->insert(menuItem->menuItem(), m_connectedBeforeApsMenu->begin());
+                menuItem->setActive(true);
+                m_neverConnectedApsMenu->removeAll(menuItem->menuItem());
                 continue;
             }
-            pair.second->setActive(false);
+            menuItem->setActive(false);
         }
     }
 
 };
 
 
-WifiLinkItem::WifiLinkItem(connectivity::networking::wifi::Link::Ptr link)
+WifiLinkItem::WifiLinkItem(wifi::WifiLink::Ptr link)
     : d{new Private(link)}
 {
 }

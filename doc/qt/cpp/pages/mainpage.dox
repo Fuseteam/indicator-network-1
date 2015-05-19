@@ -1,0 +1,18 @@
+/*!
+\mainpage Ubuntu Connectivity API
+
+\tableofcontents
+
+\section sec_introduction Introduction
+
+Ubuntu Connectivity API offers a way to access the connectivity related information of the system.
+
+\section sec_general General Topics
+
+ - \ref using-cpp "Using this C++ API"
+ - \ref networking-status "Getting the networking status."
+
+\section sec_bug_reports Reporting Bugs
+If you find any problems with the or this documentation,
+please file a bug in Connectivity API [Launchpad page](https://bugs.launchpad.net/connectivity-api).
+*/

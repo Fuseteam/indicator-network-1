@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef URL_DISPATCHER_CPP_H
-#define URL_DISPATCHER_CPP_H
+#pragma once
 
 #include <string>
 #include <functional>
@@ -28,5 +27,3 @@ class UrlDispatcher
 public:
     static void send(std::string url, std::function<void(std::string, bool)> cb = std::function<void(std::string, bool)>(nullptr));
 };
-
-#endif

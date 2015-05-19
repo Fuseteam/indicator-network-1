@@ -17,8 +17,7 @@
  *     Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef ACTIONUTILS_H_
-#define ACTIONUTILS_H_
+#pragma once
 
 #include <cassert>
 #include <menumodel-cpp/action-group.h>
@@ -37,5 +36,3 @@ Action::Ptr
 findAction (ActionGroup::Ptr actionGroup, const std::string &name);
 
 } /* namespace testutils */
-
-#endif /* ACTIONUTILS_H_ */

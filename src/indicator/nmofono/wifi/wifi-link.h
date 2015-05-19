@@ -17,16 +17,14 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_WIFI_LINK
-#define CONNECTIVITY_NETWORKING_WIFI_LINK
+#pragma once
 
 #include <nmofono/link.h>
 #include <nmofono/wifi/access-point.h>
 
-#include <set>
+#include <QSet>
 
-namespace connectivity {
-namespace networking {
+namespace nmofono {
 namespace wifi {
 
 #ifndef CONNECTIVITY_CPP_EXPORT
@@ -35,28 +33,28 @@ namespace wifi {
 
 /// @private
 class CONNECTIVITY_CPP_EXPORT
-Link : public connectivity::networking::Link
+WifiLink : public Link
 {
     Q_OBJECT
 
 public:
-    typedef std::shared_ptr<Link> Ptr;
+    typedef std::shared_ptr<WifiLink> Ptr;
     typedef unsigned int Id;
 
-    Link() = default;
-    Link(const Link&) = delete;
-    virtual ~Link() = default;
+    WifiLink() = default;
+    WifiLink(const WifiLink&) = delete;
+    virtual ~WifiLink() = default;
 
-    Q_PROPERTY(std::set<connectivity::networking::wifi::AccessPoint::Ptr> accessPoints READ accessPoints NOTIFY accessPointsUpdated)
-    virtual const std::set<AccessPoint::Ptr>& accessPoints() const = 0;
+    Q_PROPERTY(QSet<nmofono::wifi::AccessPoint::Ptr> accessPoints READ accessPoints NOTIFY accessPointsUpdated)
+    virtual const QSet<AccessPoint::Ptr>& accessPoints() const = 0;
 
     virtual void connect_to(AccessPoint::Ptr accessPoint) = 0;
 
-    Q_PROPERTY(connectivity::networking::wifi::AccessPoint::Ptr activeAccessPoint READ activeAccessPoint NOTIFY activeAccessPointUpdated)
+    Q_PROPERTY(nmofono::wifi::AccessPoint::Ptr activeAccessPoint READ activeAccessPoint NOTIFY activeAccessPointUpdated)
     virtual AccessPoint::Ptr activeAccessPoint() = 0;
 
 Q_SIGNALS:
-    void accessPointsUpdated(const std::set<AccessPoint::Ptr>&);
+    void accessPointsUpdated(const QSet<AccessPoint::Ptr>&);
 
     void activeAccessPointUpdated(AccessPoint::Ptr);
 
@@ -64,6 +62,3 @@ Q_SIGNALS:
 
 }
 }
-}
-
-#endif

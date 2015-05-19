@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef INDICATOR_MENU_H
-#define INDICATOR_MENU_H
+#pragma once
 
 #include <menumodel-cpp/action-group.h>
 #include <menumodel-cpp/menu.h>
@@ -48,5 +47,3 @@ private:
     struct Private;
     std::shared_ptr<Private> d;
 };
-
-#endif // INDICATOR_MENU_H

@@ -22,18 +22,15 @@
 #include <QTextCodec>
 #include <NetworkManager.h>
 
-namespace platform {
 namespace nmofono {
 namespace wifi {
 
-
-AccessPoint::AccessPoint(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> ap)
+AccessPointImpl::AccessPointImpl(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> ap)
         : m_ap(ap)
 {
-    uint flags = m_ap->flags();
     uint mode = m_ap->mode();
 
-    m_secured = (flags == NM_802_11_AP_FLAGS_PRIVACY);
+
     /// @todo check for the other modes also..
     m_adhoc = (mode != NM_802_11_MODE_INFRA);
 
@@ -65,9 +62,8 @@ AccessPoint::AccessPoint(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPoint
 
     m_strength = m_ap->strength();
 
-    connect(m_ap.get(), &OrgFreedesktopNetworkManagerAccessPointInterface::PropertiesChanged, this, &AccessPoint::ap_properties_changed);
+    connect(m_ap.get(), &OrgFreedesktopNetworkManagerAccessPointInterface::PropertiesChanged, this, &AccessPointImpl::ap_properties_changed);
 
-    m_flags = flags;
     /* NetworkManager seems to set the wpa and rns flags
      * for AccessPoints on the same network in a total random manner.
      * Sometimes only wpa_flags or rns_flags is set and sometimes
@@ -75,61 +71,71 @@ AccessPoint::AccessPoint(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPoint
      */
     m_secflags = m_ap->wpaFlags() | m_ap->rsnFlags();
     m_mode = mode;
+
+    m_secured = (m_secflags != NM_802_11_AP_SEC_NONE);
 }
 
-void AccessPoint::ap_properties_changed(const QVariantMap &properties)
+void AccessPointImpl::ap_properties_changed(const QVariantMap &properties)
 {
     auto strengthIt = properties.find("Strength");
     if (strengthIt != properties.cend())
     {
-        m_strength = qvariant_cast<uchar>(*strengthIt);
+        m_strength = qvariant_cast<int8_t>(*strengthIt);
         Q_EMIT strengthUpdated(m_strength);
     }
 }
 
-QDBusObjectPath AccessPoint::object_path() const {
+QDBusObjectPath AccessPointImpl::object_path() const {
     return QDBusObjectPath(m_ap->path());
 }
 
-double AccessPoint::strength() const
+double AccessPointImpl::strength() const
 {
     return m_strength;
 }
 
-std::chrono::system_clock::time_point AccessPoint::lastConnected() const
+std::chrono::system_clock::time_point AccessPointImpl::lastConnected() const
 {
     return m_lastConnected;
 }
 
-QString AccessPoint::ssid() const
+QString AccessPointImpl::ssid() const
 {
     return m_ssid;
 }
 
-QByteArray AccessPoint::raw_ssid() const
+QByteArray AccessPointImpl::raw_ssid() const
 {
     return m_raw_ssid;
 }
 
-bool AccessPoint::secured() const
+bool AccessPointImpl::secured() const
 {
     return m_secured;
 }
 
-bool AccessPoint::adhoc() const
+bool AccessPointImpl::adhoc() const
 {
     return m_adhoc;
 }
 
-bool AccessPoint::operator==(const platform::nmofono::wifi::AccessPoint &other) const {
+uint32_t AccessPointImpl::secflags() const
+{
+    return m_secflags;
+}
+
+uint32_t AccessPointImpl::mode() const
+{
+    return m_mode;
+}
+
+bool AccessPointImpl::operator==(const AccessPointImpl &other) const {
     if(this == &other)
         return true;
     return m_ssid == other.m_ssid &&
-            m_flags == other.m_flags &&
             m_secflags == other.m_secflags &&
             m_mode == other.m_mode;
 }
 
-}
 }
 }

@@ -75,13 +75,19 @@ public Q_SLOTS:
     {
         m_popupAction->setState(TypedVariant<std::string>(""));
         if (m_pendingPopupClosed)
-            m_pendingPopupClosed();
-        m_pendingPopupClosed = std::function<void()>();
+        {
+            auto tmp = m_pendingPopupClosed;
+            m_pendingPopupClosed = std::function<void()>();
+            tmp();
+        }
 
         m_errorAction->setState(TypedVariant<std::string>(""));
         if (m_pendingErrorClosed)
-            m_pendingErrorClosed();
-        m_pendingErrorClosed = std::function<void()>();
+        {
+            auto tmp = m_pendingErrorClosed;
+            m_pendingErrorClosed = std::function<void()>();
+            tmp();
+        }
     }
 
     void resetNotification(const QString &title,
@@ -114,9 +120,11 @@ public Q_SLOTS:
         m_popupAction->setState(TypedVariant<std::string>(""));
         if (m_pendingPopupClosed)
         {
-            m_pendingPopupClosed();
+            // Pop the pending function off, to allow recursion
+            auto tmp = m_pendingPopupClosed;
+            m_pendingPopupClosed = std::function<void()>();
+            tmp();
         }
-        m_pendingPopupClosed = std::function<void()>();
     }
 
     void errorActivated(const Variant&)
@@ -124,9 +132,11 @@ public Q_SLOTS:
         m_errorAction->setState(TypedVariant<std::string>(""));
         if (m_pendingErrorClosed)
         {
-            m_pendingErrorClosed();
+            // Pop the pending function off, to allow recursion
+            auto tmp = m_pendingErrorClosed;
+            m_pendingErrorClosed = std::function<void()>();
+            tmp();
         }
-        m_pendingErrorClosed = std::function<void()>();
     }
 
     void pinMinMaxChanged(std::pair<std::uint8_t, uint8_t> value) {
@@ -212,7 +222,6 @@ SimUnlock::SimUnlock(const QString &title,
 
 SimUnlock::~SimUnlock()
 {
-
 }
 
 QString
@@ -253,20 +262,28 @@ SimUnlock::close()
 }
 
 void
-SimUnlock::showError(std::string message, std::function<void()> closed)
+SimUnlock::showError(const std::string& message, std::function<void()> closed)
 {
     d->m_errorAction->setState(TypedVariant<std::string>(message));
     if (d->m_pendingErrorClosed)
-        d->m_pendingErrorClosed();
+    {
+        auto tmp = d->m_pendingErrorClosed;
+        d->m_pendingErrorClosed = std::function<void()>();
+        tmp();
+    }
     d->m_pendingErrorClosed = closed;
 }
 
 void
-SimUnlock::showPopup(std::string message, std::function<void()> closed)
+SimUnlock::showPopup(const std::string& message, std::function<void()> closed)
 {
     d->m_popupAction->setState(TypedVariant<std::string>(message));
     if (d->m_pendingPopupClosed)
-        d->m_pendingPopupClosed();
+    {
+        auto tmp = d->m_pendingPopupClosed;
+        d->m_pendingPopupClosed = std::function<void()>();
+        tmp();
+    }
     d->m_pendingPopupClosed = closed;
 }
 

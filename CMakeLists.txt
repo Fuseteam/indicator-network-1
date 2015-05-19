@@ -5,7 +5,6 @@ string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
-
 if("${build_type_lower}" STREQUAL debug)
   set(TRACE_DEFAULT TRUE)
 else()
@@ -13,6 +12,7 @@ else()
 endif()
 
 option(trace_messages "Print debug trace messages." ${TRACE_DEFAULT})
+option(REMOTE_BUILD "Remote build (skip docs, translations, tests)." FALSE)
 
 if(${trace_messages})
   add_definitions(-DINDICATOR_NETWORK_TRACE_MESSAGES)
@@ -44,9 +44,14 @@ pkg_check_modules(
   GLIB REQUIRED
   glib-2.0>=${GLIB_REQUIRED_VERSION}
   gio-2.0>=${GLIB_REQUIRED_VERSION}
-  url-dispatcher-1
 )
 include_directories(${GLIB_INCLUDE_DIRS})
+
+pkg_check_modules(
+  UNITY_API REQUIRED
+  libunity-api
+)
+include_directories(${UNITY_API_INCLUDE_DIRS})
 
 set(OFONO_REQUIRED_VERSION 1.12)
 pkg_check_modules(
@@ -54,7 +59,6 @@ pkg_check_modules(
   ofono>=${OFONO_REQUIRED_VERSION}
 )
 include_directories(${OFONO_INCLUDE_DIRS})
-
 
 set(NOTIFY_REQUIRED_VERSION 0.7.5)
 pkg_check_modules(
@@ -69,20 +73,11 @@ include_directories(${Qt5Core_INCLUDE_DIRS})
 find_package(Qt5DBus COMPONENTS Qt5DBusMacros REQUIRED)
 include_directories(${Qt5DBus_INCLUDE_DIRS})
 
-find_package(Qt5Test REQUIRED)
-include_directories(${Qt5Test_INCLUDE_DIRS})
-
 pkg_check_modules(NM REQUIRED NetworkManager REQUIRED)
 include_directories(${NM_INCLUDE_DIRS})
 
-pkg_check_modules(QTDBUSTEST REQUIRED libqtdbustest-1 REQUIRED)
-include_directories(${QTDBUSTEST_INCLUDE_DIRS})
-
-pkg_check_modules(QTDBUSMOCK REQUIRED libqtdbusmock-1 REQUIRED)
-include_directories(${QTDBUSMOCK_INCLUDE_DIRS})
-
-pkg_check_modules(GIO REQUIRED gio-2.0>=${GLIB_REQUIRED_VERSION})
-include_directories(${GIO_INCLUDE_DIRS})
+pkg_check_modules(URL_DISPATCHER REQUIRED url-dispatcher-1)
+include_directories(${URL_DISPATCHER_INCLUDE_DIRS})
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -101,35 +96,35 @@ configure_file(
   "config.h"
 )
 
-#####################################################################
-# Enable code coverage calculation with gcov/gcovr/lcov
-# Usage:
-#  * Switch build type to coverage (use ccmake or cmake-gui)
-#  * Invoke make, make test, make coverage
-#  * Find html report in subdir coveragereport
-#  * Find xml report feasible for jenkins in coverage.xml
-#####################################################################
-IF(build_type_lower MATCHES coverage)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs" )
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs" )
-  SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
-  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
-ENDIF()
-
 add_subdirectory(data)
 add_subdirectory(src)
+
+if(NOT REMOTE_BUILD)
+
 add_subdirectory(po)
+add_subdirectory(doc)
 
 enable_testing()
 add_subdirectory(tests)
-
-add_subdirectory(sniffer)
 
 ADD_CUSTOM_TARGET(
         check
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 )
 
-#///! TODO: The following needs to be updated once this project takes form again and new unit tests are written
-enable_coverage_report(TARGETS menumodel_cpp indicator-secret-agent
-                       FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)
+enable_coverage_report(
+  TARGETS
+    indicator-network-service
+    menumodel_cpp
+    notify_cpp
+    qdbus-stubs
+    url_dispatcher_cpp
+  TESTS
+    unit-tests
+    integration-tests
+  FILTER
+    ${CMAKE_SOURCE_DIR}/tests/*
+    ${CMAKE_BINARY_DIR}/*
+)
+
+endif()

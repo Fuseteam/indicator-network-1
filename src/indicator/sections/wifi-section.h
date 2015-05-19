@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WIFI_SECTION_H
-#define WIFI_SECTION_H
+#pragma once
 
 #include <nmofono/manager.h>
 
@@ -32,8 +31,7 @@ class WifiSection : public Section
 
 public:
     typedef std::shared_ptr<WifiSection> Ptr;
-    WifiSection() = delete;
-    explicit WifiSection(std::shared_ptr<connectivity::networking::Manager> manager);
+    explicit WifiSection(nmofono::Manager::Ptr manager);
     virtual ~WifiSection();
 
     // from Section
@@ -43,5 +41,3 @@ public:
     MenuModel::Ptr settingsModel();
     SwitchItem::Ptr wifiSwitch();
 };
-
-#endif

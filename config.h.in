@@ -16,10 +16,7 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef INDICATOR_NETWORK_CONFIG_H_
-#define INDICATOR_NETWORK_CONFIG_H_
+#pragma once
 
 #define GETTEXT_PACKAGE "@GETTEXT_PACKAGE@"
 #define LOCALE_DIR "@LOCALE_DIR@"
-
-#endif // INDICATOR_NETWORK_CONFIG_H_

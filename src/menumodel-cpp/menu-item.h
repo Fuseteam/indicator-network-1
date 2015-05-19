@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef MENU_ITEM_H
-#define MENU_ITEM_H
+#pragma once
 
 #include <memory>
 #include <map>
@@ -76,5 +75,3 @@ public:
 Q_SIGNALS:
     void changed();
 };
-
-#endif // MENU_ITEM_H

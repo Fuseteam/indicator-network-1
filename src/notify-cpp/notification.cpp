@@ -66,6 +66,14 @@ Notification::Notification(const QString &summary,
 Notification::~Notification()
 {
     g_signal_handler_disconnect(d->m_notification.get(), d->disconnectId);
+
+// TODO Uncomment this when the notification service is more robust
+//    GError* error = nullptr;
+//    if (notify_notification_close(d->m_notification.get(), &error) == FALSE)
+//    {
+//        qWarning() << __PRETTY_FUNCTION__ << error->message;
+//        g_error_free(error);
+//    }
 }
 
 QString
@@ -150,9 +158,8 @@ Notification::show()
     GError *error = nullptr;
     notify_notification_show(d->m_notification.get(), &error);
     if (error) {
-        std::string message {error->message};
+        qCritical() << __PRETTY_FUNCTION__ << error->message;
         g_error_free(error);
-        throw std::runtime_error(message);
     }
 }
 
@@ -162,8 +169,7 @@ Notification::close()
     GError *error = nullptr;
     notify_notification_close(d->m_notification.get(), &error);
     if (error) {
-        std::string message {error->message};
+        qCritical() << __PRETTY_FUNCTION__ << error->message;
         g_error_free(error);
-        throw std::runtime_error(message);
     }
 }

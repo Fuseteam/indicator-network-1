@@ -19,6 +19,7 @@
 
 #include "menu.h"
 #include "action-group-exporter.h"
+#include <QDebug>
 
 class MenuExporter
 {

@@ -20,8 +20,11 @@
 #include <nmofono/manager-impl.h>
 
 
-using namespace connectivity::networking;
+namespace nmofono
+{
 
 Manager::Manager()
 {
+}
+
 }

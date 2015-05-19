@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ACTION_GROUP_H
-#define ACTION_GROUP_H
+#pragma once
 
 #include "action.h"
 #include "gio-helpers/util.h"
@@ -51,5 +50,3 @@ Q_SIGNALS:
 
     void actionRemoved(Action::Ptr);
 };
-
-#endif // ACTION_GROUP_MERGER_H

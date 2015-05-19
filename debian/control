@@ -4,11 +4,15 @@ Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Ken VanDine <ken.vandine@canonical.com>
 Build-Depends: cmake,
+               cmake-extras (>= 0.4),
                dbus,
 # make g++ version explicit for ABI safety, see https://wiki.ubuntu.com/cpp-11
                g++-4.9,
                debhelper (>= 9.0.0),
+               doxygen,
                google-mock (>= 1.6.0+svn437),
+               graphviz,
+               intltool,
                libglib2.0-dev,
                libnotify-dev,
 #///! TODO: The next line should be removed once all dependancy on qmenumodel is removed
@@ -22,11 +26,13 @@ Build-Depends: cmake,
                network-manager-dev,
                ofono-dev,
                pkg-config,
-               python3-dbusmock (>= 0.14),
+               python3-dbusmock (>= 0.15),
                python3-setuptools,
                qt5-default,
                qtbase5-dev,
                qtbase5-dev-tools,
+               qtdeclarative5-dev,
+               qtdeclarative5-dev-tools,
                valgrind [amd64 armhf i386 powerpc],
 Standards-Version: 3.9.3
 # If you aren't a member of ~indicator-applet-developers but need to upload
@@ -78,3 +84,53 @@ Depends: ${misc:Depends},
 Description: tools for working with indicator-network
  This package provides developer tools to aid in debugging
  and development of indicator-network.
+
+Package: libconnectivity-qt1
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         indicator-network (>= ${source:Version}),
+Recommends:
+         indicator-network (>= 0.5.1+14.10.20140819),
+Description: Ubuntu Connectivity Qt API
+ Ubuntu Connectivity API - Qt bindings
+
+Package: libconnectivity-qt1-dev
+Section: libdevel
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libconnectivity-qt1 (= ${binary:Version}),
+         qtbase5-dev
+Suggests: connectivity-doc,
+Description: Ubuntu Connectivity Qt API - development files
+ Ubuntu Connectivity API - Qt bindings
+ .
+ This package contains development files to develop against the Qt library.
+
+Package: qml-module-ubuntu-connectivity
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libconnectivity-qt1 (= ${binary:Version}),
+Description: Ubuntu Connectivity API QML Components
+ Ubuntu Connectivity API - QML bindings
+ .
+ This package contains the qtdeclarative bindings for Ubuntu connectivity API.
+
+Package: connectivity-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Unity Action API - documentation
+ Ubuntu Connectivity API
+ .
+ This package contains developer documentation.
+

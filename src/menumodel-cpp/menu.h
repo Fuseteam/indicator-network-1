@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef MENU_H
-#define MENU_H
+#pragma once
 
 #include <memory>
 #include <list>
@@ -88,5 +87,3 @@ public:
 private Q_SLOTS:
     void itemChanged();
 };
-
-#endif

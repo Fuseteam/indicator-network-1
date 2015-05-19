@@ -23,46 +23,73 @@
 #include <NetworkManagerInterface.h>
 #include <NetworkManagerDeviceInterface.h>
 
+#define slots
+#include <qofono-qt5/qofonomanager.h>
+#include <qofono-qt5/qofonomodem.h>
+#undef slots
+
+#include <notify-cpp/snapdecision/sim-unlock.h>
+#include <sim-unlock-dialog.h>
+#include <util/qhash-sharedptr.h>
+
+#include <QMap>
+#include <QList>
 #include <NetworkManager.h>
 #include <QDebug>
+#include <algorithm>
 #include <iostream>
-
-using namespace platform::nmofono;
-namespace networking = connectivity::networking;
 
 using namespace std;
 
-namespace platform {
 namespace nmofono {
 
-class Manager::Private : public QObject
+class ManagerImpl::Private : public QObject
 {
     Q_OBJECT
 public:
     Manager& p;
 
-    std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm;
+    shared_ptr<OrgFreedesktopNetworkManagerInterface> nm;
+    shared_ptr<QOfonoManager> m_ofono;
 
-    connectivity::networking::Manager::FlightModeStatus m_flightMode = FlightModeStatus::on;
-    std::set<std::shared_ptr<connectivity::networking::Link>> m_links;
-    connectivity::networking::Manager::NetworkingStatus m_status = NetworkingStatus::offline;
+    Manager::FlightModeStatus m_flightMode = FlightModeStatus::on;
+    bool m_unstoppableOperationHappening = false;
+    Manager::NetworkingStatus m_status = NetworkingStatus::offline;
     uint32_t m_characteristics = 0;
 
     bool m_hasWifi = false;
     bool m_wifiEnabled = false;
-    std::shared_ptr<KillSwitch> m_wifiKillSwitch;
+    KillSwitch::Ptr m_killSwitch;
+
+    QSet<Link::Ptr> m_nmLinks;
+    QMap<QString, wwan::Modem::Ptr> m_ofonoLinks;
+
+    SimUnlockDialog::Ptr m_unlockDialog;
+    QList<wwan::Modem::Ptr> m_pendingUnlocks;
 
     Private(Manager& parent) :
         p(parent)
     {
     }
 
+    void setUnstoppableOperationHappening(bool happening)
+    {
+        if (m_unstoppableOperationHappening == happening)
+        {
+            return;
+        }
+
+        m_unstoppableOperationHappening = happening;
+        Q_EMIT p.unstoppableOperationHappeningUpdated(m_unstoppableOperationHappening);
+    }
+
 public Q_SLOTS:
     void updateHasWifi()
     {
-        if (m_wifiKillSwitch->state() != KillSwitch::State::not_available) {
+        if (m_killSwitch->state() != KillSwitch::State::not_available)
+        {
             m_hasWifi = true;
-            if (m_wifiKillSwitch->state() == KillSwitch::State::unblocked)
+            if (m_killSwitch->state() == KillSwitch::State::unblocked)
             {
                 m_wifiEnabled = true;
             }
@@ -77,9 +104,9 @@ public Q_SLOTS:
 
         // ok, killswitch not supported, but we still might have wifi devices
         bool haswifi = false;
-        for (auto link : m_links)
+        for (auto link : m_nmLinks)
         {
-            if (link->type() == networking::Link::Type::wifi)
+            if (link->type() == Link::Type::wifi)
             {
                 haswifi = true;
             }
@@ -92,23 +119,68 @@ public Q_SLOTS:
 
     void setFlightMode(bool flightMode)
     {
-        if (flightMode)
+        FlightModeStatus newStatus =
+                flightMode ? FlightModeStatus::on : FlightModeStatus::off;
+
+        if (m_flightMode == newStatus)
         {
-            m_flightMode = networking::Manager::FlightModeStatus::on;
-        }
-        else
-        {
-            m_flightMode = networking::Manager::FlightModeStatus::off;
+            return;
         }
 
+        m_flightMode = newStatus;
         Q_EMIT p.flightModeUpdated(m_flightMode);
     }
+
+    void sim_unlock_ready()
+    {
+        if (!m_pendingUnlocks.empty())
+        {
+            auto modem = m_pendingUnlocks.front();
+            m_pendingUnlocks.pop_front();
+            if (modem->requiredPin() != wwan::Modem::PinType::none)
+            {
+                m_unlockDialog->unlock(modem);
+            }
+        }
+    }
+
+    void modems_changed(const QStringList& value)
+    {
+        QSet<QString> modemPaths(value.toSet());
+        QSet<QString> currentModemPaths(m_ofonoLinks.keys().toSet());
+
+        auto toRemove = currentModemPaths;
+        toRemove.subtract(modemPaths);
+
+        auto toAdd = modemPaths;
+        toAdd.subtract(currentModemPaths);
+
+        for (const auto& path : toRemove)
+        {
+            auto modem = m_ofonoLinks.take(path);
+            if (m_pendingUnlocks.contains(modem))
+            {
+                m_unlockDialog->cancel();
+                m_pendingUnlocks.removeOne(modem);
+            }
+        }
+
+        for (const auto& path : toAdd)
+        {
+            auto modemInterface = make_shared<QOfonoModem>();
+            modemInterface->setModemPath(path);
+
+            auto modem = make_shared<wwan::Modem>(modemInterface);
+            m_ofonoLinks[path] = modem;
+        }
+
+        Q_EMIT p.linksUpdated();
+        m_unlockDialog->setShowSimIdentifiers(m_ofonoLinks.size() > 1);
+    }
 };
-}
-}
 
 void
-Manager::updateNetworkingStatus(uint status)
+ManagerImpl::updateNetworkingStatus(uint status)
 {
     switch(status) {
     case NM_STATE_UNKNOWN:
@@ -116,19 +188,19 @@ Manager::updateNetworkingStatus(uint status)
     case NM_STATE_DISCONNECTED:
     case NM_STATE_DISCONNECTING:
     {
-        d->m_status = networking::Manager::NetworkingStatus::offline;
+        d->m_status = NetworkingStatus::offline;
         break;
     }
     case NM_STATE_CONNECTING:
     {
-        d->m_status = networking::Manager::NetworkingStatus::connecting;
+        d->m_status = NetworkingStatus::connecting;
         break;
     }
     case NM_STATE_CONNECTED_LOCAL:
     case NM_STATE_CONNECTED_SITE:
     case NM_STATE_CONNECTED_GLOBAL:
     {
-        d->m_status = networking::Manager::NetworkingStatus::online;
+        d->m_status = NetworkingStatus::online;
         break;
     }
     }
@@ -136,48 +208,55 @@ Manager::updateNetworkingStatus(uint status)
     Q_EMIT statusUpdated(d->m_status);
 }
 
-Manager::Manager(const QDBusConnection& systemConnection) : d(new Manager::Private(*this))
+ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new ManagerImpl::Private(*this))
 {
-    d->nm = std::make_shared<OrgFreedesktopNetworkManagerInterface>(NM_DBUS_SERVICE, NM_DBUS_PATH, systemConnection);
+    d->nm = make_shared<OrgFreedesktopNetworkManagerInterface>(NM_DBUS_SERVICE, NM_DBUS_PATH, systemConnection);
+
+    d->m_unlockDialog = make_shared<SimUnlockDialog>();
+    connect(d->m_unlockDialog.get(), &SimUnlockDialog::ready, d.get(), &Private::sim_unlock_ready);
+
+    d->m_ofono = make_shared<QOfonoManager>();
+    connect(d->m_ofono.get(), &QOfonoManager::modemsChanged, d.get(), &Private::modems_changed);
+    d->modems_changed(d->m_ofono->modems());
 
     /// @todo add a watcher for the service
     /// @todo exceptions
     /// @todo offload the initialization to a thread or something
     /// @todo those Id() thingies
 
-    d->m_wifiKillSwitch = std::make_shared<KillSwitch>(systemConnection);
-    connect(d->m_wifiKillSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
+    d->m_killSwitch = make_shared<KillSwitch>(systemConnection);
+    connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
 
-    connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &Manager::device_added);
+    connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &ManagerImpl::device_added);
     QList<QDBusObjectPath> devices(d->nm->GetDevices());
     for(const auto &path : devices) {
         device_added(path);
     }
 
-    connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceRemoved, this, &Manager::device_removed);
+    connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceRemoved, this, &ManagerImpl::device_removed);
     updateNetworkingStatus(d->nm->state());
-    connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &Manager::nm_properties_changed);
+    connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &ManagerImpl::nm_properties_changed);
 
-    connect(d->m_wifiKillSwitch.get(), &KillSwitch::flightModeChanged, d.get(), &Private::setFlightMode);
+    connect(d->m_killSwitch.get(), &KillSwitch::flightModeChanged, d.get(), &Private::setFlightMode);
     try
     {
-        d->setFlightMode(d->m_wifiKillSwitch->isFlightMode());
+        d->setFlightMode(d->m_killSwitch->isFlightMode());
     }
-    catch (std::exception const& e)
+    catch (exception const& e)
     {
-        std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
-        std::cerr << "Failed to retrieve initial flight mode state, assuming state is false." << std::endl;
+        cerr << __PRETTY_FUNCTION__ << ": " << e.what() << endl;
+        cerr << "Failed to retrieve initial flight mode state, assuming state is false." << endl;
         d->setFlightMode(false);
     }
 
     /// @todo set by the default connections.
-    d->m_characteristics = networking::Link::Characteristics::empty;
+    d->m_characteristics = Link::Characteristics::empty;
 
     d->updateHasWifi();
 }
 
 void
-Manager::nm_properties_changed(const QVariantMap &properties)
+ManagerImpl::nm_properties_changed(const QVariantMap &properties)
 {
     auto stateIt = properties.find("State");
     if (stateIt != properties.cend())
@@ -187,47 +266,54 @@ Manager::nm_properties_changed(const QVariantMap &properties)
 }
 
 void
-Manager::device_removed(const QDBusObjectPath &path)
+ManagerImpl::device_removed(const QDBusObjectPath &path)
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
         qDebug() << "Device Removed:" << path.path();
 #endif
-    auto links = d->m_links;
-    for (const auto &dev : links) {
-        if (std::dynamic_pointer_cast<wifi::Link>(dev)->device_path() == path) {
-            links.erase(dev);
+    Link::Ptr toRemove;
+    for (auto dev : d->m_nmLinks)
+    {
+        auto wifiLink = dynamic_pointer_cast<wifi::WifiLinkImpl>(dev);
+        if (wifiLink && wifiLink->device_path() == path)
+        {
+            toRemove = dev;
             break;
         }
     }
-    d->m_links = links;
-    Q_EMIT linksUpdated(d->m_links);
-
-    d->updateHasWifi();
+    if (toRemove)
+    {
+        d->m_nmLinks.remove(toRemove);
+        Q_EMIT linksUpdated();
+        d->updateHasWifi();
+    }
 }
 
 void
-Manager::device_added(const QDBusObjectPath &path)
+ManagerImpl::device_added(const QDBusObjectPath &path)
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     qDebug() << "Device Added:" << path.path();
 #endif
-    for (const auto &dev : d->m_links) {
-        if (std::dynamic_pointer_cast<wifi::Link>(dev)->device_path() == path) {
+    for (const auto &dev : d->m_nmLinks)
+    {
+        auto wifiLink = dynamic_pointer_cast<wifi::WifiLinkImpl>(dev);
+        if (wifiLink && wifiLink->device_path() == path) {
             // already in the list
             return;
         }
     }
 
-    connectivity::networking::Link::Ptr link;
+    Link::Ptr link;
     try {
-        auto dev = std::make_shared<OrgFreedesktopNetworkManagerDeviceInterface>(
+        auto dev = make_shared<OrgFreedesktopNetworkManagerDeviceInterface>(
             NM_DBUS_SERVICE, path.path(), d->nm->connection());
         if (dev->deviceType() == NM_DEVICE_TYPE_WIFI) {
-            link = std::make_shared<wifi::Link>(dev,
+            link = make_shared<wifi::WifiLinkImpl>(dev,
                                                 d->nm,
-                                                d->m_wifiKillSwitch);
+                                                d->m_killSwitch);
         }
-    } catch (const std::exception &e) {
+    } catch (const exception &e) {
         qDebug() << __PRETTY_FUNCTION__ << ": failed to create Device proxy for "<< path.path() << ": ";
         qDebug() << "\t" << e.what();
         qDebug() << "\tIgnoring.";
@@ -235,8 +321,8 @@ Manager::device_added(const QDBusObjectPath &path)
     }
 
     if (link) {
-        d->m_links.insert(link);
-        Q_EMIT linksUpdated(d->m_links);
+        d->m_nmLinks.insert(link);
+        Q_EMIT linksUpdated();
     }
 
     d->updateHasWifi();
@@ -244,31 +330,27 @@ Manager::device_added(const QDBusObjectPath &path)
 
 
 void
-Manager::enableFlightMode()
+ManagerImpl::setFlightMode(bool enabled)
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    qDebug() << __PRETTY_FUNCTION__ << enabled;
 #endif
-    if (!d->m_wifiKillSwitch->flightMode(true))
+    if (enabled == d->m_killSwitch->isFlightMode())
     {
-        qWarning() << "Failed to enable flightmode.";
+        return;
     }
+
+    d->setUnstoppableOperationHappening(true);
+
+    if (!d->m_killSwitch->flightMode(enabled))
+    {
+        qWarning() << "Failed to change flightmode.";
+    }
+    d->setUnstoppableOperationHappening(false);
 }
 
-void
-Manager::disableFlightMode()
-{
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-#endif
-    if (!d->m_wifiKillSwitch->flightMode(false))
-    {
-        qWarning() << "Failed to disable flightmode";
-    }
-}
-
-networking::Manager::FlightModeStatus
-Manager::flightMode() const
+Manager::FlightModeStatus
+ManagerImpl::flightMode() const
 {
     // - connect to each individual URfkill.Killswitch interface
     // - make this property to reflect their combined state
@@ -276,87 +358,176 @@ Manager::flightMode() const
     return d->m_flightMode;
 }
 
-const std::set<std::shared_ptr<networking::Link> >&
-Manager::links() const
+bool
+ManagerImpl::unstoppableOperationHappening() const
 {
-    return d->m_links;
+    return d->m_unstoppableOperationHappening;
 }
 
-networking::Manager::NetworkingStatus
-Manager::status() const
+QSet<Link::Ptr>
+ManagerImpl::links() const
+{
+    QSet<Link::Ptr> result(d->m_nmLinks);
+    for(auto i: d->m_ofonoLinks)
+    {
+        result.insert(i);
+    }
+    return result;
+}
+
+Manager::NetworkingStatus
+ManagerImpl::status() const
 {
     return d->m_status;
 }
 
 uint32_t
-Manager::characteristics() const
+ManagerImpl::characteristics() const
 {
     return d->m_characteristics;
 }
 
 bool
-Manager::hasWifi() const
+ManagerImpl::hasWifi() const
 {
     return d->m_hasWifi;
 }
 
 bool
-Manager::wifiEnabled() const
+ManagerImpl::wifiEnabled() const
 {
     return d->m_wifiEnabled;
 }
 
 
 bool
-Manager::enableWifi()
+ManagerImpl::setWifiEnabled(bool enabled)
 {
     if (!d->m_hasWifi)
     {
         return false;
     }
 
-    if (d->m_wifiEnabled)
+    if (d->m_wifiEnabled == enabled)
     {
         return false;
     }
 
-    try {
-        if (d->m_wifiKillSwitch->state() == KillSwitch::State::soft_blocked) {
-            // try to unblock. throws if fails.
-            d->m_wifiKillSwitch->unblock();
+    bool success = true;
+    d->setUnstoppableOperationHappening(true);
+
+    try
+    {
+        if (enabled)
+        {
+            if (d->m_killSwitch->state() == KillSwitch::State::soft_blocked)
+            {
+                // try to unblock. throws if fails.
+                d->m_killSwitch->unblock();
+            }
         }
-        d->nm->setWirelessEnabled(true);
-    } catch(std::runtime_error &e) {
-        std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
-        return false;
+        else
+        {
+            if (d->m_killSwitch->state() == KillSwitch::State::unblocked) {
+                // block the device. that will disable it also
+                d->m_killSwitch->block();
+            }
+        }
+        d->nm->setWirelessEnabled(enabled);
     }
-    return true;
+    catch (runtime_error &e)
+    {
+        qWarning() << __PRETTY_FUNCTION__ << ": " << e.what();
+        success = false;
+    }
+    d->setUnstoppableOperationHappening(false);
+    return success;
 }
 
 bool
-Manager::disableWifi()
+ManagerImpl::roaming() const
 {
-    if (!d->m_hasWifi)
-    {
-        return false;
-    }
-
-    if (!d->m_wifiEnabled)
-    {
-        return false;
-    }
-
-    try {
-        if (d->m_wifiKillSwitch->state() == KillSwitch::State::unblocked) {
-            // block the device. that will disable it also
-            d->m_wifiKillSwitch->block();
+    for (auto modem : d->m_ofonoLinks) {
+        if (modem->modemStatus() == wwan::Modem::ModemStatus::roaming) {
+            return true;
         }
-        d->nm->setWirelessEnabled(false);
-    } catch(std::runtime_error &e) {
-        std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
-        return false;
     }
-    return true;
+
+    return false;
+}
+
+void
+ManagerImpl::unlockModem(wwan::Modem::Ptr modem)
+{
+    try {
+        if (!d->m_ofonoLinks.values().contains(modem)
+                || d->m_unlockDialog->modem() == modem
+                || count(d->m_pendingUnlocks.begin(), d->m_pendingUnlocks.end(), modem) != 0)
+            return;
+
+        if (d->m_unlockDialog->state() == SimUnlockDialog::State::ready
+                && d->m_pendingUnlocks.size() == 0)
+            d->m_unlockDialog->unlock(modem);
+        else
+            d->m_pendingUnlocks.push_back(modem);
+    } catch(const exception &e) {
+        // Something unexpected has happened. As an example, unity8 might have
+        // crashed taking the notification server with it. There is no graceful
+        // and reliable way to recover so die and get restarted.
+        // See also https://bugs.launchpad.net/unity-notifications/+bug/1238990
+        qWarning() << __PRETTY_FUNCTION__ << " sim unlocking failed: " << QString::fromStdString(e.what());
+    }
+}
+
+void
+ManagerImpl::unlockAllModems()
+{
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+    qDebug() << __PRETTY_FUNCTION__;
+#endif
+    for (auto& m : d->m_ofonoLinks)
+    {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "Unlocking " << m->simIdentifier();
+#endif
+        unlockModem(m);
+    }
+}
+
+void
+ManagerImpl::unlockModemByName(const QString &name)
+{
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+    qDebug() << __PRETTY_FUNCTION__ ;
+#endif
+    auto it = d->m_ofonoLinks.find(name);
+    if (it != d->m_ofonoLinks.cend())
+    {
+        unlockModem(it.value());
+    }
+}
+
+
+QSet<wifi::WifiLink::Ptr>
+ManagerImpl::wifiLinks() const
+{
+    QSet<wifi::WifiLink::Ptr> result;
+    for(auto link: d->m_nmLinks)
+    {
+        if (link->type() == Link::Type::wifi)
+        {
+            result.insert(dynamic_pointer_cast<wifi::WifiLink>(link));
+        }
+    }
+    return result;
+}
+
+QSet<wwan::Modem::Ptr>
+ManagerImpl::modemLinks() const
+{
+    return d->m_ofonoLinks.values().toSet();
+}
+
 }
 
 #include "manager-impl.moc"

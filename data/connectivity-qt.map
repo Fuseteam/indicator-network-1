@@ -1,0 +1,17 @@
+{
+global:
+    extern "C++" {
+        typeinfo?for?connectivityqt::Connectivity;
+        typeinfo?for?ubuntu::connectivity::NetworkingStatus;
+        VTT?for?connectivityqt::Connectivity;
+        VTT?for?ubuntu::connectivity::NetworkingStatus;
+        virtual?thunk?to?connectivityqt::Connectivity;
+        virtual?thunk?to?ubuntu::connectivity::NetworkingStatus;
+        vtable?for?connectivityqt::Connectivity;
+        vtable?for?ubuntu::connectivity::NetworkingStatus;
+        connectivityqt::Connectivity::[!P]*;
+        ubuntu::connectivity::NetworkingStatus::[!P]*;
+    };
+local:
+    *;
+};

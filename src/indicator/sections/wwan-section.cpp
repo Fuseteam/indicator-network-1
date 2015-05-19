@@ -24,9 +24,15 @@
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu-merger.h"
 
-#include "modem-manager.h"
-
 #include "url-dispatcher-cpp/url-dispatcher.h"
+
+#include <util/qhash-sharedptr.h>
+#include <util/localisation.h>
+
+#include <QDebug>
+
+using namespace std;
+using namespace nmofono;
 
 class WwanSection::Private: public QObject
 {
@@ -44,36 +50,39 @@ public:
     Menu::Ptr m_topMenu;
     MenuItem::Ptr m_topItem;
 
-    ModemManager::Ptr m_modemManager;
+    Manager::Ptr m_manager;
 
     TextItem::Ptr m_openCellularSettings;
 
-    std::list<std::pair<Modem::Ptr, WwanLinkItem::Ptr>> m_items;
+    QMap<wwan::Modem::Ptr, WwanLinkItem::Ptr> m_items;
 
     Private() = delete;
-    Private(ModemManager::Ptr modemManager);
+    Private(Manager::Ptr modemManager);
 
 public Q_SLOTS:
-    void modemsChanged(const QList<Modem::Ptr> &modems);
+    void modemsChanged();
 
     void openCellularSettings()
     {
-        UrlDispatcher::send("settings:///system/cellular", [](std::string url, bool success){
+        UrlDispatcher::send("settings:///system/cellular", [](string url, bool success)
+        {
             if (!success)
-                std::cerr << "URL Dispatcher failed on " << url << std::endl;
+            {
+                cerr << "URL Dispatcher failed on " << url << endl;
+            }
         });
     }
 };
 
-WwanSection::Private::Private(ModemManager::Ptr modemManager)
-    : m_modemManager{modemManager}
+WwanSection::Private::Private(Manager::Ptr modemManager)
+    : m_manager{modemManager}
 {
-    m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
-    m_menuMerger = std::make_shared<MenuMerger>();
+    m_actionGroupMerger = make_shared<ActionGroupMerger>();
+    m_menuMerger = make_shared<MenuMerger>();
 
-    m_upperMenu  = std::make_shared<Menu>();
-    m_linkMenuMerger = std::make_shared<MenuMerger>();
-    m_bottomMenu = std::make_shared<Menu>();
+    m_upperMenu  = make_shared<Menu>();
+    m_linkMenuMerger = make_shared<MenuMerger>();
+    m_bottomMenu = make_shared<Menu>();
 
     m_menuMerger->append(m_upperMenu);
     m_menuMerger->append(m_linkMenuMerger);
@@ -81,81 +90,81 @@ WwanSection::Private::Private(ModemManager::Ptr modemManager)
 
     // have the modem list in their own section.
     m_topItem = MenuItem::newSection(m_menuMerger);
-    m_topMenu = std::make_shared<Menu>();
+    m_topMenu = make_shared<Menu>();
     m_topMenu->append(m_topItem);
 
-    m_openCellularSettings = std::make_shared<TextItem>(_("Cellular settings…"), "cellular", "settings");
+    m_openCellularSettings = make_shared<TextItem>(_("Cellular settings…"), "cellular", "settings");
     connect(m_openCellularSettings.get(), &TextItem::activated, this, &Private::openCellularSettings);
-    m_actionGroupMerger->add(*m_openCellularSettings);
+    m_actionGroupMerger->add(m_openCellularSettings->actionGroup());
 
     // already synced with GMainLoop
-    connect(m_modemManager.get(), &ModemManager::modemsUpdated, this, &Private::modemsChanged);
-    modemsChanged(m_modemManager->modems());
+    connect(m_manager.get(), &Manager::linksUpdated, this, &Private::modemsChanged);
+    modemsChanged();
 }
 
 void
-WwanSection::Private::modemsChanged(const QList<Modem::Ptr> &modems)
+WwanSection::Private::modemsChanged()
 {
-    std::set<Modem::Ptr> current;
-    for (auto element : m_items)
+    auto modems = m_manager->modemLinks();
+    auto current(m_items.keys().toSet());
+
+    auto removed(current);
+    removed.subtract(modems);
+
+    auto added(modems);
+    added.subtract(current);
+
+    for (auto modem : removed)
     {
-        current.insert(element.first);
+        m_linkMenuMerger->remove(m_items[modem]->menuModel());
+        m_actionGroupMerger->remove(m_items[modem]->actionGroup());
+        m_items.remove(modem);
     }
 
-    std::set<Modem::Ptr> removed;
-    std::set_difference(current.begin(), current.end(),
-                        modems.begin(), modems.end(),
-                        std::inserter(removed, removed.begin()));
-
-    std::set<Modem::Ptr> added;
-    std::set_difference(modems.begin(), modems.end(),
-                        current.begin(), current.end(),
-                        std::inserter(added, added.begin()));
-    for (auto modem : removed) {
-        for (auto iter = m_items.begin(); iter != m_items.end(); ++iter) {
-            m_linkMenuMerger->remove(*(*iter).second);
-            m_actionGroupMerger->remove(*(*iter).second);
-            iter = m_items.erase(iter);
-            --iter;
-        }
+    for (auto modem : added)
+    {
+        auto item = make_shared<WwanLinkItem>(modem, m_manager);
+        m_items[modem] = item;
+        m_actionGroupMerger->add(item->actionGroup());
     }
 
-    for (auto modem : added) {
-        auto item = std::make_shared<WwanLinkItem>(modem, m_modemManager);
+    // for now just throw everything away and rebuild
+    /// @todo add MenuMerger::insert() and ::find()
+    m_linkMenuMerger->clear();
 
-        m_items.push_back(std::make_pair(modem, item));
-        m_actionGroupMerger->add(*item);
-
-        // for now just throw everything away and rebuild
-        /// @todo add MenuMerger::insert() and ::find()
-        m_linkMenuMerger->clear();
-
-        std::multimap<int, WwanLinkItem::Ptr, Modem::Compare> sorted;
-        for (auto pair : m_items) {
-            sorted.insert(std::make_pair(pair.first->index(), pair.second));
-        }
-        for (auto pair : sorted)
-            m_linkMenuMerger->append(*(pair.second));
+    multimap<int, WwanLinkItem::Ptr, wwan::Modem::Compare> sorted;
+    QMapIterator<wwan::Modem::Ptr, WwanLinkItem::Ptr> it(m_items);
+    while (it.hasNext())
+    {
+        it.next();
+        sorted.insert(make_pair(it.key()->index(), it.value()));
+    }
+    for (auto pair : sorted)
+    {
+        m_linkMenuMerger->append(pair.second->menuModel());
     }
 
-    if (modems.size() == 0) {
+    if (modems.size() == 0)
+    {
         m_bottomMenu->clear();
-    } else {
-        if (m_bottomMenu->find(*m_openCellularSettings) == m_bottomMenu->end())
-            m_bottomMenu->append(*m_openCellularSettings);
+    }
+    else
+    {
+        if (m_bottomMenu->find(m_openCellularSettings->menuItem()) == m_bottomMenu->end())
+        {
+            m_bottomMenu->append(m_openCellularSettings->menuItem());
+        }
     }
 
-    if (m_items.size() > 1) {
-        for(auto i : m_items)
-            i.second->showSimIdentifier(true);
-    } else {
-        for(auto i : m_items)
-            i.second->showSimIdentifier(false);
+    bool showSimIdentifier = (m_items.size() > 1);
+    for(auto item: m_items.values())
+    {
+        item->showSimIdentifier(showSimIdentifier);
     }
 }
 
-WwanSection::WwanSection(ModemManager::Ptr modemManager)
-    : d{new Private(modemManager)}
+WwanSection::WwanSection(nmofono::Manager::Ptr manager)
+    : d{new Private(manager)}
 {
 }
 
@@ -167,7 +176,7 @@ WwanSection::~WwanSection()
 ActionGroup::Ptr
 WwanSection::actionGroup()
 {
-    return *d->m_actionGroupMerger;
+    return d->m_actionGroupMerger->actionGroup();
 }
 
 MenuModel::Ptr
@@ -179,13 +188,13 @@ WwanSection::menuModel()
 void
 WwanSection::unlockAllModems()
 {
-    d->m_modemManager->unlockAllModems();
+    d->m_manager->unlockAllModems();
 }
 
 void
 WwanSection::unlockModem(const QString &name)
 {
-    d->m_modemManager->unlockModemByName(name);
+    d->m_manager->unlockModemByName(name);
 }
 
 #include "wwan-section.moc"

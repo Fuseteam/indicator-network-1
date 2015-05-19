@@ -19,8 +19,7 @@
 
 #include <nmofono/wifi/access-point.h>
 
-namespace connectivity {
-namespace networking {
+namespace nmofono {
 namespace wifi {
 
 AccessPoint::AccessPoint()
@@ -31,6 +30,5 @@ AccessPoint::~AccessPoint()
 {
 }
 
-}
 }
 }

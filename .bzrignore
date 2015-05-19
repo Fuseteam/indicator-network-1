@@ -7,4 +7,5 @@ CMakeLists.txt.user*
 /.settings
 /build
 /buildclang
-
+/po/Makefile.in.in
+/po/POTFILES.in

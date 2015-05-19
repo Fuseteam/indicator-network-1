@@ -21,12 +21,14 @@
 
 #include <notify-cpp/notification.h>
 #include <notify-cpp/snapdecision/sim-unlock.h>
+#include <util/localisation.h>
 
 #include <functional>
 #include <sstream>
 #include <QDebug>
 
 using namespace std;
+using namespace nmofono;
 
 namespace ubuntu {
 namespace i18n{
@@ -95,7 +97,7 @@ public:
     EnterPinStates m_enterPinState;
 
     State m_state = State::ready;
-    Modem::Ptr m_modem;
+    wwan::Modem::Ptr m_modem;
 
     notify::snapdecision::SimUnlock::Ptr m_sd;
 
@@ -118,22 +120,22 @@ public:
     {
         m_pinRetries = -1;
         auto retriesMap = m_modem->retries();
-        if (retriesMap.find(Modem::PinType::pin) != retriesMap.end())
+        if (retriesMap.find(wwan::Modem::PinType::pin) != retriesMap.end())
         {
-            m_pinRetries = retriesMap[Modem::PinType::pin];
+            m_pinRetries = retriesMap[wwan::Modem::PinType::pin];
         }
-        m_modem->enterPin(Modem::PinType::pin, pin);
+        m_modem->enterPin(wwan::Modem::PinType::pin, pin);
     }
 
     void sendResetPin(const QString& puk, const QString& newPin)
     {
         m_pukRetries = -1;
         auto retriesMap = m_modem->retries();
-        if (retriesMap.find(Modem::PinType::puk) != retriesMap.end())
+        if (retriesMap.find(wwan::Modem::PinType::puk) != retriesMap.end())
         {
-            m_pukRetries = retriesMap[Modem::PinType::puk];
+            m_pukRetries = retriesMap[wwan::Modem::PinType::puk];
         }
-        m_modem->resetPin(Modem::PinType::puk, puk, newPin);
+        m_modem->resetPin(wwan::Modem::PinType::puk, puk, newPin);
     }
 
     void showLastPinAttemptPopup(std::function<void()> closed = std::function<void()>())
@@ -257,24 +259,23 @@ void
 SimUnlockDialog::Private::update()
 {
     if (!m_modem || !m_sd)
+    {
         return;
+    }
 
     m_sd->setTitle("");
     m_sd->setBody("");
     m_sd->setPinMinMax({0, 0});
 
-    std::map<Modem::PinType, std::pair<std::uint8_t, std::uint8_t>> lengths;
-    lengths = {{Modem::PinType::pin, {4, 8}},
-               {Modem::PinType::puk, {8, 8}}};
-    std::map<Modem::PinType, std::uint8_t> maxRetries;
-    maxRetries = {{Modem::PinType::pin, 3},
-                  {Modem::PinType::puk, 10}};
+    std::map<wwan::Modem::PinType, std::pair<std::uint8_t, std::uint8_t>> lengths;
+    lengths = {{wwan::Modem::PinType::pin, {4, 8}},
+               {wwan::Modem::PinType::puk, {8, 8}}};
 
     auto type = m_modem->requiredPin();
     auto retries = m_modem->retries();
 
     if (m_enterPinState == EnterPinStates::enterPin &&
-        type == Modem::PinType::puk) {
+        type == wwan::Modem::PinType::puk) {
         // we transitioned from pin query to PUK query
         m_enterPinState = EnterPinStates::enterPuk;
     }
@@ -287,23 +288,28 @@ SimUnlockDialog::Private::update()
     {
         std::string title;
         switch(type){
-        case Modem::PinType::none:
+        case wwan::Modem::PinType::none:
             // we are done.
             return;
-        case Modem::PinType::pin:
+        case wwan::Modem::PinType::pin:
             title = ubuntu::i18n::argumentSubstitute(_("Enter %{1} PIN"),
                                                      m_showSimIdentifiers ?
                                                          m_modem->simIdentifier().toStdString()
                                                        : "SIM");
             break;
-        case Modem::PinType::puk:
+        case wwan::Modem::PinType::puk:
             if (!m_showSimIdentifiers)
+            {
                 title = _("Enter PUK code");
+            }
             else
+            {
                 title = ubuntu::i18n::argumentSubstitute(_("Enter PUK code for %{1}"),
                                                            m_modem->simIdentifier().toStdString());
+            }
             break;
         }
+
         m_sd->setPinMinMax(lengths[type]);
 
         std::string attempts;
@@ -323,7 +329,7 @@ SimUnlockDialog::Private::update()
                                                            m_showSimIdentifiers ?
                                                                m_modem->simIdentifier().toStdString()
                                                              : "SIM")));
-        m_sd->setPinMinMax(lengths[Modem::PinType::pin]);
+        m_sd->setPinMinMax(lengths[wwan::Modem::PinType::pin]);
         break;
     case EnterPinStates::confirmNewPin:
         m_sd->setBody("Create new PIN");
@@ -331,9 +337,10 @@ SimUnlockDialog::Private::update()
                                                            m_showSimIdentifiers ?
                                                                m_modem->simIdentifier().toStdString()
                                                              : "SIM")));
-        m_sd->setPinMinMax(lengths[Modem::PinType::pin]);
+        m_sd->setPinMinMax(lengths[wwan::Modem::PinType::pin]);
         break;
     }
+
 
     /// @todo should be able to see cleartext puk and pin when entering puk or changing pin.
     m_sd->update();
@@ -424,10 +431,12 @@ SimUnlockDialog::~SimUnlockDialog()
 
 /// must not be called is unlocking already in progress
 void
-SimUnlockDialog::unlock(Modem::Ptr modem)
+SimUnlockDialog::unlock(wwan::Modem::Ptr modem)
 {
     if (d->m_modem)
+    {
         throw std::logic_error("Unlocking already in progress.");
+    }
 
     d->m_modem = modem;
     d->m_state = State::unlocking;
@@ -435,51 +444,55 @@ SimUnlockDialog::unlock(Modem::Ptr modem)
     auto retries = modem->retries();
     auto type = modem->requiredPin();
     switch(type){
-    case Modem::PinType::none:
+    case wwan::Modem::PinType::none:
         d->reset();
         return;
-    case Modem::PinType::pin:
+    case wwan::Modem::PinType::pin:
         d->m_enterPinState = Private::EnterPinStates::enterPin;
         break;
-    case Modem::PinType::puk:
+    case wwan::Modem::PinType::puk:
         d->m_enterPinState = Private::EnterPinStates::enterPuk;
         break;
     }
 
-    d->m_connections.emplace_back(connect(modem.get(), &Modem::requiredPinUpdated, d.get(), &Private::update));
-    d->m_connections.emplace_back(connect(modem.get(), &Modem::retriesUpdated, d.get(), &Private::update));
-    d->m_connections.emplace_back(connect(modem.get(), &Modem::enterPinSuceeded, d.get(), &Private::pinSuccess));
-    d->m_connections.emplace_back(connect(modem.get(), &Modem::resetPinSuceeded, d.get(), &Private::pinSuccess));
-    d->m_connections.emplace_back(connect(modem.get(), &Modem::enterPinFailed, d.get(), &Private::enterPinFailed));
-    d->m_connections.emplace_back(connect(modem.get(), &Modem::resetPinFailed, d.get(), &Private::resetPinFailed));
+    d->m_connections.emplace_back(connect(modem.get(), &wwan::Modem::requiredPinUpdated, d.get(), &Private::update));
+    d->m_connections.emplace_back(connect(modem.get(), &wwan::Modem::retriesUpdated, d.get(), &Private::update));
+    d->m_connections.emplace_back(connect(modem.get(), &wwan::Modem::enterPinSuceeded, d.get(), &Private::pinSuccess));
+    d->m_connections.emplace_back(connect(modem.get(), &wwan::Modem::resetPinSuceeded, d.get(), &Private::pinSuccess));
+    d->m_connections.emplace_back(connect(modem.get(), &wwan::Modem::enterPinFailed, d.get(), &Private::enterPinFailed));
+    d->m_connections.emplace_back(connect(modem.get(), &wwan::Modem::resetPinFailed, d.get(), &Private::resetPinFailed));
 
     int pinRetries = -1;
     int pukRetries = -1;
 
-    if (retries.find(Modem::PinType::pin) != retries.end())
+    if (retries.find(wwan::Modem::PinType::pin) != retries.end())
     {
-        pinRetries = retries[Modem::PinType::pin];
+        pinRetries = retries[wwan::Modem::PinType::pin];
     }
-    if (retries.find(Modem::PinType::puk) != retries.end())
+    if (retries.find(wwan::Modem::PinType::puk) != retries.end())
     {
-        pukRetries = retries[Modem::PinType::puk];
+        pukRetries = retries[wwan::Modem::PinType::puk];
     }
 
     // remind the user
-    if (type == Modem::PinType::pin && pinRetries == 1)
+    if (type == wwan::Modem::PinType::pin && pinRetries == 1)
     {
         d->showLastPinAttemptPopup();
     }
-    else if (type == Modem::PinType::puk) {
+    else if (type == wwan::Modem::PinType::puk) {
         // we we know the sim is permanently blocked, just show the notification straight away
         if (pukRetries == 0)
+        {
             d->showSimPermanentlyBlockedPopup([this](){ cancel(); });
+        }
         else
+        {
             d->showPinBlockedPopup([this, pukRetries](){
                 if (pukRetries == 1) {
                     d->showLastPukAttemptPopup();
                 }
             });
+        }
     }
 
     d->update();
@@ -491,7 +504,7 @@ SimUnlockDialog::cancel()
     d->m_sd->close();
 }
 
-Modem::Ptr
+wwan::Modem::Ptr
 SimUnlockDialog::modem()
 {
     return d->m_modem;

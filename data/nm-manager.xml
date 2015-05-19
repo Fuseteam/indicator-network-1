@@ -326,6 +326,12 @@
         </tp:docstring>
       </arg>
     </signal>
+    
+    <property name="Connectivity" type="u" access="read" tp:type="NM_CONNECTIVITY">
+      <tp:docstring>
+        The network connectivity state.
+      </tp:docstring>
+    </property>
 
     <signal name="PropertiesChanged">
       <annotation name="org.qtproject.QtDBus.QtTypeName.In0" value="QVariantMap"/>

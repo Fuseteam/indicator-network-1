@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef TEXT_ITEM_H
-#define TEXT_ITEM_H
+#pragma once
 
 #include "item.h"
 
@@ -49,5 +48,3 @@ private:
     Action::Ptr m_action;
     MenuItem::Ptr m_item;
 };
-
-#endif // TEXT_ITEM_H

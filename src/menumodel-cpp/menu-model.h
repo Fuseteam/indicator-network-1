@@ -16,8 +16,8 @@
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
-#ifndef MENU_MODEL_H
-#define MENU_MODEL_H
+
+#pragma once
 
 #include <memory>
 #include <QObject>
@@ -30,5 +30,3 @@ public:
     virtual operator GMenuModel*() = 0;
     virtual ~MenuModel() {}
 };
-
-#endif

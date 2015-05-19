@@ -16,8 +16,8 @@
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
-#ifndef ACTION_GROUP_EXPORTER_H
-#define ACTION_GROUP_EXPORTER_H
+
+#pragma once
 
 #include <memory>
 #include <gio/gio.h>
@@ -43,7 +43,6 @@ public:
     typedef std::shared_ptr<ActionGroupExporter> Ptr;
     typedef std::unique_ptr<ActionGroupExporter> UPtr;
 
-    ActionGroupExporter() = delete;
     ActionGroupExporter(SessionBus::Ptr sessionBus, ActionGroup::Ptr actionGroup, const std::string &path);
 
     ~ActionGroupExporter();
@@ -56,5 +55,3 @@ private Q_SLOTS:
 
     void actionRemoved(Action::Ptr);
 };
-
-#endif // ACTION_GROUP_EXPORTER_H

@@ -23,7 +23,7 @@
 #include "menumodel-cpp/menu-item.h"
 #include "menumodel-cpp/gio-helpers/variant.h"
 
-namespace networking = connectivity::networking;
+using namespace nmofono;
 
 #include <vector>
 
@@ -34,15 +34,14 @@ class AccessPointItem::Private : public QObject
 public:
     AccessPointItem& q;
 
-    networking::wifi::AccessPoint::Ptr m_accessPoint;
+    wifi::AccessPoint::Ptr m_accessPoint;
     bool m_isActive;
 
     Action::Ptr m_actionActivate;
     Action::Ptr m_actionStrength;
     MenuItem::Ptr m_item;
 
-    Private() = delete;
-    explicit Private(AccessPointItem& parent, networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false)
+    Private(AccessPointItem& parent, wifi::AccessPoint::Ptr accessPoint, bool isActive = false)
         : q{parent},
           m_accessPoint{accessPoint},
           m_isActive{isActive}
@@ -67,7 +66,7 @@ public:
                                                     nullptr,
                                                     TypedVariant<std::uint8_t>(m_accessPoint->strength()));
 
-        connect(m_accessPoint.get(), &networking::wifi::AccessPoint::strengthUpdated, this, &Private::setStrength);
+        connect(m_accessPoint.get(), &wifi::AccessPoint::strengthUpdated, this, &Private::setStrength);
 
         m_actionActivate = std::make_shared<Action>(actionId,
                                                     nullptr,
@@ -90,7 +89,7 @@ public Q_SLOTS:
     }
 };
 
-AccessPointItem::AccessPointItem(networking::wifi::AccessPoint::Ptr accessPoint, bool isActive)
+AccessPointItem::AccessPointItem(wifi::AccessPoint::Ptr accessPoint, bool isActive)
     : d{new Private(*this, accessPoint, isActive)}
 {
 }

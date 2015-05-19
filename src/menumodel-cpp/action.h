@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ACTION_H
-#define ACTION_H
+#pragma once
 
 #include <memory>
 #include <functional>
@@ -74,5 +73,3 @@ Q_SIGNALS:
 
     void stateUpdated(const Variant&);
 };
-
-#endif // ACTION_H

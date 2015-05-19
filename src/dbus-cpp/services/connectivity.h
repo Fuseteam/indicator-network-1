@@ -15,8 +15,8 @@
  *
  * Authors: Antti Kaijanmäki <antti.kaijanmaki@canonical.com
  */
-#ifndef DBUS_CPP_SERVICES_UBUNTU_CONNECTIVITY_H
-#define DBUS_CPP_SERVICES_UBUNTU_CONNECTIVITY_H
+
+#pragma once
 
 #include <core/dbus/bus.h>
 #include <core/dbus/object.h>
@@ -197,6 +197,3 @@ struct Service
 }
 }
 }
-
-#endif // DBUS_CPP_SERVICES_UBUNTU_CONNECTIVITY_H
-

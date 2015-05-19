@@ -26,19 +26,23 @@ add_custom_target(QtCreatorHeaderHack SOURCES ${NETWORK_SERVICE_HEADERS})
 set(NETWORK_SERVICE_SOURCES
     ${NETWORK_SERVICE_HEADERS}
 
-    nmofono/kill-switch-impl.cpp
+    nmofono/kill-switch.cpp
     nmofono/manager.cpp
     nmofono/manager-impl.cpp
     nmofono/wifi/access-point.cpp
     nmofono/wifi/access-point-impl.cpp
-    nmofono/wifi/grouped-access-point-impl.cpp
+    nmofono/wifi/grouped-access-point.cpp
     nmofono/wifi/wifi-link-impl.cpp
+    nmofono/wwan/modem.cpp
+    
+    agent/SecretAgent.cpp
+    agent/SecretRequest.cpp
+    agent/PasswordMenu.cpp
 
     factory.cpp
     indicator-menu.cpp
+    icons.cpp
     menu-builder.cpp
-    modem.cpp
-    modem-manager.cpp
     sim-unlock-dialog.cpp
     root-state.cpp
     sections/quick-access-section.cpp
@@ -73,6 +77,14 @@ qt5_add_dbus_adaptor(
     NetworkingStatusPrivateAdaptor
 )
 
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/nm-secret-agent.xml"
+    "agent/SecretAgentInclude.h"
+    "agent::SecretAgent"
+    SecretAgentAdaptor
+)
+
 add_library(
   indicator-network-service-static
   STATIC
@@ -87,7 +99,6 @@ target_link_libraries(
     qdbus-stubs
     ${DBUSCPP_LIBRARIES}
     ${GLIB_LIBRARIES}
-    ${GIO_LIBRARIES}
     ${NOTIFY_LIBRARIES}
     ${QOFONO_LIBRARIES}
 )

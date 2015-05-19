@@ -1,0 +1,3 @@
+usr/lib/*/libconnectivity-qt1.so
+usr/include/*
+usr/lib/*/pkgconfig/*

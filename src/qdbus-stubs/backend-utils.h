@@ -21,8 +21,6 @@
 
 #include <QDBusPendingReply>
 
-namespace backend
-{
 namespace utils
 {
 
@@ -38,5 +36,4 @@ T getOrThrow(QDBusPendingReply<T> const& pendingReply)
     return pendingReply;
 }
 
-}
 }

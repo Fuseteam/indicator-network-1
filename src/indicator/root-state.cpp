@@ -17,17 +17,19 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "root-state.h"
-
-#include <functional>
+#include <root-state.h>
 
 #include <nmofono/wifi/wifi-link.h>
 #include <nmofono/wifi/access-point.h>
 
-#include <menumodel-cpp/gio-helpers/util.h>
+#include <icons.h>
+#include <util/localisation.h>
+
+#include <functional>
+#include <QDebug>
 
 using namespace std;
-namespace networking = connectivity::networking;
+using namespace nmofono;
 
 class RootState::Private : public QObject
 {
@@ -36,143 +38,143 @@ class RootState::Private : public QObject
 public:
     RootState& p;
 
-    std::shared_ptr<networking::Manager> m_manager;
-    ModemManager::Ptr m_modemManager;
+    Manager::Ptr m_manager;
     Variant m_state;
-    networking::wifi::AccessPoint::Ptr m_activeAP;
-    std::unique_ptr<QMetaObject::Connection> m_activeAP_conn;
+    wifi::AccessPoint::Ptr m_activeAP;
+    unique_ptr<QMetaObject::Connection> m_activeAP_conn;
 
-    std::string m_label;
+    string m_label;
 
     /// @todo multiple adapters etc..
-    std::string m_networkingIcon;
+    QString m_networkingIcon;
 
-    std::map<Modem::Ptr, std::string> m_cellularIcons;
-    std::map<int, std::string>        m_modemTechIcons;
+    QMap<int, QString> m_cellularIcons;
+    QMap<int, QString> m_modemTechIcons;
 
     int m_activeModem = -1;
 
-    Private() = delete;
-    Private(RootState& parent, std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
+    Private(RootState& parent, nmofono::Manager::Ptr manager);
 
-    Variant createIcon(const std::string& name);
+    Variant createIcon(const string& name);
+
+    void updateModems();
+
+    void updateModem(const wwan::Modem& modem);
 
 public Q_SLOTS:
-    void updateModem(Modem::Ptr modem);
-
     void updateNetworkingIcon();
 
     void updateRootState();
-
-void modemsChanged(const QList<Modem::Ptr> &modems);
 };
 
-RootState::Private::Private(RootState& parent, std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager)
+RootState::Private::Private(RootState& parent, nmofono::Manager::Ptr manager)
     : p{parent},
-      m_manager{manager},
-      m_modemManager{modemManager}
+      m_manager{manager}
 {
-    connect(m_manager.get(), &networking::Manager::flightModeUpdated, this, &Private::updateRootState);
+    connect(m_manager.get(), &nmofono::Manager::flightModeUpdated, this, &Private::updateRootState);
 
-    modemsChanged(m_modemManager->modems());
-    // modem properties and signals already synced with GMainLoop
-    connect(m_modemManager.get(), &ModemManager::modemsUpdated, this, &Private::modemsChanged);
-
-    connect(m_manager.get(), &networking::Manager::statusUpdated, this, &Private::updateNetworkingIcon);
-    connect(m_manager.get(), &networking::Manager::linksUpdated, this, &Private::updateNetworkingIcon);
+    connect(m_manager.get(), &Manager::statusUpdated, this, &Private::updateNetworkingIcon);
+    connect(m_manager.get(), &Manager::linksUpdated, this, &Private::updateNetworkingIcon);
 
     // will also call updateRootState()
     updateNetworkingIcon();
 }
 
 void
-RootState::Private::modemsChanged(const QList<Modem::Ptr> &modems)
+RootState::Private::updateModems()
 {
-    std::set<Modem::Ptr> current;
-    for (auto element : m_cellularIcons)
-        current.insert(element.first);
+    QMap<int, wwan::Modem::Ptr> modems;
+    for (auto modem : m_manager->modemLinks())
+    {
+        modems[modem->index()] = modem;
+    }
 
-    std::set<Modem::Ptr> removed;
-    std::set_difference(current.begin(), current.end(),
-                        modems.begin(), modems.end(),
-                        std::inserter(removed, removed.begin()));
+    QSet<int> current = m_cellularIcons.keys().toSet();
+    QSet<int> updated = modems.keys().toSet();
 
-    std::set<Modem::Ptr> added;
-    std::set_difference(modems.begin(), modems.end(),
-                        current.begin(), current.end(),
-                        std::inserter(added, added.begin()));
-    for (auto modem : removed)
-        m_cellularIcons.erase(modem);
+    QSet<int> removed(current);
+    removed.subtract(updated);
+
+    QSet<int> added(updated);
+    added.subtract(current);
+
+    for (auto index : removed)
+    {
+        m_cellularIcons.remove(index);
+    }
+
+    for (auto index : added) {
+        // modem properties and signals already synced with GMainLoop
+        connect(modems[index].get(), &wwan::Modem::updated, this, &Private::updateNetworkingIcon);
+    }
 
     m_activeModem = -1;
-    for (auto modem : added) {
-        // modem properties and signals already synced with GMainLoop
-        connect(modem.get(), &Modem::updated, this, &Private::updateModem);
-        updateModem(modem);
+    for (auto modem : modems)
+    {
+        updateModem(*modem);
     }
 }
 
 void
-RootState::Private::updateModem(Modem::Ptr modem)
+RootState::Private::updateModem(const wwan::Modem& modem)
 {
-    if (modem->dataEnabled())
+    int index = modem.index();
+
+    QString newModemTechIcon;
+    QString newCellularIcon;
+
+    if (modem.online())
     {
-        m_activeModem = modem->index();
-    }
-    m_modemTechIcons.erase(modem->index());
-    m_cellularIcons[modem] = "";
-
-    if (!modem->online()) {
-        // modem offline, nothing to show
-        updateRootState();
-        return;
-    }
-
-    switch(modem->simStatus()) {
-    case Modem::SimStatus::missing:
-        // no need to show anything in the panel
-        break;
-    case Modem::SimStatus::error:
-        m_cellularIcons[modem] = "simcard-error";
-        break;
-    case Modem::SimStatus::locked:
-    case Modem::SimStatus::permanentlyLocked:
-        m_cellularIcons[modem] = "simcard-locked";
-        break;
-    case Modem::SimStatus::ready:
-    {
-        switch (modem->status()) {
-        case Modem::Status::unregistered:
-        case Modem::Status::unknown:
-        case Modem::Status::searching:
-            m_cellularIcons[modem] = "gsm-3g-disabled";
+        switch(modem.simStatus())
+        {
+        case wwan::Modem::SimStatus::missing:
+            // no need to show anything in the panel
             break;
-        case Modem::Status::denied:
-            /// @todo we might need network-error for this
-            m_cellularIcons[modem] = "gsm-3g-disabled";
+        case wwan::Modem::SimStatus::error:
+            newCellularIcon = "simcard-error";
             break;
-        case Modem::Status::registered:
-        case Modem::Status::roaming:
-            if (modem->strength() != 0) {
-                m_cellularIcons[modem] = Modem::strengthIcon(modem->strength()).toStdString();
-                m_modemTechIcons[modem->index()] = Modem::technologyIcon(modem->bearer()).toStdString();
-            } else {
-                m_cellularIcons[modem] = "gsm-3g-no-service";
-
+        case wwan::Modem::SimStatus::locked:
+        case wwan::Modem::SimStatus::permanentlyLocked:
+            newCellularIcon = "simcard-locked";
+            break;
+        case wwan::Modem::SimStatus::ready:
+        {
+            switch (modem.modemStatus())
+            {
+            case wwan::Modem::ModemStatus::unregistered:
+            case wwan::Modem::ModemStatus::unknown:
+            case wwan::Modem::ModemStatus::searching:
+                newCellularIcon = "gsm-3g-disabled";
+                break;
+            case wwan::Modem::ModemStatus::denied:
+                /// @todo we might need network-error for this
+                newCellularIcon = "gsm-3g-disabled";
+                break;
+            case wwan::Modem::ModemStatus::registered:
+            case wwan::Modem::ModemStatus::roaming:
+                if (modem.strength() != 0) {
+                    newCellularIcon = Icons::strengthIcon(modem.strength());
+                    newModemTechIcon = Icons::bearerIcon(modem.bearer());
+                } else {
+                    newCellularIcon = "gsm-3g-no-service";
+                }
+                break;
             }
-
-            // we might have changed the modem tech icon which affects the networkingIcon.
-            updateNetworkingIcon();
             break;
         }
-        break;
-    }
-    case Modem::SimStatus::not_available:
-        // no need to show anything in the panel
-        break;
+        case wwan::Modem::SimStatus::not_available:
+            // no need to show anything in the panel
+            break;
+        }
     }
 
-    updateRootState();
+    m_cellularIcons[index] = newCellularIcon;
+    m_modemTechIcons[index] = newModemTechIcon;
+
+    if (modem.dataEnabled())
+    {
+        m_activeModem = index;
+    }
 }
 
 void
@@ -180,62 +182,65 @@ RootState::Private::updateNetworkingIcon()
 {
     m_networkingIcon.clear();
 
+    updateModems();
+
     switch (m_manager->status()) {
-    case networking::Manager::NetworkingStatus::offline:
+    case Manager::NetworkingStatus::offline:
         m_networkingIcon = "nm-no-connection";
         //a11ydesc = _("Network (none)");
         break;
-    case networking::Manager::NetworkingStatus::connecting:
+    case Manager::NetworkingStatus::connecting:
         m_networkingIcon = "nm-no-connection";
         // some sort of connection animation
         break;
-    case networking::Manager::NetworkingStatus::online:
-        for (auto link : m_manager->links()) {
-            if (link->status() != networking::Link::Status::online)
+    case Manager::NetworkingStatus::online:
+        for (auto wifiLink : m_manager->wifiLinks())
+        {
+            if (wifiLink->status() != Link::Status::online)
+            {
                 continue;
-            if (link->type() == networking::Link::Type::wifi) {
+            }
 
-                auto wifiLink = std::dynamic_pointer_cast<networking::wifi::Link>(link);
+            int strength = -1;
+            bool secured = false;
 
-                int strength = -1;
-                bool secured = false;
-
-                // check if the currently active AP has changed
-                if (m_activeAP != wifiLink->activeAccessPoint())
+            // check if the currently active AP has changed
+            if (m_activeAP != wifiLink->activeAccessPoint())
+            {
+                // locally store the active AP
+                m_activeAP = wifiLink->activeAccessPoint();
+                if (m_activeAP)
                 {
-                    // locally store the active AP
-                    m_activeAP = wifiLink->activeAccessPoint();
-                    if (m_activeAP)
+                    // connect updateNetworkingIcon() to changes in AP strength
+                    auto c = QObject::connect(
+                            m_activeAP.get(),
+                            &wifi::AccessPoint::strengthUpdated,
+                            this,
+                            &Private::updateNetworkingIcon);
+
+                    if (m_activeAP_conn)
                     {
-                        // connect updateNetworkingIcon() to changes in AP strength
-                        auto c = QObject::connect(
-                                m_activeAP.get(),
-                                &networking::wifi::AccessPoint::strengthUpdated,
-                                this,
-                                &Private::updateNetworkingIcon);
-                        if (m_activeAP_conn)
-                        {
-                            disconnect(*m_activeAP_conn);
-                        }
-                        m_activeAP_conn.reset(new QMetaObject::Connection(c));
+                        disconnect(*m_activeAP_conn);
                     }
-                    else
+                    m_activeAP_conn.reset(new QMetaObject::Connection(c));
+                }
+                else
+                {
+                    // there is no active AP, so we disconnect from strength updates
+                    if (m_activeAP_conn)
                     {
-                        // there is no active AP, so we disconnect from strength updates
-                        if (m_activeAP_conn)
-                        {
-                            disconnect(*m_activeAP_conn);
-                            m_activeAP_conn.release();
-                        }
+                        disconnect(*m_activeAP_conn);
+                        m_activeAP_conn.release();
                     }
                 }
+            }
 
-                if (m_activeAP) {
-                    strength = m_activeAP->strength();
-                    secured  = m_activeAP->secured();
-                }
+            if (m_activeAP) {
+                strength = m_activeAP->strength();
+                secured  = m_activeAP->secured();
+            }
 
-                /// @todo deal with a11ydesc
+            /// @todo deal with a11ydesc
 //                gchar *a11ydesc = nullptr;
 //                if (secured) {
 //                    a11ydesc = g_strdup_printf(_("Network (wireless, %d%%, secure)"), strength);
@@ -245,29 +250,26 @@ RootState::Private::updateNetworkingIcon()
 //                m_a11ydesc = {a11ydesc};
 //                g_free(a11ydesc);
 
-                if (strength >= 80) {
-                    m_networkingIcon = secured ? "nm-signal-100-secure" : "nm-signal-100";
-                } else if (strength >= 60) {
-                    m_networkingIcon = secured ? "nm-signal-75-secure" : "nm-signal-75";
-                } else if (strength >= 40) {
-                    m_networkingIcon = secured ? "nm-signal-50-secure" : "nm-signal-50";
-                } else if (strength >= 20) {
-                    m_networkingIcon = secured ? "nm-signal-25-secure" : "nm-signal-25";
-                } else {
-                    m_networkingIcon = secured ? "nm-signal-0-secure" : "nm-signal-0";
-                }
-
-            } else if (link->type() == networking::Link::Type::wwan) {
-                /// @todo show the tech icon
+            if (strength >= 80) {
+                m_networkingIcon = secured ? "nm-signal-100-secure" : "nm-signal-100";
+            } else if (strength >= 60) {
+                m_networkingIcon = secured ? "nm-signal-75-secure" : "nm-signal-75";
+            } else if (strength >= 40) {
+                m_networkingIcon = secured ? "nm-signal-50-secure" : "nm-signal-50";
+            } else if (strength >= 20) {
+                m_networkingIcon = secured ? "nm-signal-25-secure" : "nm-signal-25";
+            } else {
+                m_networkingIcon = secured ? "nm-signal-0-secure" : "nm-signal-0";
             }
         }
 
-        if (m_networkingIcon.empty()) {
+        if (m_networkingIcon.isEmpty())
+        {
             if (m_activeModem != -1) {
                 auto it = m_modemTechIcons.find(m_activeModem);
                 if (it != m_modemTechIcons.end())
                 {
-                    m_networkingIcon = it->second;
+                    m_networkingIcon = it.value();
                 }
             }
         }
@@ -278,14 +280,14 @@ RootState::Private::updateNetworkingIcon()
 }
 
 Variant
-RootState::Private::createIcon(const std::string& name)
+RootState::Private::createIcon(const string& name)
 {
     GError *error = nullptr;
     auto gicon = shared_ptr<GIcon>(g_icon_new_for_string(name.c_str(), &error), GObjectDeleter());
     if (error) {
         string message(error->message);
         g_error_free(error);
-        throw std::runtime_error("Could not create GIcon: " + message);
+        throw runtime_error("Could not create GIcon: " + message);
     }
 
     Variant ret = Variant::fromGVariant(g_icon_serialize(gicon.get()));
@@ -295,75 +297,79 @@ RootState::Private::createIcon(const std::string& name)
 void
 RootState::Private::updateRootState()
 {
-    std::vector<std::string> icons;
-    std::map<std::string, Variant> state;
+    vector<string> icons;
+    map<string, Variant> state;
 
     switch(m_manager->flightMode()) {
-    case networking::Manager::FlightModeStatus::off:
+    case Manager::FlightModeStatus::off:
         break;
-    case networking::Manager::FlightModeStatus::on:
+    case Manager::FlightModeStatus::on:
         icons.push_back("airplane-mode");
         break;
     }
 
-    std::multimap<int, std::string, Modem::Compare> sorted;
-    for (auto pair : m_cellularIcons) {
-        sorted.insert(std::make_pair(pair.first->index(), pair.second));
-    }
-    for (auto pair : sorted) {
-        if (!pair.second.empty())
-            icons.push_back(pair.second);
+    multimap<int, QString, wwan::WwanLink::Compare> sorted;
+    QMapIterator<int, QString> iconIt(m_cellularIcons);
+    while (iconIt.hasNext()) {
+        iconIt.next();
+        sorted.insert(make_pair(iconIt.key(), iconIt.value()));
     }
 
-    // if any of the modems is roaming, show the roaming icon
-    for (auto modem : m_modemManager->modems()) {
-        if (modem->status() == Modem::Status::roaming) {
-            icons.push_back("network-cellular-roaming");
-            break;
+    for (auto pair : sorted)
+    {
+        if (!pair.second.isEmpty())
+        {
+            icons.push_back(pair.second.toStdString());
         }
     }
 
-    if (!m_networkingIcon.empty()) {
+    if (m_manager->roaming())
+    {
+        icons.push_back("network-cellular-roaming");
+    }
 
+    if (!m_networkingIcon.isEmpty()) {
         /* We're doing icon always right now so we have a fallback before everyone
            supports multi-icon.  We shouldn't set both in the future. */
         try {
-            state["icon"] = createIcon(m_networkingIcon);
-        } catch (std::exception &e) {
-            std::cerr << e.what();
+            state["icon"] = createIcon(m_networkingIcon.toStdString());
+        } catch (exception &e) {
+            qWarning() << __PRETTY_FUNCTION__ << e.what();
         }
 
-        icons.push_back(m_networkingIcon);
+        icons.push_back(m_networkingIcon.toStdString());
     }
 
     if (!m_label.empty())
-        state["label"] = TypedVariant<std::string>(m_label);
+    {
+        state["label"] = TypedVariant<string>(m_label);
+    }
 
     // TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-    state["title"] = TypedVariant<std::string>(_("Network"));
+    state["title"] = TypedVariant<string>(_("Network"));
 
-    /// @todo state["accessibility-desc"] = TypedVariant<std::string>(a11ydesc);
+    /// @todo state["accessibility-desc"] = TypedVariant<string>(a11ydesc);
     state["visible"] = TypedVariant<bool>(true); /// @todo is this really necessary/useful?
 
 
     if (!icons.empty()) {
-        std::vector<Variant> iconVariants;
+        vector<Variant> iconVariants;
         for (auto name : icons) {
             try {
                 iconVariants.push_back(createIcon(name));
-            } catch (std::exception &e) {
-                std::cerr << e.what();
+            } catch (exception &e) {
+                cerr << e.what();
             }
         }
-        state["icons"] = TypedVariant<std::vector<Variant>>(iconVariants);
+        state["icons"] = TypedVariant<vector<Variant>>(iconVariants);
     }
 
-    m_state = TypedVariant<std::map<std::string, Variant>>(state);
+    m_state = TypedVariant<map<string, Variant>>(state);
     Q_EMIT p.stateUpdated(m_state);
 }
 
-RootState::RootState(std::shared_ptr<connectivity::networking::Manager> manager, ModemManager::Ptr modemManager)
-    : d{new Private(*this, manager, modemManager)}
+RootState::RootState(Manager::Ptr manager)
+    : d{new Private(*this, manager)}
 {
 }
 

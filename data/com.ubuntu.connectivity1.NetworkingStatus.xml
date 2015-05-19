@@ -6,6 +6,11 @@
         <property name="Limitations" type="as" access="read"/>
         <property name="Status" type="s" access="read"/>
 
+        <property name="FlightMode" type="b" access="read"/>
+        <property name="WifiEnabled" type="b" access="read"/>
+
+        <property name="UnstoppableOperationHappening" type="b" access="read"/>
+
     </interface>
 </node>
 

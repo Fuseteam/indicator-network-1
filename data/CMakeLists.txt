@@ -35,25 +35,25 @@ install (
 )
 
 ###########################
-# Secret agent upstart job
-###########################
-
-configure_file (
-	indicator-secret-agent.conf.in
-	indicator-secret-agent.conf
-	@ONLY
-)
-
-install (
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/indicator-secret-agent.conf
-	DESTINATION ${CMAKE_INSTALL_PREFIX}/share/upstart/sessions
-)
-
-###########################
 # GSettings
 ###########################
 
 add_schema ("com.canonical.indicator.network.gschema.xml")
+
+###########################
+# PkgConfig
+###########################
+
+configure_file(
+  "connectivity-qt.pc.in"
+  "connectivity-qt.pc"
+  @ONLY
+)
+
+install(
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/connectivity-qt.pc"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+)
 
 ###########################
 # XDG Autostart File

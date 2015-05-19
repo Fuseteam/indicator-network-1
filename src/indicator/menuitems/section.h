@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef SECTION_H
-#define SECTION_H
+#pragma once
 
 #include <memory>
 #include "menumodel-cpp/action-group.h"
@@ -33,9 +32,4 @@ public:
 
     virtual ActionGroup::Ptr actionGroup() = 0;
     virtual MenuModel::Ptr   menuModel()   = 0;
-
-    operator ActionGroup::Ptr() { return actionGroup(); }
-    operator MenuModel::Ptr()   { return menuModel();   }
 };
-
-#endif

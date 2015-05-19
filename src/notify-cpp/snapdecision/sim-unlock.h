@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef SIM_UNLOCK_DIALOG_H
-#define SIM_UNLOCK_DIALOG_H
+#pragma once
 
 #include <memory>
 
@@ -59,7 +58,6 @@ public:
     /**
      * To update the value in the dialog, call update().
      */
-//    Q_PROPERTY(std::pair<std::uint8_t, std::uint8_t> pinMinMax READ pinMinMax WRITE setPinMinMax NOTIFY pinMinMaxUpdated)
     std::pair<std::uint8_t, std::uint8_t> pinMinMax();
 
     /**
@@ -71,8 +69,8 @@ public:
     void show();
     void close();
 
-    void showError(std::string message, std::function<void()> closed = std::function<void()>());
-    void showPopup(std::string message, std::function<void()> closed = std::function<void()>());
+    void showError(const std::string& message, std::function<void()> closed = std::function<void()>());
+    void showPopup(const std::string& message, std::function<void()> closed = std::function<void()>());
 
 public Q_SLOTS:
     void setTitle(const QString& title);
@@ -97,4 +95,3 @@ Q_SIGNALS:
 
 }
 }
-#endif

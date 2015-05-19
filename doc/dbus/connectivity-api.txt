@@ -1,0 +1,26 @@
+Service		com.ubuntu.connectivity1
+Interface	com.ubuntu.connectivity1.NetworkingStatus
+Object path	/com/ubuntu/connectivity1/NetworkingStatus
+Policy group	connectivity
+Supports	org.freedesktop.DBus.Introspectable
+		org.freedesktop.DBus.Properties
+
+Properties	array{string} Limitations [readonly]
+
+			String array representing the possible limitations
+			on networking.
+
+			Currently available limitations are:
+				"bandwith"
+
+			"bandwith" - indicates that the bandwith of the
+				Internet connection has limitations.
+				Applications should minimize their bandwith
+				usage if possible.
+
+		string Status [readonly]
+
+			Status of the Internet connectivity. 
+
+			Possible values:
+				"offline", "connecting", "online"

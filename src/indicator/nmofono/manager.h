@@ -17,18 +17,17 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_MANAGER
-#define CONNECTIVITY_NETWORKING_MANAGER
+#pragma once
 
 #include <nmofono/link.h>
+#include <nmofono/wifi/wifi-link.h>
+#include <nmofono/wwan/modem.h>
 
 #include <memory>
-#include <set>
-
+#include <QSet>
 #include <QObject>
 
-namespace connectivity {
-namespace networking {
+namespace nmofono {
 
 #ifndef CONNECTIVITY_CPP_EXPORT
 #define CONNECTIVITY_CPP_EXPORT __attribute ((visibility ("default")))
@@ -52,6 +51,8 @@ Manager: public QObject
 {
     Q_OBJECT
 public:
+    typedef std::shared_ptr<Manager> Ptr;
+
     Manager &operator=(const Manager&) = delete;
     virtual ~Manager()                 = default;
     Manager(const Manager&)            = delete;
@@ -79,18 +80,19 @@ public:
     };
 
     /// @private
-    virtual void enableFlightMode()  = 0;
-
-    /// @private
-    virtual void disableFlightMode() = 0;
-
-    /// @private
     Q_PROPERTY(Manager::FlightModeStatus flightMode READ flightMode NOTIFY flightModeUpdated)
     virtual FlightModeStatus flightMode() const = 0;
 
+    Q_PROPERTY(bool unstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
+    virtual bool unstoppableOperationHappening() const = 0;
+
     /// @private
-    Q_PROPERTY(std::set<Link::Ptr> links READ links NOTIFY linksUpdated)
-    virtual const std::set<Link::Ptr>& links() const = 0;
+    Q_PROPERTY(QSet<Link::Ptr> links READ links NOTIFY linksUpdated)
+    virtual QSet<Link::Ptr> links() const = 0;
+
+    virtual QSet<wifi::WifiLink::Ptr> wifiLinks() const = 0;
+
+    virtual QSet<wwan::Modem::Ptr> modemLinks() const = 0;
 
     /**
      * status of the overall system networking
@@ -117,14 +119,18 @@ public:
     Q_PROPERTY(bool wifiEnabled READ wifiEnabled NOTIFY wifiEnabledUpdated)
     virtual bool wifiEnabled() const = 0;
 
-    virtual bool enableWifi() = 0;
+    virtual bool roaming() const = 0;
 
-    virtual bool disableWifi() = 0;
+    virtual void unlockModem(wwan::Modem::Ptr modem) = 0;
+
+    virtual void unlockAllModems() = 0;
+
+    virtual void unlockModemByName(const QString &name) = 0;
 
 Q_SIGNALS:
     void flightModeUpdated(FlightModeStatus);
 
-    void linksUpdated(const std::set<Link::Ptr>&);
+    void linksUpdated();
 
     void statusUpdated(NetworkingStatus);
 
@@ -133,6 +139,13 @@ Q_SIGNALS:
     void hasWifiUpdated(bool);
 
     void wifiEnabledUpdated(bool);
+
+    void unstoppableOperationHappeningUpdated(bool);
+
+public Q_SLOTS:
+    virtual bool setWifiEnabled(bool) = 0;
+
+    virtual void setFlightMode(bool)  = 0;
 
 protected:
     /**
@@ -145,6 +158,3 @@ protected:
 };
 
 }
-}
-
-#endif

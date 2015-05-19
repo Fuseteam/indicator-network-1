@@ -17,11 +17,10 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WWAN_SECTION_H
-#define WWAN_SECTION_H
+#pragma once
 
-#include "menuitems/section.h"
-#include "modem-manager.h"
+#include <menuitems/section.h>
+#include <nmofono/manager.h>
 
 class WwanSection : public Section
 {
@@ -30,8 +29,7 @@ class WwanSection : public Section
 
 public:
     typedef std::shared_ptr<WwanSection> Ptr;
-    WwanSection() = delete;
-    explicit WwanSection(ModemManager::Ptr modemManager);
+    explicit WwanSection(nmofono::Manager::Ptr modemManager);
     virtual ~WwanSection();
 
     virtual ActionGroup::Ptr actionGroup();
@@ -40,5 +38,3 @@ public:
     void unlockAllModems();
     void unlockModem(const QString &name);
 };
-
-#endif

@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef MENU_MERGER_H
-#define MENU_MERGER_H
+#pragma once
 
 #include <algorithm>
 #include <memory>
@@ -143,5 +142,3 @@ public:
 
     operator GMenuModel*() { return G_MENU_MODEL(m_gmenu.get()); }
 };
-
-#endif

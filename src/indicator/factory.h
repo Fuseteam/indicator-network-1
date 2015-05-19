@@ -28,6 +28,7 @@
 #include <sections/quick-access-section.h>
 #include <sections/wifi-section.h>
 #include <sections/wwan-section.h>
+#include <agent/SecretAgent.h>
 
 #include <memory>
 
@@ -64,4 +65,6 @@ public:
     virtual BusName::UPtr newBusName(std::string name,
                                      std::function<void(std::string)> acquired,
                                      std::function<void(std::string)> lost);
+
+    virtual agent::SecretAgent::UPtr newSecretAgent();
 };

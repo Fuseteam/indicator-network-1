@@ -17,11 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef GIO_HELPERS_UTIL_H
-#define GIO_HELPERS_UTIL_H
-
-#include <libintl.h>
-#define _(String) gettext (String)
+#pragma once
 
 #include <gio/gio.h>
 #include <memory>
@@ -35,7 +31,7 @@ struct GObjectDeleter {
     GObjectDeleter() noexcept {}
    ~GObjectDeleter() noexcept {}
 
-    void operator() (void *ptr)
+    void operator() (void *ptr) const
     {
         if (!ptr)
             return;
@@ -50,7 +46,7 @@ struct GVariantDeleter {
     GVariantDeleter() noexcept {}
     ~GVariantDeleter() noexcept {}
 
-    void operator() (GVariant *ptr)
+    void operator() (GVariant *ptr) const
     {
         if (!ptr)
             return;
@@ -138,7 +134,7 @@ public:
         g_dbus_connection_set_exit_on_close(m_bus.get(), FALSE);
     }
 
-    std::shared_ptr<GDBusConnection> bus()
+    std::shared_ptr<GDBusConnection> bus() const
     {
         return m_bus;
     }
@@ -200,6 +196,3 @@ public:
             g_bus_unown_name(m_busOwnId);
     }
 };
-
-
-#endif

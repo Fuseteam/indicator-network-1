@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WIFI_LINK_ITEM_H
-#define WIFI_LINK_ITEM_H
+#pragma once
 
 #include <nmofono/wifi/wifi-link.h>
 
@@ -32,12 +31,9 @@ class WifiLinkItem : public Item
 public:
     typedef std::shared_ptr<WifiLinkItem> Ptr;
 
-    WifiLinkItem() = delete;
-    WifiLinkItem(connectivity::networking::wifi::Link::Ptr link);
+    WifiLinkItem(nmofono::wifi::WifiLink::Ptr link);
     virtual ~WifiLinkItem();
 
     virtual MenuItem::Ptr menuItem();
     virtual ActionGroup::Ptr actionGroup();
 };
-
-#endif // WIFI_LINK_ITEM_H

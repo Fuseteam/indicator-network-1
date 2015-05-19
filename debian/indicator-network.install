@@ -1,9 +1,7 @@
 usr/share/upstart/xdg/autostart/indicator-network.desktop
 usr/share/upstart/sessions/indicator-network.conf
-usr/share/upstart/sessions/indicator-secret-agent.conf
 usr/share/glib-2.0/schemas/com.canonical.indicator.network.gschema.xml
 usr/share/unity/indicators/com.canonical.indicator.network
-usr/lib/*/indicator-secret-agent
 usr/lib/*/indicator-network/indicator-network-service
 etc/xdg/autostart/indicator-network.desktop
 usr/share/locale

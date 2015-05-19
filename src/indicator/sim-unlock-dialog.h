@@ -17,10 +17,9 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef SIM_UNLOCK_DIALOG
-#define SIM_UNLOCK_DIALOG
+#pragma once
 
-#include "modem.h"
+#include <nmofono/wwan/modem.h>
 
 #include <memory>
 #include <QObject>
@@ -46,11 +45,11 @@ public:
     SimUnlockDialog();
     ~SimUnlockDialog();
 
-    void unlock(Modem::Ptr modem);
+    void unlock(nmofono::wwan::Modem::Ptr modem);
 
     void cancel();
 
-    Modem::Ptr modem();
+    nmofono::wwan::Modem::Ptr modem();
 
     State state() const;
 
@@ -64,5 +63,3 @@ Q_SIGNALS:
 
     void showSimIdentifiersUpdated(bool showSimIdentifiers);
 };
-
-#endif

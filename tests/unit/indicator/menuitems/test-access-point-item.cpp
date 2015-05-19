@@ -30,15 +30,19 @@ using namespace testing;
 using namespace QtDBusTest;
 using namespace testutils;
 
-using namespace connectivity;
+using namespace nmofono;
 
 namespace
 {
 
-class MockAccessPoint : public networking::wifi::AccessPoint
+class MockAccessPoint : public wifi::AccessPoint
 {
 public:
     MOCK_CONST_METHOD0(ssid, QString());
+
+    MOCK_CONST_METHOD0(raw_ssid, QByteArray());
+
+    MOCK_CONST_METHOD0(object_path, QDBusObjectPath());
 
     MOCK_CONST_METHOD0(secured, bool());
 

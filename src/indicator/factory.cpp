@@ -19,16 +19,13 @@
 
 #include <factory.h>
 
-#include <modem-manager.h>
 #include <nmofono/manager-impl.h>
 
 using namespace std;
 
 struct Factory::Private
 {
-    ModemManager::Ptr m_modemManager;
-
-    shared_ptr<connectivity::networking::Manager> m_nmofono;
+    shared_ptr<nmofono::Manager> m_nmofono;
 
     SessionBus::Ptr m_sessionBus;
 
@@ -41,22 +38,13 @@ struct Factory::Private
         return m_sessionBus;
     }
 
-    shared_ptr<connectivity::networking::Manager> singletonNmofono()
+    shared_ptr<nmofono::Manager> singletonNmofono()
     {
         if (!m_nmofono)
         {
-            m_nmofono = make_shared<platform::nmofono::Manager>(QDBusConnection::systemBus());
+            m_nmofono = make_shared<nmofono::ManagerImpl>(QDBusConnection::systemBus());
         }
         return m_nmofono;
-    }
-
-    ModemManager::Ptr singletonModemManager()
-    {
-        if (!m_modemManager)
-        {
-            m_modemManager = make_shared<ModemManager>();
-        }
-        return m_modemManager;
     }
 };
 
@@ -81,7 +69,7 @@ unique_ptr<connectivity_service::ConnectivityService> Factory::newConnectivitySe
 
 unique_ptr<RootState> Factory::newRootState()
 {
-    return make_unique<RootState>(d->singletonNmofono(), d->singletonModemManager());
+    return make_unique<RootState>(d->singletonNmofono());
 }
 
 unique_ptr<IndicatorMenu> Factory::newIndicatorMenu(RootState::Ptr rootState, const string &prefix)
@@ -101,7 +89,7 @@ unique_ptr<QuickAccessSection> Factory::newQuickAccessSection(SwitchItem::Ptr wi
 
 unique_ptr<WwanSection> Factory::newWwanSection()
 {
-    return make_unique<WwanSection>(d->singletonModemManager());
+    return make_unique<WwanSection>(d->singletonNmofono());
 }
 
 unique_ptr<WifiSection> Factory::newWiFiSection()
@@ -125,5 +113,11 @@ BusName::UPtr Factory::newBusName(string name,
                                   function<void(string)> lost)
 {
     return make_unique<BusName>(name, acquired, lost, d->singletonSessionBus());
+}
+
+agent::SecretAgent::UPtr Factory::newSecretAgent()
+{
+    return make_unique<agent::SecretAgent>(QDBusConnection::systemBus(),
+                                           QDBusConnection::sessionBus());
 }
 

@@ -17,16 +17,15 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_WIFI_ACCESS_POINT
-#define CONNECTIVITY_NETWORKING_WIFI_ACCESS_POINT
+#pragma once
 
 #include <QObject>
 #include <QString>
+#include <QDBusObjectPath>
 
 #include <memory>
 
-namespace connectivity {
-namespace networking {
+namespace nmofono {
 namespace wifi {
 
 #ifndef CONNECTIVITY_CPP_EXPORT
@@ -50,7 +49,9 @@ public:
     Q_PROPERTY(double strength READ strength NOTIFY strengthUpdated)
     virtual double strength() const = 0;
 
-    virtual QString ssid()     const = 0;
+    virtual QString ssid()            const = 0;
+    virtual QByteArray raw_ssid()     const = 0;
+    virtual QDBusObjectPath object_path()     const = 0;
     virtual bool secured()            const = 0;
     virtual bool adhoc()              const = 0;
 
@@ -60,7 +61,3 @@ Q_SIGNALS:
 
 }
 }
-}
-
-#endif
-

@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ACTION_GROUP_MERGER_H
-#define ACTION_GROUP_MERGER_H
+#pragma once
 
 #include <memory>
 #include <gio/gio.h>
@@ -57,8 +56,4 @@ public:
     void remove(ActionGroup::Ptr group);
 
     ActionGroup::Ptr actionGroup();
-
-    operator ActionGroup::Ptr() { return actionGroup(); }
 };
-
-#endif // ACTION_GROUP_MERGER_H

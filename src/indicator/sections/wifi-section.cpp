@@ -29,13 +29,15 @@
 #include "menumodel-cpp/menu.h"
 #include "menumodel-cpp/menu-merger.h"
 
-using namespace connectivity;
+#include <util/localisation.h>
+
+using namespace nmofono;
 
 class WifiSection::Private : public QObject
 {
     Q_OBJECT
 public:
-    std::shared_ptr<connectivity::networking::Manager> m_manager;
+    Manager::Ptr m_manager;
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
     Menu::Ptr m_menu;
@@ -46,8 +48,7 @@ public:
     WifiLinkItem::Ptr m_wifiLink;
     TextItem::Ptr m_openWifiSettings;
 
-    Private() = delete;
-    Private(std::shared_ptr<connectivity::networking::Manager> manager)
+    Private(Manager::Ptr manager)
         : m_manager{manager}
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
@@ -59,25 +60,25 @@ public:
         /// @todo don't now really care about actully being able to detach the whole
         ///       wifi chipset. on touch devices we always have wifi.
         if (m_manager->hasWifi()) {
-            m_actionGroupMerger->add(*m_switch);
-            m_menu->append(*m_switch);
-            m_settingsMenu->append(*m_switch);
+            m_actionGroupMerger->add(m_switch->actionGroup());
+            m_menu->append(m_switch->menuItem());
+            m_settingsMenu->append(m_switch->menuItem());
         }
 
         m_switch->setState(m_manager->wifiEnabled());
-        connect(m_manager.get(), &networking::Manager::wifiEnabledUpdated, m_switch.get(), &SwitchItem::setState);
-        connect(m_switch.get(), &SwitchItem::stateUpdated, this, &Private::switchActivated);
+        connect(m_manager.get(), &Manager::wifiEnabledUpdated, m_switch.get(), &SwitchItem::setState);
+        connect(m_switch.get(), &SwitchItem::stateUpdated, m_manager.get(), &Manager::setWifiEnabled);
 
         m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
         connect(m_openWifiSettings.get(), &TextItem::activated, this, &Private::openWiFiSettings);
 
-        m_actionGroupMerger->add(*m_openWifiSettings);
-        m_menu->append(*m_openWifiSettings);
+        m_actionGroupMerger->add(m_openWifiSettings->actionGroup());
+        m_menu->append(m_openWifiSettings->menuItem());
 
         // We have this last because the menu item insertion location
         // depends on the presence of the WiFi settings item.
         updateLinks();
-        connect(m_manager.get(), &networking::Manager::linksUpdated, this, &Private::updateLinks);
+        connect(m_manager.get(), &Manager::linksUpdated, this, &Private::updateLinks);
     }
 
 public Q_SLOTS:
@@ -93,43 +94,30 @@ public Q_SLOTS:
     {
         // remove all and recreate. we have top 1 now anyway
         if (m_wifiLink) {
-            m_actionGroupMerger->remove(*m_wifiLink);
-            m_menu->removeAll(*m_wifiLink);
-            m_settingsMenu->removeAll(*m_wifiLink);
+            m_actionGroupMerger->remove(m_wifiLink->actionGroup());
+            m_menu->removeAll(m_wifiLink->menuItem());
+            m_settingsMenu->removeAll(m_wifiLink->menuItem());
             m_wifiLink.reset();
         }
 
-        for (auto link : m_manager->links()) {
-            auto wifi_link = std::dynamic_pointer_cast<networking::wifi::Link>(link);
+        for (auto wifi_link : m_manager->wifiLinks()) {
             m_wifiLink = std::make_shared<WifiLinkItem>(wifi_link);
 
-            m_actionGroupMerger->add(*m_wifiLink);
+            m_actionGroupMerger->add(m_wifiLink->actionGroup());
             auto comp = [this](MenuItem::Ptr, MenuItem::Ptr other)
             {
                 return other == m_openWifiSettings->menuItem();
             };
-            m_menu->insert(*m_wifiLink, comp);
-            m_settingsMenu->insert(*m_wifiLink, comp);
+            m_menu->insert(m_wifiLink->menuItem(), comp);
+            m_settingsMenu->insert(m_wifiLink->menuItem(), comp);
 
             // just take the first one
             break;
         }
     }
-
-    void switchActivated(bool state)
-    {
-        m_switch->setEnabled(false);
-        runGMainloop();
-        if (state) {
-            m_manager->enableWifi();
-        } else {
-            m_manager->disableWifi();
-        }
-        m_switch->setEnabled(true);
-    }
 };
 
-WifiSection::WifiSection(std::shared_ptr<connectivity::networking::Manager> manager)
+WifiSection::WifiSection(Manager::Ptr manager)
     : d{new Private(manager)}
 {
 }

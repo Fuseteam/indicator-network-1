@@ -24,15 +24,5 @@ add_library(menumodel_cpp STATIC ${MENUMODEL_CPP_SOURCES})
 target_link_libraries(
     menumodel_cpp
     ${GLIB_LIBRARIES}
-    ${GIO_LIBRARIES}
 )
-
-###########################
-# Installation
-###########################
-
-#install(
-#  TARGETS indicator-network-service
-#  RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/indicator-network/"
-#)
 

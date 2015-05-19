@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef SWITCH_ITEM_H
-#define SWITCH_ITEM_H
+#pragma once
 
 #include <menuitems/item.h>
 #include <menumodel-cpp/menu-item.h>
@@ -58,5 +57,3 @@ private:
     Action::Ptr m_action;
     MenuItem::Ptr m_item;
 };
-
-#endif // SWITCH_ITEM_H

@@ -17,11 +17,10 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WWAN_LINK_ITEM_H
-#define WWAN_LINK_ITEM_H
+#pragma once
 
 #include "menuitems/section.h"
-#include "modem-manager.h"
+#include <nmofono/manager.h>
 
 class WwanLinkItem : public Section
 {
@@ -30,8 +29,7 @@ class WwanLinkItem : public Section
 
 public:
     typedef std::shared_ptr<WwanLinkItem> Ptr;
-    WwanLinkItem() = delete;
-    WwanLinkItem(Modem::Ptr, ModemManager::Ptr modemManager);
+    WwanLinkItem(nmofono::wwan::Modem::Ptr, nmofono::Manager::Ptr manager);
     virtual ~WwanLinkItem();
 
     // from Section
@@ -40,6 +38,3 @@ public:
 
     void showSimIdentifier(bool value);
 };
-
-#endif // WWAN_LINK_ITEM_H
-

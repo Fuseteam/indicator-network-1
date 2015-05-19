@@ -19,7 +19,7 @@
 
 #include <factory.h>
 #include <util/unix-signal-handler.h>
-#include <DBusTypes.h>
+#include <dbus-types.h>
 
 #include <QCoreApplication>
 
@@ -38,6 +38,7 @@ main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
     DBusTypes::registerMetaTypes();
+    Variant::registerMetaTypes();
 
     util::UnixSignalHandler handler([]{
         QCoreApplication::exit(0);
@@ -51,11 +52,17 @@ main(int argc, char **argv)
 
     notify_init(GETTEXT_PACKAGE);
 
+    if (argc == 2 && QString("--print-address") == argv[1])
+    {
+        qDebug() << QDBusConnection::systemBus().baseService();
+    }
+
     int result = 0;
     {
         Factory factory;
-        shared_ptr<MenuBuilder> menu = factory.newMenuBuilder();
-        unique_ptr<ConnectivityService> connectivityService = factory.newConnectivityService();
+        auto menu = factory.newMenuBuilder();
+        auto secretAgent = factory.newSecretAgent();
+        auto connectivityService = factory.newConnectivityService();
 
         QObject::connect(connectivityService.get(), &ConnectivityService::unlockAllModems, menu.get(), &MenuBuilder::unlockAllModems);
         QObject::connect(connectivityService.get(), &ConnectivityService::unlockModem, menu.get(), &MenuBuilder::unlockModem);

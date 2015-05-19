@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ITEM_H
-#define ITEM_H
+#pragma once
 
 #include <menumodel-cpp/action-group-merger.h>
 #include <menumodel-cpp/menu-item.h>
@@ -47,9 +46,6 @@ public:
 
     virtual MenuItem::Ptr menuItem() = 0;
 
-    operator ActionGroup::Ptr() { return actionGroup(); }
-    operator MenuItem::Ptr()    { return menuItem();    }
-
 protected:
 
     ActionGroup::Ptr m_actionGroup;
@@ -57,5 +53,3 @@ protected:
 
 private:
 };
-
-#endif // ITEM_H

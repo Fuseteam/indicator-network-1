@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef QUICK_ACCESS_SECTION_H
-#define QUICK_ACCESS_SECTION_H
+#pragma once
 
 #include <menuitems/section.h>
 #include <menuitems/switch-item.h>
@@ -34,12 +33,9 @@ class QuickAccessSection : public Section
 
 public:
     typedef std::shared_ptr<QuickAccessSection> Ptr;
-    QuickAccessSection() = delete;
-    QuickAccessSection(std::shared_ptr<connectivity::networking::Manager> manager, SwitchItem::Ptr wifiSwitch);
+    QuickAccessSection(nmofono::Manager::Ptr manager, SwitchItem::Ptr wifiSwitch);
     virtual ~QuickAccessSection();
 
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();
 };
-
-#endif

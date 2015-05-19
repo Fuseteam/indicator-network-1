@@ -17,14 +17,12 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_LINK
-#define CONNECTIVITY_NETWORKING_LINK
+#pragma once
 
 #include <memory>
 #include <QObject>
 
-namespace connectivity {
-namespace networking {
+namespace nmofono {
 
 #ifndef CONNECTIVITY_CPP_EXPORT
 #define CONNECTIVITY_CPP_EXPORT __attribute ((visibility ("default")))
@@ -107,7 +105,7 @@ public:
     virtual std::uint32_t characteristics() const = 0;
 
     /// @private
-    Q_PROPERTY(connectivity::networking::Link::Status status READ status NOTIFY statusUpdated)
+    Q_PROPERTY(nmofono::Link::Status status READ status NOTIFY statusUpdated)
     virtual Status status() const = 0;
 
     /// @private
@@ -130,6 +128,3 @@ protected:
 };
 
 }
-}
-
-#endif

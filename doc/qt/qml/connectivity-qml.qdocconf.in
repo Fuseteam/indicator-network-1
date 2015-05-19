@@ -1,0 +1,55 @@
+project = Connectivity
+description = Ubuntu Connectivity QML API
+version = CONNECTIVITY_QT_VERSION_MAJOR@.@CONNECTIVITY_QT_VERSION_MINOR@
+
+outputencoding = UTF-8
+sourceencoding = UTF-8
+
+# Bug in Qt5.2 qdoc, does not support absolute paths
+# just have to hack this over and copy the files to BINARY_DIR
+#sourcedirs = @CMAKE_CURRENT_SOURCE_DIR@/pages @CMAKE_CURRENT_SOURCE_DIR@/qml-api
+#exampledirs = @CMAKE_SOURCE_DIR@/examples/
+#imagedirs = @CMAKE_CURRENT_SOURCE_DIR@/../images
+sourcedirs = pages qml-api
+exampledirs = examples/
+
+sources.fileextensions = "*.qdoc *.qml"
+headers.fileextensions = "*.h"
+examples.fileextensions = "*.js *.qml"
+examples.imageextensions = "*.png *.jpeg *.jpg"
+
+outputdir = @CMAKE_CURRENT_BINARY_DIR@/html
+outputformat = HTML
+
+outputprefixes = QML
+outputprefixes.QML = qml-
+
+HTML.templatedir = @CMAKE_CURRENT_SOURCE_DIR@/
+HTML.nobreadcrumbs = "true"
+		   
+HTML.stylesheets = \
+    css/reset.css \
+    css/qtquick.css \
+    css/base.css \
+    css/scratch.css
+
+HTML.headerstyles = \
+  "<link rel=\"stylesheet\" type=\"text/css\" href=\"style/reset.css\" />\n" \
+  "<link rel=\"stylesheet\" type=\"text/css\" href=\"style/qtquick.css\" />\n" \
+  "<link rel=\"stylesheet\" type=\"text/css\" href=\"style/base.css\" />\n" \
+  "<link rel=\"stylesheet\" type=\"text/css\" href=\"style/scratch.css\" />\n"
+
+HTML.postheader = \
+    "   <div class=\"wrapper\">\n" \
+    "   <div class=\"main-content\">\n" 
+
+HTML.footer = \
+    "</div></div>\n" \
+    "<div class=\"shadow\"></div>\n" \
+    "<footer>\n" \
+    "	<div>\n" \
+    "		<nav role=\"navigation\" class=\"clearfix\">\n" \
+    "		</nav>\n" \
+    "		<p>&copy; 2014 Canonical Ltd. Ubuntu and Canonical are registered trademarks of Canonical Ltd.</p>\n" \
+    "	</div>\n" \
+    "</footer>\n"

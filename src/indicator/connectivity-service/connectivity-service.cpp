@@ -20,9 +20,9 @@
 #include <connectivity-service/connectivity-service.h>
 #include <NetworkingStatusAdaptor.h>
 #include <NetworkingStatusPrivateAdaptor.h>
-#include <DBusTypes.h>
+#include <dbus-types.h>
 
-namespace networking = connectivity::networking;
+using namespace nmofono;
 using namespace std;
 
 namespace connectivity_service
@@ -36,7 +36,7 @@ public:
 
     QDBusConnection m_connection;
 
-    shared_ptr<networking::Manager> m_manager;
+    Manager::Ptr m_manager;
 
     shared_ptr<PrivateService> m_privateService;
 
@@ -69,6 +69,27 @@ public:
     }
 
 public Q_SLOTS:
+    void flightModeUpdated()
+    {
+        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "FlightMode" });
+    }
+
+    void wifiEnabledUpdated()
+    {
+        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "WifiEnabled" });
+    }
+
+    void unstoppableOperationHappeningUpdated()
+    {
+        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "UnstoppableOperationHappening" });
+    }
+
     void updateNetworkingStatus()
     {
         QStringList changed;
@@ -78,13 +99,13 @@ public Q_SLOTS:
 
         switch (m_manager->status())
         {
-            case networking::Manager::NetworkingStatus::offline:
+            case Manager::NetworkingStatus::offline:
                 m_status = "offline";
                 break;
-            case networking::Manager::NetworkingStatus::connecting:
+            case Manager::NetworkingStatus::connecting:
                 m_status = "connecting";
                 break;
-            case networking::Manager::NetworkingStatus::online:
+            case Manager::NetworkingStatus::online:
                 m_status = "online";
         }
         if (old_status != m_status)
@@ -95,8 +116,9 @@ public Q_SLOTS:
         QStringList limitations;
         auto characteristics = m_manager->characteristics();
         if ((characteristics
-                & networking::Link::Characteristics::is_bandwidth_limited) != 0)
+                & Link::Characteristics::is_bandwidth_limited) != 0)
         {
+            // FIXME KNOWN TYPO
             limitations.push_back("bandwith");
         }
         m_limitations = limitations;
@@ -114,7 +136,7 @@ public Q_SLOTS:
     }
 };
 
-ConnectivityService::ConnectivityService(shared_ptr<networking::Manager> manager, const QDBusConnection& connection)
+ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QDBusConnection& connection)
     : d{new Private(*this, connection)}
 {
     d->m_manager = manager;
@@ -123,8 +145,11 @@ ConnectivityService::ConnectivityService(shared_ptr<networking::Manager> manager
     // Memory is managed by Qt parent ownership
     new NetworkingStatusAdaptor(this);
 
-    connect(d->m_manager.get(), &networking::Manager::characteristicsUpdated, d.get(), &Private::updateNetworkingStatus);
-    connect(d->m_manager.get(), &networking::Manager::statusUpdated, d.get(), &Private::updateNetworkingStatus);
+    connect(d->m_manager.get(), &Manager::characteristicsUpdated, d.get(), &Private::updateNetworkingStatus);
+    connect(d->m_manager.get(), &Manager::statusUpdated, d.get(), &Private::updateNetworkingStatus);
+    connect(d->m_manager.get(), &Manager::flightModeUpdated, d.get(), &Private::flightModeUpdated);
+    connect(d->m_manager.get(), &Manager::wifiEnabledUpdated, d.get(), &Private::wifiEnabledUpdated);
+    connect(d->m_manager.get(), &Manager::unstoppableOperationHappeningUpdated, d.get(), &Private::unstoppableOperationHappeningUpdated);
 
     d->updateNetworkingStatus();
 
@@ -160,6 +185,21 @@ QString ConnectivityService::status() const
     return d->m_status;
 }
 
+bool ConnectivityService::wifiEnabled() const
+{
+    return d->m_manager->wifiEnabled();
+}
+
+bool ConnectivityService::flightMode() const
+{
+    return (d->m_manager->flightMode() == Manager::FlightModeStatus::on);
+}
+
+bool ConnectivityService::unstoppableOperationHappening() const
+{
+    return d->m_manager->unstoppableOperationHappening();
+}
+
 PrivateService::PrivateService(ConnectivityService& parent) :
         p(parent)
 {
@@ -175,6 +215,16 @@ void PrivateService::UnlockAllModems()
 void PrivateService::UnlockModem(const QString &modem)
 {
     Q_EMIT p.unlockModem(modem);
+}
+
+void PrivateService::SetFlightMode(bool enabled)
+{
+    p.d->m_manager->setFlightMode(enabled);
+}
+
+void PrivateService::SetWifiEnabled(bool enabled)
+{
+    p.d->m_manager->setWifiEnabled(enabled);
 }
 
 }

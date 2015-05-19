@@ -16,12 +16,12 @@
  * Authored by: Pete Woods <pete.woods@canonical.com>
  */
 
+#pragma once
+
 #include <memory>
 #include <string>
 
 #include <gio/gio.h>
-
-#pragma once
 
 namespace menuharness
 {

@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ACCESS_POINT_ITEM_H
-#define ACCESS_POINT_ITEM_H
+#pragma once
 
 #include <nmofono/wifi/access-point.h>
 #include "item.h"
@@ -33,8 +32,7 @@ class AccessPointItem : public Item
 public:
     typedef std::shared_ptr<AccessPointItem> Ptr;
 
-    AccessPointItem() = delete;
-    explicit AccessPointItem(connectivity::networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false);
+    explicit AccessPointItem(nmofono::wifi::AccessPoint::Ptr accessPoint, bool isActive = false);
     virtual ~AccessPointItem();
 
     void setActive(bool value);
@@ -44,5 +42,3 @@ public:
 Q_SIGNALS:
     void activated();
 };
-
-#endif // ACCESS_POINT_ITEM_H

@@ -20,6 +20,7 @@
 #include "action-group-exporter.h"
 
 #include <unity/util/ResourcePtr.h>
+#include <QDebug>
 
 using namespace std;
 namespace util = unity::util;
@@ -39,6 +40,7 @@ ActionGroupExporter::ActionGroupExporter(SessionBus::Ptr sessionBus,
                                                        path.c_str(),
                                                        G_ACTION_GROUP(m_gSimpleActionGroup.get()),
                                                        &error);
+
     if (error) {
         if (error->domain != G_IO_ERROR || error->code != G_IO_ERROR_CANCELLED) {
             std::cerr << "Error exporting action group: " << error->message;
@@ -47,7 +49,6 @@ ActionGroupExporter::ActionGroupExporter(SessionBus::Ptr sessionBus,
         /// @todo throw something
         return;
     }
-
 
     for (auto action : actionGroup->actions()) {
         g_action_map_add_action(G_ACTION_MAP(m_gSimpleActionGroup.get()), action->gaction().get());
@@ -85,7 +86,7 @@ void ActionGroupExporter::actionRemoved(Action::Ptr action)
 
 void ActionGroupExporter::waitForFirstSignalEmission()
 {
-    shared_ptr<GMainLoop> loop(g_main_loop_new(nullptr, false), &g_main_loop_unref);
+    shared_ptr<GMainLoop> loop(g_main_loop_new(nullptr, FALSE), &g_main_loop_unref);
 
     /* Our two exit criteria */
     util::ResourcePtr<gulong,

@@ -1,0 +1,35 @@
+/*!
+\page networking-status Networking Status
+
+Applications needing to access the overall system networking status must access the
+ubuntu::connectivity::NetworkingStatus class. The class has properties
+for the networking status and connection limitations of the system networking.
+
+Accessing the networking status from confined applications requires
+the <i>connectivity</i> policy group.
+
+\section Setup
+
+Manager is accessed by including the appropriate header:
+\snippet example_networking_status.cpp include
+
+and then creating an instance of the NetworkingStatus:
+\snippet example_networking_status.cpp create networkingstatus
+
+\section sec_networking_status Networking Status
+
+\subsection sec_networking_status_status Status
+
+The status of the system networking can be accessed through the ubuntu::connectivity::NetworkingStatus::status property:
+\snippet example_networking_status.cpp status
+
+\subsection sec_networking_status_limitations Limitations
+
+The limitations can be accessed through the ubuntu::connectivity::NetworkingStatus::limitations property:
+\snippet example_networking_status.cpp limitations
+
+---
+The complete example (found in <i>examples/example_networking_status.cpp</i>):
+\include example_networking_status.cpp
+
+*/

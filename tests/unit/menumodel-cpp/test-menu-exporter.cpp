@@ -18,6 +18,7 @@
  */
 
 #include <cassert>
+#include <dbus-types.h>
 #include <menumodel-cpp/action.h>
 #include <menumodel-cpp/action-group-exporter.h>
 #include <menumodel-cpp/action-group.h>
@@ -43,7 +44,9 @@ protected:
     void
     SetUp ()
     {
+        Variant::registerMetaTypes();
         sessionBus = make_shared<SessionBus>();
+        g_dbus_connection_set_exit_on_close(sessionBus->bus().get(), FALSE);
         actionGroup = make_shared<ActionGroup>();
         menu = make_shared<Menu>();
     }
@@ -132,11 +135,9 @@ TEST_F(TestMenuExporter, ActionActivation)
 
     menuModel.activate(0);
 
-    signalSpy.wait();
-    ASSERT_FALSE(signalSpy.isEmpty());
-
-    // FIXME restore assertion
-//    ASSERT_EQ(QString("activated"), signalObject.objectName());
+    ASSERT_TRUE(signalSpy.wait());
+    auto v = qvariant_cast<Variant>(signalSpy.first().first());
+    EXPECT_EQ("null", v.to_string());
 }
 
 TEST_F(TestMenuExporter, ParameterizedActionActivation)
@@ -167,11 +168,10 @@ TEST_F(TestMenuExporter, ParameterizedActionActivation)
 
     menuModel.activate(0, "hello");
 
-    signalSpy.wait();
-    ASSERT_FALSE(signalSpy.isEmpty());
+    ASSERT_TRUE(signalSpy.wait());
 
-    // FIXME restore assertion
-//    ASSERT_EQ("hello", result);
+    auto v = qvariant_cast<Variant>(signalSpy.first().first());
+    EXPECT_EQ("hello", v.as<string>());
 }
 
 } // namespace
