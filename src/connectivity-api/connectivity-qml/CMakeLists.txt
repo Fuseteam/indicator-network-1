@@ -11,18 +11,19 @@ set(CONNECTIVITY_QML_SRC
   plugin.cpp
 )
 
-add_library(connectivity-qml MODULE
+add_library(connectivity-qml SHARED
   ${CONNECTIVITY_QML_SRC}
 )
+target_link_libraries(
+  connectivity-qml
+  ${CONNECTIVITY_QT_LIB_TARGET}
+)
+
 
 qt5_use_modules(connectivity-qml
   Qml
 )
 
-target_link_libraries(
-  connectivity-qml
-  connectivity-qt
-)
 
 add_qmlplugin(
   Ubuntu.Connectivity

@@ -96,6 +96,10 @@ configure_file(
   "config.h"
 )
 
+set(CONNECTIVITY_QT_VERSION_MAJOR 1)
+set(CONNECTIVITY_QT_VERSION_MINOR 0)
+set(CONNECTIVITY_QT_LIB_TARGET connectivity-qt${CONNECTIVITY_QT_VERSION_MAJOR})
+
 add_subdirectory(data)
 add_subdirectory(src)
 

@@ -1,0 +1,10 @@
+libdir=@libdir@
+includedir=@includedir@
+
+Cflags: -I${includedir}/
+Requires: Qt5DBus
+Libs: @ABSOLUTE_SO_FILE@
+
+Name: connectivity-qt1
+Description: Ubuntu Connectivity API
+Version: @CONNECTIVITY_QT_VERSION_MAJOR@.@CONNECTIVITY_QT_VERSION_MINOR@

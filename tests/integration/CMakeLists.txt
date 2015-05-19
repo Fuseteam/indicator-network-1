@@ -29,7 +29,7 @@ target_link_libraries(
     integration-tests
     test-utils
     menuharness
-    connectivity-qt
+    ${CONNECTIVITY_QT_LIB_TARGET}
     ${QTDBUSMOCK_LDFLAGS}
     ${QTDBUSTEST_LDFLAGS}
     ${GTEST_LIBRARIES}
