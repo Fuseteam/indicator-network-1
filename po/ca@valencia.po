@@ -6,11 +6,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-07 20:43+0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-19 18:21+0300\n"
 "PO-Revision-Date: 2014-10-19 22:27+0000\n"
 "Last-Translator: David Planella <david.planella@ubuntu.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,59 +19,65 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-10-20 07:17+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: src/indicator/quick-access-section.cpp:48
+#: ../src/indicator/sim-unlock-dialog.cpp:317
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "Manca un intent"
+msgstr[1] "Manquen %d intents"
+
+#: ../src/indicator/agent/SecretRequest.cpp:81
+msgid "Cancel"
+msgstr "Cancel·la"
+
+#: ../src/indicator/sections/wwan-section.cpp:96
+msgid "Cellular settings…"
+msgstr "Paràmetres de la xarxa mòbil..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:336
+msgid "Confirm new %{1} PIN"
+msgstr "Confirmeu el PIN nou per a %{1}"
+
+#: ../src/indicator/agent/SecretRequest.cpp:80
+msgid "Connect"
+msgstr "Connecta"
+
+#: ../src/indicator/agent/SecretRequest.cpp:67
+msgid "Connect to “%1”"
+msgstr "Connecta a “%1”"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+msgid "Denied"
+msgstr "Denegat"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:295
+msgid "Enter %{1} PIN"
+msgstr "Introduïu el codi PIN de %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:303
+msgid "Enter PUK code"
+msgstr "Entre el codi PUK"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:307
+msgid "Enter PUK code for %{1}"
+msgstr "Introduïu el codi PUK per a %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:328
+msgid "Enter new %{1} PIN"
+msgstr "Introduïu el PIN nou per a %{1}"
+
+#: ../src/indicator/sections/quick-access-section.cpp:83
 msgid "Flight Mode"
 msgstr "Mode d'avió"
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: src/indicator/root-state.cpp:296
-msgid "Network"
-msgstr "Xarxa"
-
-#: src/indicator/sim-unlock-dialog.cpp:115
-msgid "Sorry, incorrect PIN"
-msgstr "El codi PIN no és correcte"
-
-#: src/indicator/sim-unlock-dialog.cpp:136
-msgid "Sorry, incorrect PUK"
-msgstr "El codi PUK no és correcte"
-
-#: src/indicator/sim-unlock-dialog.cpp:151
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "El codi PIN per a %{1} és incorrecte"
-
-#: src/indicator/sim-unlock-dialog.cpp:156
-#: src/indicator/sim-unlock-dialog.cpp:185
-msgid "This will be your last attempt."
-msgstr "Este serà el darrer intent."
-
-#: src/indicator/sim-unlock-dialog.cpp:158
+#: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
 "Si introduïu el codi PIN per a  %{1} de manera incorrecta, vos caldrà "
 "utilitzar el codi PUK per desbloquejar la targeta SIM."
 
-#: src/indicator/sim-unlock-dialog.cpp:168
-msgid "Sorry, your %{1} is now blocked."
-msgstr "S'ha bloquejat %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:173
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr "Introduïu el codi PUK per desbloquejar la targeta SIM."
-
-#: src/indicator/sim-unlock-dialog.cpp:175
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-"Pot ser que hàgeu de contactar el vostre proveïdor de xarxa mòbil per "
-"obtindre el codi PUK."
-
-#: src/indicator/sim-unlock-dialog.cpp:183
-#: src/indicator/sim-unlock-dialog.cpp:197
-msgid "Sorry, incorrect PUK."
-msgstr "El codi PUK és incorrecte."
-
-#: src/indicator/sim-unlock-dialog.cpp:187
+#: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
@@ -78,141 +85,128 @@ msgstr ""
 "Si introduïu el codi PUK de manera incorrecta, es bloquejarà la targeta SIM "
 "i caldrà reemplaçar-la."
 
-#: src/indicator/sim-unlock-dialog.cpp:189
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:349
+msgid "Network"
+msgstr "Xarxa"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:92
+msgid "No SIM"
+msgstr "Sense SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:140
+msgid "No Signal"
+msgstr "Sense senyal"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:146
+#: ../src/indicator/menuitems/wwan-link-item.cpp:152
+msgid "Offline"
+msgstr "Fora de línia"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "Una altra xarxa..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:375
+msgid "PIN codes did not match."
+msgstr "Els codis PIN no són iguals."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:182
 msgid "Please contact your network provider."
 msgstr "Contacteu el proveïdor mòbil."
 
-#: src/indicator/sim-unlock-dialog.cpp:199
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Contacteu el vostre proveïdor de serveis."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Introduïu el codi PUK per desbloquejar la targeta SIM."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:98
+msgid "SIM Error"
+msgstr "Error de la SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM blocada"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:129
+msgid "Searching"
+msgstr "S'està cercant"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "El codi PIN per a %{1} és incorrecte"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:220
+msgid "Sorry, incorrect PIN"
+msgstr "El codi PIN no és correcte"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:232
+msgid "Sorry, incorrect PUK"
+msgstr "El codi PUK no és correcte"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "El codi PUK és incorrecte."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "S'ha bloquejat %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Este serà el darrer intent."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:121
+msgid "Unknown"
+msgstr "Desconegut"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:117
+msgid "Unregistered"
+msgstr "No registrat"
+
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:72
+msgid "WPA"
+msgstr "WPA"
+
+#: ../src/indicator/sections/wifi-section.cpp:58
+msgid "Wi-Fi"
+msgstr "Sense fil"
+
+#: ../src/indicator/sections/wifi-section.cpp:72
+msgid "Wi-Fi settings…"
+msgstr "Paràmetres del sense fil..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+"Pot ser que hàgeu de contactar el vostre proveïdor de xarxa mòbil per "
+"obtindre el codi PUK."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
 msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
 "La targeta SIM està bloquejada permanentment i requereix ésser reemplaçada."
 
-#: src/indicator/sim-unlock-dialog.cpp:201
-msgid "Please contact your service provider."
-msgstr "Contacteu el vostre proveïdor de serveis."
+#~ msgid "Confirm new PIN code"
+#~ msgstr "Confirme el nou codi PIN"
 
-#: src/indicator/sim-unlock-dialog.cpp:265
-msgid "Enter %{1} PIN"
-msgstr "Introduïu el codi PIN de %{1}"
+#~ msgid "Enter SIM PIN"
+#~ msgstr "Introduïu el PIN de la tarjeta SIM"
 
-#: src/indicator/sim-unlock-dialog.cpp:272
-msgid "Enter PUK code"
-msgstr "Entre el codi PUK"
+#~ msgid "Enter new PIN code"
+#~ msgstr "Entre un nou codi PIN"
 
-#: src/indicator/sim-unlock-dialog.cpp:274
-msgid "Enter PUK code for %{1}"
-msgstr "Introduïu el codi PUK per a %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:282
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] "Manca un intent"
-msgstr[1] "Manquen %d intents"
-
-#: src/indicator/sim-unlock-dialog.cpp:293
-msgid "Enter new %{1} PIN"
-msgstr "Introduïu el PIN nou per a %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:301
-msgid "Confirm new %{1} PIN"
-msgstr "Confirmeu el PIN nou per a %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:340
-#: src/indicator/sim-unlock-dialog.cpp:515
-msgid "PIN codes did not match."
-msgstr "Els codis PIN no són iguals."
-
-#: src/indicator/sim-unlock-dialog.cpp:495
-#: src/indicator/sim-unlock-dialog.cpp:523
-msgid "Enter SIM PIN"
-msgstr "Introduïu el PIN de la tarjeta SIM"
-
-#: src/indicator/sim-unlock-dialog.cpp:506
-#: src/indicator/sim-unlock-dialog.cpp:516
-msgid "Enter new PIN code"
-msgstr "Entre un nou codi PIN"
-
-#: src/indicator/sim-unlock-dialog.cpp:510
-msgid "Confirm new PIN code"
-msgstr "Confirme el nou codi PIN"
-
-#: src/indicator/sim-unlock-dialog.cpp:522
-msgid "Failed to change PIN."
-msgstr "No s'ha pogut canviar el PIN."
-
-#: src/indicator/wifi-link-item.h:88
-msgid "Wi-Fi"
-msgstr "Sense fil"
-
-#: src/indicator/wifi-link-item.h:152
-msgid "Other network…"
-msgstr "Una altra xarxa..."
-
-#: src/indicator/wifi-section.cpp:60
-msgid "Wi-Fi settings…"
-msgstr "Paràmetres del sense fil..."
-
-#: src/indicator/wwan-link-item.cpp:87
-msgid "No SIM"
-msgstr "Sense SIM"
-
-#: src/indicator/wwan-link-item.cpp:93
-msgid "SIM Error"
-msgstr "Error de la SIM"
-
-#: src/indicator/wwan-link-item.cpp:100
-msgid "SIM Locked"
-msgstr "SIM blocada"
-
-#: src/indicator/wwan-link-item.cpp:112
-msgid "Unregistered"
-msgstr "No registrat"
-
-#: src/indicator/wwan-link-item.cpp:116
-msgid "Unknown"
-msgstr "Desconegut"
-
-#: src/indicator/wwan-link-item.cpp:120
-msgid "Denied"
-msgstr "Denegat"
-
-#: src/indicator/wwan-link-item.cpp:124
-msgid "Searching"
-msgstr "S'està cercant"
-
-#: src/indicator/wwan-link-item.cpp:135
-msgid "No Signal"
-msgstr "Sense senyal"
-
-#: src/indicator/wwan-link-item.cpp:141
-msgid "Offline"
-msgstr "Fora de línia"
-
-#: src/indicator/wwan-section.cpp:79
-msgid "Cellular settings…"
-msgstr "Paràmetres de la xarxa mòbil..."
-
-#: src/secret-agent/SecretRequest.cpp:62
-#, qt-format
-msgid "Connect to “%1”"
-msgstr "Connecta a “%1”"
-
-#: src/secret-agent/SecretRequest.cpp:67
-msgid "WPA"
-msgstr "WPA"
-
-#: src/secret-agent/SecretRequest.cpp:69
-msgid "WEP"
-msgstr "WEP"
-
-#: src/secret-agent/SecretRequest.cpp:75
-msgid "Connect"
-msgstr "Connecta"
-
-#: src/secret-agent/SecretRequest.cpp:76
-msgid "Cancel"
-msgstr "Cancel·la"
+#~ msgid "Failed to change PIN."
+#~ msgstr "No s'ha pogut canviar el PIN."
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "Desbloca la SIM..."

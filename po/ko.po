@@ -6,11 +6,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-07 20:43+0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-19 18:21+0300\n"
 "PO-Revision-Date: 2014-08-18 23:46+0000\n"
 "Last-Translator: MinSik CHO <Unknown>\n"
 "Language-Team: Korean <ko@li.org>\n"
+"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,231 +19,226 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: src/indicator/quick-access-section.cpp:48
-msgid "Flight Mode"
-msgstr "비행 중 모드"
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: src/indicator/root-state.cpp:296
-msgid "Network"
-msgstr "네트워크"
-
-#: src/indicator/sim-unlock-dialog.cpp:115
-msgid "Sorry, incorrect PIN"
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:136
-msgid "Sorry, incorrect PUK"
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:151
-msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:156
-#: src/indicator/sim-unlock-dialog.cpp:185
-msgid "This will be your last attempt."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:158
-msgid ""
-"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:168
-msgid "Sorry, your %{1} is now blocked."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:173
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:175
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:183
-#: src/indicator/sim-unlock-dialog.cpp:197
-msgid "Sorry, incorrect PUK."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:187
-msgid ""
-"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
-"replacement."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:189
-msgid "Please contact your network provider."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:199
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:201
-msgid "Please contact your service provider."
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:265
-msgid "Enter %{1} PIN"
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:272
-msgid "Enter PUK code"
-msgstr "SIM 카드의 PUK 코드를 입력하세요."
-
-#: src/indicator/sim-unlock-dialog.cpp:274
-msgid "Enter PUK code for %{1}"
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:282
+#: ../src/indicator/sim-unlock-dialog.cpp:317
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/indicator/sim-unlock-dialog.cpp:293
-msgid "Enter new %{1} PIN"
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:301
-msgid "Confirm new %{1} PIN"
-msgstr ""
-
-#: src/indicator/sim-unlock-dialog.cpp:340
-#: src/indicator/sim-unlock-dialog.cpp:515
-msgid "PIN codes did not match."
-msgstr "PIN 코드가 일치하지 않습니다."
-
-#: src/indicator/sim-unlock-dialog.cpp:495
-#: src/indicator/sim-unlock-dialog.cpp:523
-msgid "Enter SIM PIN"
-msgstr "심 카드의 개인 식별 번호 입력"
-
-#: src/indicator/sim-unlock-dialog.cpp:506
-#: src/indicator/sim-unlock-dialog.cpp:516
-msgid "Enter new PIN code"
-msgstr "새로운 PIN 코드를 입력하세요."
-
-#: src/indicator/sim-unlock-dialog.cpp:510
-msgid "Confirm new PIN code"
-msgstr "새로운 PIN 코드를 확인하세요."
-
-#: src/indicator/sim-unlock-dialog.cpp:522
-msgid "Failed to change PIN."
-msgstr "PIN 코드 수정에 실패하였습니다."
-
-#: src/indicator/wifi-link-item.h:88
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#: src/indicator/wifi-link-item.h:152
-msgid "Other network…"
-msgstr "다른 네트워크..."
-
-#: src/indicator/wifi-section.cpp:60
-msgid "Wi-Fi settings…"
-msgstr "Wi-Fi 설정..."
-
-#: src/indicator/wwan-link-item.cpp:87
-msgid "No SIM"
-msgstr "SIM 카드 없음"
-
-#: src/indicator/wwan-link-item.cpp:93
-msgid "SIM Error"
-msgstr "SIM 카드 오류"
-
-#: src/indicator/wwan-link-item.cpp:100
-msgid "SIM Locked"
-msgstr "SIM 카드 잠김"
-
-#: src/indicator/wwan-link-item.cpp:112
-msgid "Unregistered"
-msgstr "등록 해제했습니다"
-
-#: src/indicator/wwan-link-item.cpp:116
-msgid "Unknown"
-msgstr "알 수 없음"
-
-#: src/indicator/wwan-link-item.cpp:120
-msgid "Denied"
-msgstr "무시"
-
-#: src/indicator/wwan-link-item.cpp:124
-msgid "Searching"
-msgstr "검색 중"
-
-#: src/indicator/wwan-link-item.cpp:135
-msgid "No Signal"
-msgstr "신호가 없음"
-
-#: src/indicator/wwan-link-item.cpp:141
-msgid "Offline"
-msgstr "오프라인"
-
-#: src/indicator/wwan-section.cpp:79
-msgid "Cellular settings…"
-msgstr "셀룰러 네트워크 설정..."
-
-#: src/secret-agent/SecretRequest.cpp:62
-#, qt-format
-msgid "Connect to “%1”"
-msgstr "\"%1\"에 연결하기"
-
-#: src/secret-agent/SecretRequest.cpp:67
-msgid "WPA"
-msgstr "WPA"
-
-#: src/secret-agent/SecretRequest.cpp:69
-msgid "WEP"
-msgstr "WEP"
-
-#: src/secret-agent/SecretRequest.cpp:75
-msgid "Connect"
-msgstr "접속"
-
-#: src/secret-agent/SecretRequest.cpp:76
+#: ../src/indicator/agent/SecretRequest.cpp:81
 msgid "Cancel"
 msgstr "취소"
 
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "이런!<br>PUK 코드를 잘못 입력하셨습니다."
+#: ../src/indicator/sections/wwan-section.cpp:96
+msgid "Cellular settings…"
+msgstr "셀룰러 네트워크 설정..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:336
+msgid "Confirm new %{1} PIN"
+msgstr ""
+
+#: ../src/indicator/agent/SecretRequest.cpp:80
+msgid "Connect"
+msgstr "접속"
+
+#: ../src/indicator/agent/SecretRequest.cpp:67
+msgid "Connect to “%1”"
+msgstr "\"%1\"에 연결하기"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+msgid "Denied"
+msgstr "무시"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:295
+msgid "Enter %{1} PIN"
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:303
+msgid "Enter PUK code"
+msgstr "SIM 카드의 PUK 코드를 입력하세요."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:307
+msgid "Enter PUK code for %{1}"
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:328
+msgid "Enter new %{1} PIN"
+msgstr ""
+
+#: ../src/indicator/sections/quick-access-section.cpp:83
+msgid "Flight Mode"
+msgstr "비행 중 모드"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:151
+msgid ""
+"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:180
+msgid ""
+"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
+"replacement."
+msgstr ""
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:349
+msgid "Network"
+msgstr "네트워크"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:92
+msgid "No SIM"
+msgstr "SIM 카드 없음"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:140
+msgid "No Signal"
+msgstr "신호가 없음"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:146
+#: ../src/indicator/menuitems/wwan-link-item.cpp:152
+msgid "Offline"
+msgstr "오프라인"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "다른 네트워크..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:375
+msgid "PIN codes did not match."
+msgstr "PIN 코드가 일치하지 않습니다."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr ""
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:98
+msgid "SIM Error"
+msgstr "SIM 카드 오류"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM 카드 잠김"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:129
+msgid "Searching"
+msgstr "검색 중"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:220
+msgid "Sorry, incorrect PIN"
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:232
+msgid "Sorry, incorrect PUK"
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr ""
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:121
+msgid "Unknown"
+msgstr "알 수 없음"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:117
+msgid "Unregistered"
+msgstr "등록 해제했습니다"
+
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:72
+msgid "WPA"
+msgstr "WPA"
+
+#: ../src/indicator/sections/wifi-section.cpp:58
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: ../src/indicator/sections/wifi-section.cpp:72
+msgid "Wi-Fi settings…"
+msgstr "Wi-Fi 설정..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr ""
+
+#~ msgid "Attempt %d of %d"
+#~ msgstr "%d 번째 시도 (총 %d 번 기회 중)"
+
+#~ msgid "Confirm new PIN code"
+#~ msgstr "새로운 PIN 코드를 확인하세요."
+
+#~ msgid "Enter SIM PIN"
+#~ msgstr "심 카드의 개인 식별 번호 입력"
+
+#~ msgid "Enter new PIN code"
+#~ msgstr "새로운 PIN 코드를 입력하세요."
+
+#~ msgid "Failed to change PIN."
+#~ msgstr "PIN 코드 수정에 실패하였습니다."
 
 #~ msgid "Oops!<br>Incorrect PIN entered."
 #~ msgstr "이런!<br>PIN 코드를 잘못 입력하셨습니다."
 
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "%d 번째 시도 (총 %d 번 기회 중)"
+#~ msgid "Oops!<br>Incorrect PUK entered."
+#~ msgstr "이런!<br>PUK 코드를 잘못 입력하셨습니다."
+
+#~ msgid ""
+#~ "This will be the last attempt.<br><br>If the PUK code is entered "
+#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact "
+#~ "your network provider."
+#~ msgstr ""
+#~ "이번 기회가 마지막 시도입니다. <br><br>심카드 PUK 번호를 잘못 입력하시면 "
+#~ "SIM 카드를 교체하셔야합니다. <br><br>네트워크 사업자를 연락하세요."
+
+#~ msgid ""
+#~ "This will be the last attempt.<br><br>If the SIM PIN is entered "
+#~ "incorrectly, your SIM will be blocked and would require the PUK Code to "
+#~ "unlock."
+#~ msgstr ""
+#~ "이번 기회가 마지막 시도입니다. <br><br>심카드 PIN 번호를 잘못 입력하시면 "
+#~ "심카드의 사용이 제한되고 해제하기 위해 PUK코드를 입력해야 합니다."
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "SIM 카드 잠금 해제..."
 
 #~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr "SIM 카드가 사용 불가 상태로 변경되어 새로운 카드로 교체해야 합니다. <br><br>네트워크 사업자를 연락하세요."
+#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You "
+#~ "may contact your network provider for PUK Code."
+#~ msgstr ""
+#~ "심카드가 잠겼습니다. <br><br>해제하려면 PUK 코드를 입력하세요 <br><br>PUK "
+#~ "코드는 네트워크 사업자로부터 얻을 수 있습니다."
 
 #~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
+#~ "Your SIM is now permanently blocked and needs to be replaced."
+#~ "<br><br>Please contact your network provider."
 #~ msgstr ""
-#~ "이번 기회가 마지막 시도입니다. <br><br>심카드 PIN 번호를 잘못 입력하시면 심카드의 사용이 제한되고 해제하기 위해 PUK코드를 "
-#~ "입력해야 합니다."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "이번 기회가 마지막 시도입니다. <br><br>심카드 PUK 번호를 잘못 입력하시면 SIM 카드를 교체하셔야합니다. "
+#~ "SIM 카드가 사용 불가 상태로 변경되어 새로운 카드로 교체해야 합니다. "
 #~ "<br><br>네트워크 사업자를 연락하세요."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "심카드가 잠겼습니다. <br><br>해제하려면 PUK 코드를 입력하세요 <br><br>PUK 코드는 네트워크 사업자로부터 얻을 수 "
-#~ "있습니다."

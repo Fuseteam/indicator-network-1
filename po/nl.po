@@ -6,11 +6,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-07 20:43+0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-19 18:21+0300\n"
 "PO-Revision-Date: 2014-10-08 17:50+0000\n"
 "Last-Translator: rob <linuxned@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,58 +19,65 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: src/indicator/quick-access-section.cpp:48
+#: ../src/indicator/sim-unlock-dialog.cpp:317
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "Nog 1 poging over"
+msgstr[1] "Nog %d pogingen over"
+
+#: ../src/indicator/agent/SecretRequest.cpp:81
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: ../src/indicator/sections/wwan-section.cpp:96
+msgid "Cellular settings…"
+msgstr "Mobielinstellingen…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:336
+msgid "Confirm new %{1} PIN"
+msgstr "Bevestig de nieuwe %{1}-pincode"
+
+#: ../src/indicator/agent/SecretRequest.cpp:80
+msgid "Connect"
+msgstr "Verbind"
+
+#: ../src/indicator/agent/SecretRequest.cpp:67
+msgid "Connect to “%1”"
+msgstr "Verbinding maken met “%1”"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+msgid "Denied"
+msgstr "Geweigerd"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:295
+msgid "Enter %{1} PIN"
+msgstr "Voer de %{1}-pincode in"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:303
+msgid "Enter PUK code"
+msgstr "Voer de PUK-code in"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:307
+msgid "Enter PUK code for %{1}"
+msgstr "Voer de PUK-code in voor %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:328
+msgid "Enter new %{1} PIN"
+msgstr "Voer de nieuwe %{1}-pincode in"
+
+#: ../src/indicator/sections/quick-access-section.cpp:83
 msgid "Flight Mode"
 msgstr "Vliegtuigstand"
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: src/indicator/root-state.cpp:296
-msgid "Network"
-msgstr "Netwerk"
-
-#: src/indicator/sim-unlock-dialog.cpp:115
-msgid "Sorry, incorrect PIN"
-msgstr "Sorry, onjuiste pincode"
-
-#: src/indicator/sim-unlock-dialog.cpp:136
-msgid "Sorry, incorrect PUK"
-msgstr "Sorry, onjuiste PUK-code"
-
-#: src/indicator/sim-unlock-dialog.cpp:151
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "Sorry, onjuiste %{1}-pincode."
-
-#: src/indicator/sim-unlock-dialog.cpp:156
-#: src/indicator/sim-unlock-dialog.cpp:185
-msgid "This will be your last attempt."
-msgstr "Dit zal uw laatste poging worden."
-
-#: src/indicator/sim-unlock-dialog.cpp:158
+#: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
 "Indien de %{1}-pincode nu opnieuw onjuist wordt ingevoerd, heeft u de PUK-"
 "code nodig om de simkaart te deblokkeren."
 
-#: src/indicator/sim-unlock-dialog.cpp:168
-msgid "Sorry, your %{1} is now blocked."
-msgstr "Sorry, uw %{1} is nu geblokkeerd."
-
-#: src/indicator/sim-unlock-dialog.cpp:173
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr "Voer a.u.b. de PUK-code in om de simkaart te deblokkeren."
-
-#: src/indicator/sim-unlock-dialog.cpp:175
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-"U kunt eventueel contact opnemen met uw telefoonprovider voor de PUK-code."
-
-#: src/indicator/sim-unlock-dialog.cpp:183
-#: src/indicator/sim-unlock-dialog.cpp:197
-msgid "Sorry, incorrect PUK."
-msgstr "Sorry, onjuiste PUK-code."
-
-#: src/indicator/sim-unlock-dialog.cpp:187
+#: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
@@ -77,183 +85,168 @@ msgstr ""
 "Indien de PUK-code nu opnieuw onjuist wordt ingevoerd, zal uw simkaart "
 "definitief geblokkeerd worden en dient u deze te vervangen."
 
-#: src/indicator/sim-unlock-dialog.cpp:189
-msgid "Please contact your network provider."
-msgstr "Neem a.u.b. contact op met uw telefoonprovider."
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:349
+msgid "Network"
+msgstr "Netwerk"
 
-#: src/indicator/sim-unlock-dialog.cpp:199
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
-"Uw simkaart is nu definitief geblokkeerd en dient vervangen te worden."
-
-#: src/indicator/sim-unlock-dialog.cpp:201
-msgid "Please contact your service provider."
-msgstr "Neem a.u.b. contact op met uw telefoonprovider."
-
-#: src/indicator/sim-unlock-dialog.cpp:265
-msgid "Enter %{1} PIN"
-msgstr "Voer de %{1}-pincode in"
-
-#: src/indicator/sim-unlock-dialog.cpp:272
-msgid "Enter PUK code"
-msgstr "Voer de PUK-code in"
-
-#: src/indicator/sim-unlock-dialog.cpp:274
-msgid "Enter PUK code for %{1}"
-msgstr "Voer de PUK-code in voor %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:282
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] "Nog 1 poging over"
-msgstr[1] "Nog %d pogingen over"
-
-#: src/indicator/sim-unlock-dialog.cpp:293
-msgid "Enter new %{1} PIN"
-msgstr "Voer de nieuwe %{1}-pincode in"
-
-#: src/indicator/sim-unlock-dialog.cpp:301
-msgid "Confirm new %{1} PIN"
-msgstr "Bevestig de nieuwe %{1}-pincode"
-
-#: src/indicator/sim-unlock-dialog.cpp:340
-#: src/indicator/sim-unlock-dialog.cpp:515
-msgid "PIN codes did not match."
-msgstr "Pincodes komen niet overeen."
-
-#: src/indicator/sim-unlock-dialog.cpp:495
-#: src/indicator/sim-unlock-dialog.cpp:523
-msgid "Enter SIM PIN"
-msgstr "Voer simpincode in"
-
-#: src/indicator/sim-unlock-dialog.cpp:506
-#: src/indicator/sim-unlock-dialog.cpp:516
-msgid "Enter new PIN code"
-msgstr "Voer de nieuwe pincode in"
-
-#: src/indicator/sim-unlock-dialog.cpp:510
-msgid "Confirm new PIN code"
-msgstr "Bevestig de nieuwe pincode"
-
-#: src/indicator/sim-unlock-dialog.cpp:522
-msgid "Failed to change PIN."
-msgstr "Kon pincode niet wijzigen."
-
-#: src/indicator/wifi-link-item.h:88
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#: src/indicator/wifi-link-item.h:152
-msgid "Other network…"
-msgstr "Ander netwerk…"
-
-#: src/indicator/wifi-section.cpp:60
-msgid "Wi-Fi settings…"
-msgstr "Wi-Fi-instellingen…"
-
-#: src/indicator/wwan-link-item.cpp:87
+#: ../src/indicator/menuitems/wwan-link-item.cpp:92
 msgid "No SIM"
 msgstr "Geen simkaart"
 
-#: src/indicator/wwan-link-item.cpp:93
-msgid "SIM Error"
-msgstr "Simkaartfout"
-
-#: src/indicator/wwan-link-item.cpp:100
-msgid "SIM Locked"
-msgstr "Simkaart geblokkeerd"
-
-#: src/indicator/wwan-link-item.cpp:112
-msgid "Unregistered"
-msgstr "Niet geregistreerd"
-
-#: src/indicator/wwan-link-item.cpp:116
-msgid "Unknown"
-msgstr "Onbekend"
-
-#: src/indicator/wwan-link-item.cpp:120
-msgid "Denied"
-msgstr "Geweigerd"
-
-#: src/indicator/wwan-link-item.cpp:124
-msgid "Searching"
-msgstr "Zoeken"
-
-#: src/indicator/wwan-link-item.cpp:135
+#: ../src/indicator/menuitems/wwan-link-item.cpp:140
 msgid "No Signal"
 msgstr "Geen signaal"
 
-#: src/indicator/wwan-link-item.cpp:141
+#: ../src/indicator/menuitems/wwan-link-item.cpp:146
+#: ../src/indicator/menuitems/wwan-link-item.cpp:152
 msgid "Offline"
 msgstr "Offline"
 
-#: src/indicator/wwan-section.cpp:79
-msgid "Cellular settings…"
-msgstr "Mobielinstellingen…"
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "Ander netwerk…"
 
-#: src/secret-agent/SecretRequest.cpp:62
-#, qt-format
-msgid "Connect to “%1”"
-msgstr "Verbinding maken met “%1”"
+#: ../src/indicator/sim-unlock-dialog.cpp:375
+msgid "PIN codes did not match."
+msgstr "Pincodes komen niet overeen."
 
-#: src/secret-agent/SecretRequest.cpp:67
-msgid "WPA"
-msgstr "WPA"
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr "Neem a.u.b. contact op met uw telefoonprovider."
 
-#: src/secret-agent/SecretRequest.cpp:69
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Neem a.u.b. contact op met uw telefoonprovider."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Voer a.u.b. de PUK-code in om de simkaart te deblokkeren."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:98
+msgid "SIM Error"
+msgstr "Simkaartfout"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "Simkaart geblokkeerd"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:129
+msgid "Searching"
+msgstr "Zoeken"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Sorry, onjuiste %{1}-pincode."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:220
+msgid "Sorry, incorrect PIN"
+msgstr "Sorry, onjuiste pincode"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:232
+msgid "Sorry, incorrect PUK"
+msgstr "Sorry, onjuiste PUK-code"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Sorry, onjuiste PUK-code."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Sorry, uw %{1} is nu geblokkeerd."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Dit zal uw laatste poging worden."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:121
+msgid "Unknown"
+msgstr "Onbekend"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:117
+msgid "Unregistered"
+msgstr "Niet geregistreerd"
+
+#: ../src/indicator/agent/SecretRequest.cpp:74
 msgid "WEP"
 msgstr "WEP"
 
-#: src/secret-agent/SecretRequest.cpp:75
-msgid "Connect"
-msgstr "Verbind"
+#: ../src/indicator/agent/SecretRequest.cpp:72
+msgid "WPA"
+msgstr "WPA"
 
-#: src/secret-agent/SecretRequest.cpp:76
-msgid "Cancel"
-msgstr "Annuleren"
+#: ../src/indicator/sections/wifi-section.cpp:58
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
 
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Oeps!<br>Onjuiste PUK-code ingevoerd."
+#: ../src/indicator/sections/wifi-section.cpp:72
+msgid "Wi-Fi settings…"
+msgstr "Wi-Fi-instellingen…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+"U kunt eventueel contact opnemen met uw telefoonprovider voor de PUK-code."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr "Uw simkaart is nu definitief geblokkeerd en dient vervangen te worden."
+
+#~ msgid "Attempt %d of %d"
+#~ msgstr "Poging %d van %d"
+
+#~ msgid "Confirm new PIN code"
+#~ msgstr "Bevestig de nieuwe pincode"
+
+#~ msgid "Enter SIM PIN"
+#~ msgstr "Voer simpincode in"
+
+#~ msgid "Enter new PIN code"
+#~ msgstr "Voer de nieuwe pincode in"
+
+#~ msgid "Failed to change PIN."
+#~ msgstr "Kon pincode niet wijzigen."
 
 #~ msgid "Oops!<br>Incorrect PIN entered."
 #~ msgstr "Oeps!<br>Onjuiste pincode ingevoerd."
 
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Poging %d van %d"
-
-#~ msgid "Unlock SIM…"
-#~ msgstr "SIM-kaart deblokkeren…"
+#~ msgid "Oops!<br>Incorrect PUK entered."
+#~ msgstr "Oeps!<br>Onjuiste PUK-code ingevoerd."
 
 #~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
+#~ "This will be the last attempt.<br><br>If the PUK code is entered "
+#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact "
+#~ "your network provider."
 #~ msgstr ""
-#~ "Uw simkaart is nu definitief geblokkeerd en dient vervangen te "
-#~ "worden.<br><br>Neem a.u.b. contact op met uw telefoonprovider."
+#~ "Dit zal uw laatste poging worden!<br><br>Indien de PUK-code nu opnieuw "
+#~ "onjuist wordt ingevoerd, zal uw simkaart vervangen dienen te worden."
+#~ "<br><br>Neem a.u.b. contact op met uw telefoonprovider."
 
 #~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
+#~ "This will be the last attempt.<br><br>If the SIM PIN is entered "
+#~ "incorrectly, your SIM will be blocked and would require the PUK Code to "
+#~ "unlock."
 #~ msgstr ""
 #~ "Dit zal uw laatste poging worden!<br><br>Indien de simpincode nu opnieuw "
 #~ "onjuist wordt ingevoerd, zal uw simkaart geblokkeerd worden en dient u de "
 #~ "PUK-code in te voeren om de simkaart te deblokkeren."
 
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "Dit zal uw laatste poging worden!<br><br>Indien de PUK-code nu opnieuw "
-#~ "onjuist wordt ingevoerd, zal uw simkaart vervangen dienen te "
-#~ "worden.<br><br>Neem a.u.b. contact op met uw telefoonprovider."
+#~ msgid "Unlock SIM…"
+#~ msgstr "SIM-kaart deblokkeren…"
 
 #~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
+#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You "
+#~ "may contact your network provider for PUK Code."
 #~ msgstr ""
-#~ "Uw simkaart is nu geblokkeerd.<br><br>Voer de PUK-code in om de simkaart te "
-#~ "deblokkeren.<br><br>U kunt contact opnemen met uw telefoonprovider voor de "
-#~ "PUK-code."
+#~ "Uw simkaart is nu geblokkeerd.<br><br>Voer de PUK-code in om de simkaart "
+#~ "te deblokkeren.<br><br>U kunt contact opnemen met uw telefoonprovider "
+#~ "voor de PUK-code."
+
+#~ msgid ""
+#~ "Your SIM is now permanently blocked and needs to be replaced."
+#~ "<br><br>Please contact your network provider."
+#~ msgstr ""
+#~ "Uw simkaart is nu definitief geblokkeerd en dient vervangen te worden."
+#~ "<br><br>Neem a.u.b. contact op met uw telefoonprovider."
