@@ -1,3 +1,10 @@
+indicator-network (0.5.1+15.04.20150513.1-0ubuntu1) vivid; urgency=medium
+
+  [ Antti Kaijanmäki ]
+  * sync from 15.10 to get the branch match the released packages.
+
+ -- Antti Kaijanmäki <antti.kaijanmaki@canonical.com>  Tue, 19 Apr 2015 00:00:00 +0000
+
 indicator-network (0.5.1+15.04.20150412-0ubuntu1) vivid; urgency=medium
 
   [ Pete Woods ]
