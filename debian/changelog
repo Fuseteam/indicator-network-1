@@ -1,3 +1,139 @@
+indicator-network (0.5.1+15.04.20150520-0ubuntu1) vivid; urgency=medium
+
+  [ Antti Kaijanmäki ]
+  * sync from 15.10 to get the branch match the released packages.
+    removed: cmake/EnableCoverageReport.cmake cmake/FindGMock.cmake
+    cmake/FindLcov.cmake cmake/Findgcovr.cmake
+    cmake/ParseArguments.cmake cmake/UseGSettings.cmake data/indicator-
+    secret-agent.conf.in po/update-indicator-network-pot
+    sniffer/nmaccesspoint.cpp sniffer/nmaccesspoint.h
+    sniffer/nmactiveconnection.cpp sniffer/nmactiveconnection.h
+    sniffer/nmconnsettings.cpp sniffer/nmconnsettings.h
+    sniffer/nmroot.cpp sniffer/nmroot.h sniffer/nmsettings.cpp
+    sniffer/nmsettings.h sniffer/nmwirelessdevice.cpp
+    sniffer/nmwirelessdevice.h sniffer/ofonomodemmodem.cpp
+    sniffer/ofonomodemmodem.h sniffer/ofonomodemnetworkregistration.cpp
+    sniffer/ofonomodemnetworkregistration.h
+    sniffer/ofonomodemsimmanager.cpp sniffer/ofonomodemsimmanager.h
+    sniffer/ofonoroot.cpp sniffer/ofonoroot.h sniffer/qdbusdatatypes.h
+    sniffer/urfkillroot.cpp sniffer/urfkillroot.h
+    sniffer/urfkillswitch.cpp sniffer/urfkillswitch.h src/connectivity-
+    cpp/src/CMakeLists.txt src/connectivity-cpp/src/platform/
+    src/connectivity-cpp/src/platform/nmofono/ src/indicator/modem-
+    manager.cpp src/indicator/modem-manager.h src/secret-
+    agent/CMakeLists.txt src/secret-agent/DBusTypes.h src/secret-
+    agent/Localisation.h src/secret-agent/gtk/ src/secret-agent/main.cpp
+    tests/integration/CMakeLists.txt tests/integration/connectivity-cpp/
+    tests/integration/connectivity-cpp/CMakeLists.txt
+    tests/integration/connectivity-cpp/mocks/
+    tests/integration/connectivity-cpp/mocks/urfkill.h
+    tests/integration/connectivity-cpp/sig_term_catcher.h
+    tests/integration/connectivity-cpp/test_data.h.in
+    tests/integration/connectivity-cpp/test_flight_mode.cpp
+    tests/integration/connectivity-cpp/test_networking_status.cpp
+    tests/integration/connectivity-cpp/test_service.h
+    tests/integration/connectivity-cpp/test_wifi_connect.cpp
+    tests/integration/connectivity-cpp/test_wifi_link.cpp
+    tests/integration/connectivity-cpp/test_wifi_link_dedup.cpp
+    tests/integration/connectivity-cpp/test_wifi_link_enable_disable.cpp
+    tests/integration/indicator/ tests/unit/indicator/CMakeLists.txt
+    tests/unit/indicator/menuitems/CMakeLists.txt tests/unit/menumodel-
+    cpp/CMakeLists.txt tests/unit/secret-agent/CMakeLists.txt
+    tests/unit/test_variant.h added: data/connectivity-qt.map
+    data/connectivity-qt.pc.in data/org.freedesktop.DBus.Properties.xml
+    debian/connectivity-doc.install debian/libconnectivity-qt1-
+    dev.install debian/libconnectivity-qt1.install debian/qml-module-
+    ubuntu-connectivity.install doc/ doc/CMakeLists.txt doc/dbus/
+    doc/dbus/connectivity-api.txt doc/qt/ doc/qt/CMakeLists.txt
+    doc/qt/cpp/ doc/qt/cpp/CMakeLists.txt doc/qt/cpp/css/
+    doc/qt/cpp/css/base.css doc/qt/cpp/css/qtquick.css
+    doc/qt/cpp/css/reset.css doc/qt/cpp/css/scratch.css
+    doc/qt/cpp/examples/ doc/qt/cpp/examples/CMakeLists.txt
+    doc/qt/cpp/examples/example_networking_status.cpp doc/qt/cpp/pages/
+    doc/qt/cpp/pages/mainpage.dox doc/qt/cpp/pages/networking-status.dox
+    doc/qt/cpp/pages/using.dox doc/qt/cpp/ubuntu-appdev-site-footer.html
+    doc/qt/cpp/ubuntu-appdev-site-header.html doc/qt/qml/
+    doc/qt/qml/CMakeLists.txt doc/qt/qml/connectivity-qml.qdocconf.in
+    doc/qt/qml/css/ doc/qt/qml/css/base.css doc/qt/qml/css/qtquick.css
+    doc/qt/qml/css/reset.css doc/qt/qml/css/scratch.css
+    doc/qt/qml/examples/
+    doc/qt/qml/examples/example_networking_status.qml doc/qt/qml/pages/
+    doc/qt/qml/pages/mainpage.qdoc doc/qt/qml/qml-api/ doc/qt/qml/qml-
+    api/NetworkingStatus.qml src/connectivity-api/ src/connectivity-
+    api/CMakeLists.txt src/connectivity-api/connectivity-
+    cpp/include/connectivity/ src/connectivity-api/connectivity-
+    cpp/include/connectivity/networking/ src/connectivity-
+    api/connectivity-cpp/include/connectivity/networking/link.h
+    src/connectivity-api/connectivity-
+    cpp/include/connectivity/networking/manager.h src/connectivity-
+    api/connectivity-cpp/include/connectivity/networking/service/
+    src/connectivity-api/connectivity-
+    cpp/include/connectivity/networking/service.h src/connectivity-
+    api/connectivity-
+    cpp/include/connectivity/networking/service/tethering/
+    src/connectivity-api/connectivity-
+    cpp/include/connectivity/networking/service/tethering/service.h
+    src/connectivity-api/connectivity-
+    cpp/include/connectivity/networking/service/tor/ src/connectivity-
+    api/connectivity-
+    cpp/include/connectivity/networking/service/tor/service.h
+    src/connectivity-api/connectivity-
+    cpp/include/connectivity/networking/service/vpn/ src/connectivity-
+    api/connectivity-
+    cpp/include/connectivity/networking/service/vpn/service.h
+    src/connectivity-api/connectivity-
+    cpp/include/connectivity/networking/wifi/ src/connectivity-
+    api/connectivity-cpp/include/connectivity/networking/wifi/access-
+    point.h src/connectivity-api/connectivity-
+    cpp/include/connectivity/networking/wifi/link.h src/connectivity-
+    api/connectivity-cpp/include/connectivity/networking/wwan/
+    src/connectivity-api/connectivity-
+    cpp/include/connectivity/networking/wwan/link.h src/connectivity-
+    api/connectivity-qml/ src/connectivity-api/connectivity-
+    qml/CMakeLists.txt src/connectivity-api/connectivity-qml/plugin.cpp
+    src/connectivity-api/connectivity-qml/plugin.h src/connectivity-
+    api/connectivity-qml/qmldir src/connectivity-api/connectivity-qt/
+    src/connectivity-api/connectivity-qt/CMakeLists.txt
+    src/connectivity-api/connectivity-qt/connectivityqt/
+    src/connectivity-api/connectivity-qt/connectivityqt/connectivity.cpp
+    src/connectivity-api/connectivity-qt/connectivityqt/connectivity.h
+    src/connectivity-api/connectivity-qt/connectivityqt/internal/
+    src/connectivity-api/connectivity-qt/connectivityqt/internal/dbus-
+    property-cache.cpp src/connectivity-api/connectivity-
+    qt/connectivityqt/internal/dbus-property-cache.h src/connectivity-
+    api/connectivity-qt/ubuntu/ src/connectivity-api/connectivity-
+    qt/ubuntu/connectivity/ src/connectivity-api/connectivity-
+    qt/ubuntu/connectivity/networking-status.cpp src/connectivity-
+    api/connectivity-qt/ubuntu/connectivity/networking-status.h
+    src/indicator/icons.cpp src/indicator/icons.h
+    src/indicator/util/localisation.h src/indicator/util/qhash-
+    sharedptr.h tests/integration/indicator-network-test-base.cpp
+    tests/integration/indicator-network-test-base.h
+    tests/integration/test-connectivity-api.cpp tests/unit/secret-
+    agent/secret-agent-main.cpp renamed: sniffer/ => src/sniffer/
+    sniffer/i-n-extractor.cpp => src/sniffer/i-n-sniffer.cpp
+    src/connectivity-cpp/ => src/connectivity-api/connectivity-cpp/
+    src/indicator/modem.cpp => src/indicator/nmofono/wwan/modem.cpp
+    src/indicator/modem.h => src/indicator/nmofono/wwan/modem.h
+    src/indicator/nmofono/kill-switch-impl.cpp =>
+    src/indicator/nmofono/kill-switch.cpp src/indicator/nmofono/kill-
+    switch-impl.h => src/indicator/nmofono/kill-switch.h
+    src/indicator/nmofono/wifi/grouped-access-point-impl.cpp =>
+    src/indicator/nmofono/wifi/grouped-access-point.cpp
+    src/indicator/nmofono/wifi/grouped-access-point-impl.h =>
+    src/indicator/nmofono/wifi/grouped-access-point.h
+    src/indicator/nmofono/wwan/link.h =>
+    src/indicator/nmofono/wwan/wwan-link.h src/qdbus-stubs/DBusTypes.h
+    => src/qdbus-stubs/dbus-types.h src/secret-agent/ =>
+    src/indicator/agent/ tests/integration/indicator/CMakeLists.txt =>
+    tests/integration/CMakeLists.txt
+    tests/integration/indicator/TestIndicatorNetworkService.cpp =>
+    tests/integration/test-indicator.cpp tests/unit/secret-
+    agent/TestSecretAgent.cpp => tests/unit/secret-agent/test-secret-
+    agent.cpp
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Wed, 20 May 2015 10:02:42 +0000
+
 indicator-network (0.5.1+15.04.20150513.1-0ubuntu1) vivid; urgency=medium
 
   [ Antti Kaijanmäki ]
