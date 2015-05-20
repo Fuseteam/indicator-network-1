@@ -6,11 +6,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-07 20:43+0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-19 18:21+0300\n"
 "PO-Revision-Date: 2014-10-09 06:36+0000\n"
 "Last-Translator: Richard Somlói <ricsipontaz@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,58 +19,64 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-10-10 05:45+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: src/indicator/quick-access-section.cpp:48
+#: ../src/indicator/sim-unlock-dialog.cpp:317
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "1 próbálkozás maradt"
+msgstr[1] "%d próbálkozás maradt"
+
+#: ../src/indicator/agent/SecretRequest.cpp:81
+msgid "Cancel"
+msgstr "Mégse"
+
+#: ../src/indicator/sections/wwan-section.cpp:96
+msgid "Cellular settings…"
+msgstr "Mobil beállítások…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:336
+msgid "Confirm new %{1} PIN"
+msgstr "Új %{1} PIN megerősítése"
+
+#: ../src/indicator/agent/SecretRequest.cpp:80
+msgid "Connect"
+msgstr "Csatlakozás"
+
+#: ../src/indicator/agent/SecretRequest.cpp:67
+msgid "Connect to “%1”"
+msgstr "Csatlakozás ehhez: „%1”"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+msgid "Denied"
+msgstr "Megtagadva"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:295
+msgid "Enter %{1} PIN"
+msgstr "%{1} PIN megadása"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:303
+msgid "Enter PUK code"
+msgstr "Adja meg a PUK kódót"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:307
+msgid "Enter PUK code for %{1}"
+msgstr "Adja meg a PUK kódot a következőhöz: %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:328
+msgid "Enter new %{1} PIN"
+msgstr "ÚJ %{1} PIN megadása"
+
+#: ../src/indicator/sections/quick-access-section.cpp:83
 msgid "Flight Mode"
 msgstr "Repülőgépes mód"
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: src/indicator/root-state.cpp:296
-msgid "Network"
-msgstr "Hálózat"
-
-#: src/indicator/sim-unlock-dialog.cpp:115
-msgid "Sorry, incorrect PIN"
-msgstr "Sajnáljuk, helytelen PIN"
-
-#: src/indicator/sim-unlock-dialog.cpp:136
-msgid "Sorry, incorrect PUK"
-msgstr "Sajnáljuk, helytelen PUK"
-
-#: src/indicator/sim-unlock-dialog.cpp:151
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "Sajnáljuk, helytelen  %{1} PIN."
-
-#: src/indicator/sim-unlock-dialog.cpp:156
-#: src/indicator/sim-unlock-dialog.cpp:185
-msgid "This will be your last attempt."
-msgstr "Ez az utolsó próbálkozási lehetősége."
-
-#: src/indicator/sim-unlock-dialog.cpp:158
+#: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
 "Ha elrontja a(z) %{1} PIN kódját, a PUK kódra lesz szüksége a feloldáshoz."
 
-#: src/indicator/sim-unlock-dialog.cpp:168
-msgid "Sorry, your %{1} is now blocked."
-msgstr "Sajnáljuk, a(z) %{1} blokkolva lett."
-
-#: src/indicator/sim-unlock-dialog.cpp:173
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr "Adja meg a PUK kódját a SIM kártya feloldásához."
-
-#: src/indicator/sim-unlock-dialog.cpp:175
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-"Lehetséges, hogy fel kell vennie a kapcsolatot a szolgáltatójával a PUK "
-"kódért."
-
-#: src/indicator/sim-unlock-dialog.cpp:183
-#: src/indicator/sim-unlock-dialog.cpp:197
-msgid "Sorry, incorrect PUK."
-msgstr "Sajnáljuk, helytelen PUK."
-
-#: src/indicator/sim-unlock-dialog.cpp:187
+#: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
@@ -77,182 +84,168 @@ msgstr ""
 "Ha rossz PUK kódot ad meg, a SIM kártyája blokkolva lesz és szükséges lesz "
 "egy másikra."
 
-#: src/indicator/sim-unlock-dialog.cpp:189
-msgid "Please contact your network provider."
-msgstr "Vegye fel a kapcsolatot a szolgáltatójával."
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:349
+msgid "Network"
+msgstr "Hálózat"
 
-#: src/indicator/sim-unlock-dialog.cpp:199
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
-"A SIM kártyája véglegesen blokkolva lett és szüksége lesz egy másikra."
-
-#: src/indicator/sim-unlock-dialog.cpp:201
-msgid "Please contact your service provider."
-msgstr "Vegye fel a kapcsolatot a szolgáltatójával."
-
-#: src/indicator/sim-unlock-dialog.cpp:265
-msgid "Enter %{1} PIN"
-msgstr "%{1} PIN megadása"
-
-#: src/indicator/sim-unlock-dialog.cpp:272
-msgid "Enter PUK code"
-msgstr "Adja meg a PUK kódót"
-
-#: src/indicator/sim-unlock-dialog.cpp:274
-msgid "Enter PUK code for %{1}"
-msgstr "Adja meg a PUK kódot a következőhöz: %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:282
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] "1 próbálkozás maradt"
-msgstr[1] "%d próbálkozás maradt"
-
-#: src/indicator/sim-unlock-dialog.cpp:293
-msgid "Enter new %{1} PIN"
-msgstr "ÚJ %{1} PIN megadása"
-
-#: src/indicator/sim-unlock-dialog.cpp:301
-msgid "Confirm new %{1} PIN"
-msgstr "Új %{1} PIN megerősítése"
-
-#: src/indicator/sim-unlock-dialog.cpp:340
-#: src/indicator/sim-unlock-dialog.cpp:515
-msgid "PIN codes did not match."
-msgstr "A PIN kódok nem egyeznek."
-
-#: src/indicator/sim-unlock-dialog.cpp:495
-#: src/indicator/sim-unlock-dialog.cpp:523
-msgid "Enter SIM PIN"
-msgstr "Adja meg a SIM PIN kódját"
-
-#: src/indicator/sim-unlock-dialog.cpp:506
-#: src/indicator/sim-unlock-dialog.cpp:516
-msgid "Enter new PIN code"
-msgstr "Adja meg az új PIN kódot"
-
-#: src/indicator/sim-unlock-dialog.cpp:510
-msgid "Confirm new PIN code"
-msgstr "Erősítse meg az új PIN kódot"
-
-#: src/indicator/sim-unlock-dialog.cpp:522
-msgid "Failed to change PIN."
-msgstr "Nem sikerült a PIN kód megváltoztatása."
-
-#: src/indicator/wifi-link-item.h:88
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#: src/indicator/wifi-link-item.h:152
-msgid "Other network…"
-msgstr "Más hálózat…"
-
-#: src/indicator/wifi-section.cpp:60
-msgid "Wi-Fi settings…"
-msgstr "Wi-Fi beállítások…"
-
-#: src/indicator/wwan-link-item.cpp:87
+#: ../src/indicator/menuitems/wwan-link-item.cpp:92
 msgid "No SIM"
 msgstr "Nincs SIM"
 
-#: src/indicator/wwan-link-item.cpp:93
-msgid "SIM Error"
-msgstr "SIM hiba"
-
-#: src/indicator/wwan-link-item.cpp:100
-msgid "SIM Locked"
-msgstr "SIM zárolva"
-
-#: src/indicator/wwan-link-item.cpp:112
-msgid "Unregistered"
-msgstr "Nem regisztrált"
-
-#: src/indicator/wwan-link-item.cpp:116
-msgid "Unknown"
-msgstr "Ismeretlen"
-
-#: src/indicator/wwan-link-item.cpp:120
-msgid "Denied"
-msgstr "Megtagadva"
-
-#: src/indicator/wwan-link-item.cpp:124
-msgid "Searching"
-msgstr "Keresés"
-
-#: src/indicator/wwan-link-item.cpp:135
+#: ../src/indicator/menuitems/wwan-link-item.cpp:140
 msgid "No Signal"
 msgstr "Nincs jel"
 
-#: src/indicator/wwan-link-item.cpp:141
+#: ../src/indicator/menuitems/wwan-link-item.cpp:146
+#: ../src/indicator/menuitems/wwan-link-item.cpp:152
 msgid "Offline"
 msgstr "Nem elérhető"
 
-#: src/indicator/wwan-section.cpp:79
-msgid "Cellular settings…"
-msgstr "Mobil beállítások…"
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "Más hálózat…"
 
-#: src/secret-agent/SecretRequest.cpp:62
-#, qt-format
-msgid "Connect to “%1”"
-msgstr "Csatlakozás ehhez: „%1”"
+#: ../src/indicator/sim-unlock-dialog.cpp:375
+msgid "PIN codes did not match."
+msgstr "A PIN kódok nem egyeznek."
 
-#: src/secret-agent/SecretRequest.cpp:67
-msgid "WPA"
-msgstr "WPA"
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr "Vegye fel a kapcsolatot a szolgáltatójával."
 
-#: src/secret-agent/SecretRequest.cpp:69
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Vegye fel a kapcsolatot a szolgáltatójával."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Adja meg a PUK kódját a SIM kártya feloldásához."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:98
+msgid "SIM Error"
+msgstr "SIM hiba"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM zárolva"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:129
+msgid "Searching"
+msgstr "Keresés"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Sajnáljuk, helytelen  %{1} PIN."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:220
+msgid "Sorry, incorrect PIN"
+msgstr "Sajnáljuk, helytelen PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:232
+msgid "Sorry, incorrect PUK"
+msgstr "Sajnáljuk, helytelen PUK"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Sajnáljuk, helytelen PUK."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Sajnáljuk, a(z) %{1} blokkolva lett."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Ez az utolsó próbálkozási lehetősége."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:121
+msgid "Unknown"
+msgstr "Ismeretlen"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:117
+msgid "Unregistered"
+msgstr "Nem regisztrált"
+
+#: ../src/indicator/agent/SecretRequest.cpp:74
 msgid "WEP"
 msgstr "WEP"
 
-#: src/secret-agent/SecretRequest.cpp:75
-msgid "Connect"
-msgstr "Csatlakozás"
+#: ../src/indicator/agent/SecretRequest.cpp:72
+msgid "WPA"
+msgstr "WPA"
 
-#: src/secret-agent/SecretRequest.cpp:76
-msgid "Cancel"
-msgstr "Mégse"
+#: ../src/indicator/sections/wifi-section.cpp:58
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
 
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Hoppá!<br>Hibás PUK kódot adott meg."
+#: ../src/indicator/sections/wifi-section.cpp:72
+msgid "Wi-Fi settings…"
+msgstr "Wi-Fi beállítások…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+"Lehetséges, hogy fel kell vennie a kapcsolatot a szolgáltatójával a PUK "
+"kódért."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr "A SIM kártyája véglegesen blokkolva lett és szüksége lesz egy másikra."
+
+#~ msgid "Attempt %d of %d"
+#~ msgstr "%d / %d kísérlet"
+
+#~ msgid "Confirm new PIN code"
+#~ msgstr "Erősítse meg az új PIN kódot"
+
+#~ msgid "Enter SIM PIN"
+#~ msgstr "Adja meg a SIM PIN kódját"
+
+#~ msgid "Enter new PIN code"
+#~ msgstr "Adja meg az új PIN kódot"
+
+#~ msgid "Failed to change PIN."
+#~ msgstr "Nem sikerült a PIN kód megváltoztatása."
 
 #~ msgid "Oops!<br>Incorrect PIN entered."
 #~ msgstr "Hoppá!<br>Hibás PIN kódot adott meg."
 
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "%d / %d kísérlet"
+#~ msgid "Oops!<br>Incorrect PUK entered."
+#~ msgstr "Hoppá!<br>Hibás PUK kódot adott meg."
+
+#~ msgid ""
+#~ "This will be the last attempt.<br><br>If the PUK code is entered "
+#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact "
+#~ "your network provider."
+#~ msgstr ""
+#~ "Ez lesz az utolsó kísérlet.<br><br>Ha hibásan adja meg a PUK kódot, a SIM "
+#~ "cseréjére lesz szüksége.<br><br>Lépjen kapcsolatba a hálózat "
+#~ "szolgáltatójával."
+
+#~ msgid ""
+#~ "This will be the last attempt.<br><br>If the SIM PIN is entered "
+#~ "incorrectly, your SIM will be blocked and would require the PUK Code to "
+#~ "unlock."
+#~ msgstr ""
+#~ "Ez lesz az utolsó kísérlet.<br><br>Ha hibásan adja meg a SIM PIN kódját, "
+#~ "a SIM blokkolva lesz, és a PUK kódra lesz szükség a feloldáshoz."
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "SIM feloldása…"
 
 #~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
+#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You "
+#~ "may contact your network provider for PUK Code."
 #~ msgstr ""
-#~ "Ez lesz az utolsó kísérlet.<br><br>Ha hibásan adja meg a SIM PIN kódját, a "
-#~ "SIM blokkolva lesz, és a PUK kódra lesz szükség a feloldáshoz."
+#~ "A SIM most blokkolva lett.<br><br>Adja meg a PUK kódot a feloldáshoz."
+#~ "<br><br>Lehet, hogy a hálózat szolgáltatójához kell fordulnia a PUK "
+#~ "kódért."
 
 #~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "A SIM most blokkolva lett.<br><br>Adja meg a PUK kódot a "
-#~ "feloldáshoz.<br><br>Lehet, hogy a hálózat szolgáltatójához kell fordulnia a "
-#~ "PUK kódért."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
+#~ "Your SIM is now permanently blocked and needs to be replaced."
+#~ "<br><br>Please contact your network provider."
 #~ msgstr ""
 #~ "A SIM most véglegesen blokkolva lett, és ki kell cserélni.<br><br>Lépjen "
 #~ "kapcsolatba a hálózat szolgáltatójával."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "Ez lesz az utolsó kísérlet.<br><br>Ha hibásan adja meg a PUK kódot, a SIM "
-#~ "cseréjére lesz szüksége.<br><br>Lépjen kapcsolatba a hálózat "
-#~ "szolgáltatójával."

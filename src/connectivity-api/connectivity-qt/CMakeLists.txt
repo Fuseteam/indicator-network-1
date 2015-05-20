@@ -1,8 +1,18 @@
 
-set(API_VERSION 1)
-set(SOVERSION 1)
+set(CONNECTIVITY_QT_INCLUDE_DIR
+"${CMAKE_INSTALL_FULL_INCLUDEDIR}/connectivity-api/qt${CONNECTIVITY_QT_VERSION_MAJOR}")
+
+set(PUBLIC_HEADER_DIR "${CMAKE_SOURCE_DIR}/src/connectivity-api/connectivity-qt/ubuntu/connectivity")
+set(PUBLIC_HEADERS
+    ${PUBLIC_HEADER_DIR}/networking-status.h
+)
+install(FILES ${PUBLIC_HEADERS}
+        DESTINATION "${CONNECTIVITY_QT_INCLUDE_DIR}/ubuntu/connectivity")
+
+
+
 set(SYMBOL_MAP "${DATA_DIR}/connectivity-qt.map")
-set(OUTPUT_NAME "connectivity-qt${SOVERSION}")
+
 include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
 
 set(
@@ -40,41 +50,43 @@ qt5_add_dbus_interface(
 )
 
 add_library(
-    connectivity-qt
+    ${CONNECTIVITY_QT_LIB_TARGET}
     SHARED
     ${CONNECTIVITY_QT_SRC}
+    ${PUBLIC_HEADERS} # public headers have to be included here for Q_DECL_EXPORT to work properly
 )
 
 qt5_use_modules(
-    connectivity-qt
+    ${CONNECTIVITY_QT_LIB_TARGET}
     Core
     DBus
 )
 
 target_link_libraries(
-    connectivity-qt
+    ${CONNECTIVITY_QT_LIB_TARGET}
     qdbus-stubs
 )
 
+set(SO_VERSION ${CONNECTIVITY_QT_VERSION_MAJOR})
 set_target_properties(
-    connectivity-qt
+    ${CONNECTIVITY_QT_LIB_TARGET}
     PROPERTIES
-    OUTPUT_NAME ${OUTPUT_NAME}
-    VERSION ${API_VERSION}.0.0
-    SOVERSION ${SOVERSION}
+    SOVERSION ${SO_VERSION}
     LINK_FLAGS "-Wl,--version-script,${SYMBOL_MAP}"
     LINK_DEPENDS "${SYMBOL_MAP}"
 )
 
 install(
-    TARGETS connectivity-qt
+    TARGETS ${CONNECTIVITY_QT_LIB_TARGET}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
+set(PC_FILE_TARGET "${CMAKE_BINARY_DIR}/${CONNECTIVITY_QT_LIB_TARGET}.pc")
+set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
+set(includedir "${CONNECTIVITY_QT_INCLUDE_DIR}")
+set(ABSOLUTE_SO_FILE "${CMAKE_INSTALL_FULL_LIBDIR}/lib${CONNECTIVITY_QT_LIB_TARGET}.so.${SO_VERSION}")
+configure_file("connectivity-qt.pc.in" ${PC_FILE_TARGET} @ONLY)
 install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    DESTINATION "include"
-    FILES_MATCHING PATTERN "*.h"
-    PATTERN "internal" EXCLUDE
+  FILES ${PC_FILE_TARGET}
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
 )
-

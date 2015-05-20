@@ -17,7 +17,8 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#pragma once
+#ifndef CONNECTIVITY_NETWORKING_STATUS_H
+#define CONNECTIVITY_NETWORKING_STATUS_H
 
 #include <QObject>
 #include <QScopedPointer>
@@ -45,11 +46,29 @@ class Q_DECL_EXPORT NetworkingStatus : public QObject
     Q_ENUMS(Limitations)
     Q_ENUMS(Status)
 
-    Q_PROPERTY(QVector<ubuntu::connectivity::NetworkingStatus::Limitations> limitations
+    /**
+     * limitations of the overall system networking
+     *
+     * @initvalue {}
+     * @accessors limitations()
+     * @notify limitationsChanged()
+     *
+     * \snippet example_networking_status.cpp limitations
+     */
+    Q_PROPERTY(QVector<Limitations> limitations
                READ limitations
                NOTIFY limitationsChanged)
 
-    Q_PROPERTY(ubuntu::connectivity::NetworkingStatus::Status status
+    /**
+     * status of the overall system networking
+     *
+     * @initvalue NetworkingStatus::Online
+     * @accessors status()
+     * @notify statusChanged()
+     *
+     * \snippet example_networking_status.cpp status
+     */
+    Q_PROPERTY(Status status
                READ status
                NOTIFY statusChanged)
 
@@ -107,3 +126,4 @@ Q_DECLARE_METATYPE(ubuntu::connectivity::NetworkingStatus::Limitations)
 Q_DECLARE_METATYPE(QVector<ubuntu::connectivity::NetworkingStatus::Limitations>)
 Q_DECLARE_METATYPE(ubuntu::connectivity::NetworkingStatus::Status)
 
+#endif // CONNECTIVITY_NETWORKING_STATUS_H

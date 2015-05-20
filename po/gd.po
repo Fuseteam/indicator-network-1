@@ -6,11 +6,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-10-07 20:43+0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-05-19 18:21+0300\n"
 "PO-Revision-Date: 2014-10-09 18:09+0000\n"
 "Last-Translator: GunChleoc <Unknown>\n"
 "Language-Team: Fòram na Gàidhlig\n"
+"Language: gd\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,95 +19,8 @@ msgstr ""
 "(n > 2 && n < 20) ? 2 : 3;\n"
 "X-Launchpad-Export-Date: 2014-10-10 05:45+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
-"Language: gd\n"
 
-#: src/indicator/quick-access-section.cpp:48
-msgid "Flight Mode"
-msgstr "Modh iteil"
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: src/indicator/root-state.cpp:296
-msgid "Network"
-msgstr "Lìonra"
-
-#: src/indicator/sim-unlock-dialog.cpp:115
-msgid "Sorry, incorrect PIN"
-msgstr "Duilich ach tha a' PIN cearr"
-
-#: src/indicator/sim-unlock-dialog.cpp:136
-msgid "Sorry, incorrect PUK"
-msgstr "Duilich ach tha a' PUK cearr"
-
-#: src/indicator/sim-unlock-dialog.cpp:151
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "Duilich ach tha a' PIN airson %{1} cearr."
-
-#: src/indicator/sim-unlock-dialog.cpp:156
-#: src/indicator/sim-unlock-dialog.cpp:185
-msgid "This will be your last attempt."
-msgstr "Seo an oidhirp mu dheireadh agad."
-
-#: src/indicator/sim-unlock-dialog.cpp:158
-msgid ""
-"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
-msgstr ""
-"Mur cuir thu a' PIN airson %{1} a-steach mar bu chòir, bidh feum agad air a' "
-"PUK agad gus a' ghlas a thoirt dheth."
-
-#: src/indicator/sim-unlock-dialog.cpp:168
-msgid "Sorry, your %{1} is now blocked."
-msgstr "Duilich ach tha a' %{1} agad glaiste a-nis."
-
-#: src/indicator/sim-unlock-dialog.cpp:173
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
-"Cuir a-steach an còd PUK agad gus a' ghlas a thoirt far na cairt SIM."
-
-#: src/indicator/sim-unlock-dialog.cpp:175
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-"Dh'fhaoidte gum feum thu fios a chur gu solaraiche an lìonraidh agad airson "
-"a' chòd PUK agad."
-
-#: src/indicator/sim-unlock-dialog.cpp:183
-#: src/indicator/sim-unlock-dialog.cpp:197
-msgid "Sorry, incorrect PUK."
-msgstr "Duilich ach tha a' PUK cearr."
-
-#: src/indicator/sim-unlock-dialog.cpp:187
-msgid ""
-"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
-"replacement."
-msgstr ""
-"Mur cuir thu an còd PUK a-steach mar bu chòir, thèid a' chairt SIM agad a "
-"ghlasadh 's feumaidh tu tè ùr fhaighinn."
-
-#: src/indicator/sim-unlock-dialog.cpp:189
-msgid "Please contact your network provider."
-msgstr "Cuir fios gu solaraiche an lìonraidh agad."
-
-#: src/indicator/sim-unlock-dialog.cpp:199
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
-"Tha a' chairt SIM agad glaiste gu buan a-nis 's feumaidh tu tè ùr fhaighinn."
-
-#: src/indicator/sim-unlock-dialog.cpp:201
-msgid "Please contact your service provider."
-msgstr "Cuir fios gu solaraiche an t-seirbheis agad."
-
-#: src/indicator/sim-unlock-dialog.cpp:265
-msgid "Enter %{1} PIN"
-msgstr "Cuir a-steach a' PIN airson %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:272
-msgid "Enter PUK code"
-msgstr "Cuir a-steach an còd PUK"
-
-#: src/indicator/sim-unlock-dialog.cpp:274
-msgid "Enter PUK code for %{1}"
-msgstr "Cuir a-steach an còd PUK airson %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:282
+#: ../src/indicator/sim-unlock-dialog.cpp:317
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
@@ -115,151 +29,229 @@ msgstr[1] "%d oidhirp air fhàgail"
 msgstr[2] "%d oidhirpean air fhàgail"
 msgstr[3] "%d oidhirp air fhàgail"
 
-#: src/indicator/sim-unlock-dialog.cpp:293
-msgid "Enter new %{1} PIN"
-msgstr "Cuir a-steach a' PIN ùr airson %{1}"
+#: ../src/indicator/agent/SecretRequest.cpp:81
+msgid "Cancel"
+msgstr "Sguir dheth"
 
-#: src/indicator/sim-unlock-dialog.cpp:301
-msgid "Confirm new %{1} PIN"
-msgstr "Dearbhaich a' PIN ùr airson %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:340
-#: src/indicator/sim-unlock-dialog.cpp:515
-msgid "PIN codes did not match."
-msgstr "Cha robh an dà chòd PIN co-ionnann"
-
-#: src/indicator/sim-unlock-dialog.cpp:495
-#: src/indicator/sim-unlock-dialog.cpp:523
-msgid "Enter SIM PIN"
-msgstr "Cuir a-steach PIN an t-SIM"
-
-#: src/indicator/sim-unlock-dialog.cpp:506
-#: src/indicator/sim-unlock-dialog.cpp:516
-msgid "Enter new PIN code"
-msgstr "Cuir a-steach còd PIN ùr"
-
-#: src/indicator/sim-unlock-dialog.cpp:510
-msgid "Confirm new PIN code"
-msgstr "Dearbh an còd PIN ùr"
-
-#: src/indicator/sim-unlock-dialog.cpp:522
-msgid "Failed to change PIN."
-msgstr "Dh'fhàillig atharrachadh a' PIN."
-
-#: src/indicator/wifi-link-item.h:88
-msgid "Wi-Fi"
-msgstr "WiFi"
-
-#: src/indicator/wifi-link-item.h:152
-msgid "Other network…"
-msgstr "Lìonra eile..."
-
-#: src/indicator/wifi-section.cpp:60
-msgid "Wi-Fi settings…"
-msgstr "Roghainnean WiFi…"
-
-#: src/indicator/wwan-link-item.cpp:87
-msgid "No SIM"
-msgstr "Gun SIM"
-
-#: src/indicator/wwan-link-item.cpp:93
-msgid "SIM Error"
-msgstr "Mearachd SIM"
-
-#: src/indicator/wwan-link-item.cpp:100
-msgid "SIM Locked"
-msgstr "SIM glaiste"
-
-#: src/indicator/wwan-link-item.cpp:112
-msgid "Unregistered"
-msgstr "Gun chlàradh"
-
-#: src/indicator/wwan-link-item.cpp:116
-msgid "Unknown"
-msgstr "Neo-aithnichte"
-
-#: src/indicator/wwan-link-item.cpp:120
-msgid "Denied"
-msgstr "Air a dhiùltadh"
-
-#: src/indicator/wwan-link-item.cpp:124
-msgid "Searching"
-msgstr "'Ga lorg"
-
-#: src/indicator/wwan-link-item.cpp:135
-msgid "No Signal"
-msgstr "Gun siognal"
-
-#: src/indicator/wwan-link-item.cpp:141
-msgid "Offline"
-msgstr "Far loidhne"
-
-#: src/indicator/wwan-section.cpp:79
+#: ../src/indicator/sections/wwan-section.cpp:96
 msgid "Cellular settings…"
 msgstr "Roghainnean ceangal fòn-làimhe..."
 
-#: src/secret-agent/SecretRequest.cpp:62
-#, qt-format
-msgid "Connect to “%1”"
-msgstr "Ceangail ri \"%1\""
+#: ../src/indicator/sim-unlock-dialog.cpp:336
+msgid "Confirm new %{1} PIN"
+msgstr "Dearbhaich a' PIN ùr airson %{1}"
 
-#: src/secret-agent/SecretRequest.cpp:67
-msgid "WPA"
-msgstr "WPA"
-
-#: src/secret-agent/SecretRequest.cpp:69
-msgid "WEP"
-msgstr "WEP"
-
-#: src/secret-agent/SecretRequest.cpp:75
+#: ../src/indicator/agent/SecretRequest.cpp:80
 msgid "Connect"
 msgstr "Ceangail"
 
-#: src/secret-agent/SecretRequest.cpp:76
-msgid "Cancel"
-msgstr "Sguir dheth"
+#: ../src/indicator/agent/SecretRequest.cpp:67
+msgid "Connect to “%1”"
+msgstr "Ceangail ri \"%1\""
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+msgid "Denied"
+msgstr "Air a dhiùltadh"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:295
+msgid "Enter %{1} PIN"
+msgstr "Cuir a-steach a' PIN airson %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:303
+msgid "Enter PUK code"
+msgstr "Cuir a-steach an còd PUK"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:307
+msgid "Enter PUK code for %{1}"
+msgstr "Cuir a-steach an còd PUK airson %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:328
+msgid "Enter new %{1} PIN"
+msgstr "Cuir a-steach a' PIN ùr airson %{1}"
+
+#: ../src/indicator/sections/quick-access-section.cpp:83
+msgid "Flight Mode"
+msgstr "Modh iteil"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:151
+msgid ""
+"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
+msgstr ""
+"Mur cuir thu a' PIN airson %{1} a-steach mar bu chòir, bidh feum agad air a' "
+"PUK agad gus a' ghlas a thoirt dheth."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:180
+msgid ""
+"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
+"replacement."
+msgstr ""
+"Mur cuir thu an còd PUK a-steach mar bu chòir, thèid a' chairt SIM agad a "
+"ghlasadh 's feumaidh tu tè ùr fhaighinn."
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:349
+msgid "Network"
+msgstr "Lìonra"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:92
+msgid "No SIM"
+msgstr "Gun SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:140
+msgid "No Signal"
+msgstr "Gun siognal"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:146
+#: ../src/indicator/menuitems/wwan-link-item.cpp:152
+msgid "Offline"
+msgstr "Far loidhne"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "Lìonra eile..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:375
+msgid "PIN codes did not match."
+msgstr "Cha robh an dà chòd PIN co-ionnann"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr "Cuir fios gu solaraiche an lìonraidh agad."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Cuir fios gu solaraiche an t-seirbheis agad."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Cuir a-steach an còd PUK agad gus a' ghlas a thoirt far na cairt SIM."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:98
+msgid "SIM Error"
+msgstr "Mearachd SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM glaiste"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:129
+msgid "Searching"
+msgstr "'Ga lorg"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Duilich ach tha a' PIN airson %{1} cearr."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:220
+msgid "Sorry, incorrect PIN"
+msgstr "Duilich ach tha a' PIN cearr"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:232
+msgid "Sorry, incorrect PUK"
+msgstr "Duilich ach tha a' PUK cearr"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Duilich ach tha a' PUK cearr."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Duilich ach tha a' %{1} agad glaiste a-nis."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Seo an oidhirp mu dheireadh agad."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:121
+msgid "Unknown"
+msgstr "Neo-aithnichte"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:117
+msgid "Unregistered"
+msgstr "Gun chlàradh"
+
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:72
+msgid "WPA"
+msgstr "WPA"
+
+#: ../src/indicator/sections/wifi-section.cpp:58
+msgid "Wi-Fi"
+msgstr "WiFi"
+
+#: ../src/indicator/sections/wifi-section.cpp:72
+msgid "Wi-Fi settings…"
+msgstr "Roghainnean WiFi…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+"Dh'fhaoidte gum feum thu fios a chur gu solaraiche an lìonraidh agad airson "
+"a' chòd PUK agad."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr ""
+"Tha a' chairt SIM agad glaiste gu buan a-nis 's feumaidh tu tè ùr fhaighinn."
+
+#~ msgid "Attempt %d of %d"
+#~ msgstr "Oidhirp %d à %d"
+
+#~ msgid "Confirm new PIN code"
+#~ msgstr "Dearbh an còd PIN ùr"
+
+#~ msgid "Enter SIM PIN"
+#~ msgstr "Cuir a-steach PIN an t-SIM"
+
+#~ msgid "Enter new PIN code"
+#~ msgstr "Cuir a-steach còd PIN ùr"
+
+#~ msgid "Failed to change PIN."
+#~ msgstr "Dh'fhàillig atharrachadh a' PIN."
+
+#~ msgid "Oops!<br>Incorrect PIN entered."
+#~ msgstr "Murt!<br>Chuir thu a-steach PIN cearr."
+
+#~ msgid "Oops!<br>Incorrect PUK entered."
+#~ msgstr "Murt!<br>Chuir thu a-steach PUK cearr."
+
+#~ msgid ""
+#~ "This will be the last attempt.<br><br>If the PUK code is entered "
+#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact "
+#~ "your network provider."
+#~ msgstr ""
+#~ "Seo an oidhirp mu dheireadh. <br><br>Ma chuireas tu an còd PUK cearr a-"
+#~ "steach a-rithist, bidh feum agad air SIM ùr.<br><br>Cuir fios gu "
+#~ "solaraiche an lìonraidh agad."
+
+#~ msgid ""
+#~ "This will be the last attempt.<br><br>If the SIM PIN is entered "
+#~ "incorrectly, your SIM will be blocked and would require the PUK Code to "
+#~ "unlock."
+#~ msgstr ""
+#~ "Seo an oidhirp mu dheireadh agad.<br><br>Ma chuireas tu PIN cearr an t-"
+#~ "SIM a-steach a-rithist, thèid an SIM agad a ghlasadh agus bidh feum agad "
+#~ "air a' PUK gus a' ghlas a thoirt dheth."
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "Neo-glais SIM…"
 
 #~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
+#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You "
+#~ "may contact your network provider for PUK Code."
 #~ msgstr ""
-#~ "Tha an SIM agad glaiste gu bràth a-nis agus bidh feum agad air fear "
-#~ "ùr.<br><br>Cuir fios gu solaraiche an lìonraidh agad."
+#~ "Tha an SIM agad glaiste a-nis.<br><br>Cuir a-steach an còd PUK gus a' "
+#~ "ghlas a thoirt dheth.<br><br>Faodaidh gum bi agad ri faighneachd de "
+#~ "sholaraiche an lìonraidh agad dè am PUK agad."
 
 #~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
+#~ "Your SIM is now permanently blocked and needs to be replaced."
+#~ "<br><br>Please contact your network provider."
 #~ msgstr ""
-#~ "Seo an oidhirp mu dheireadh agad.<br><br>Ma chuireas tu PIN cearr an t-SIM a-"
-#~ "steach a-rithist, thèid an SIM agad a ghlasadh agus bidh feum agad air a' "
-#~ "PUK gus a' ghlas a thoirt dheth."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "Seo an oidhirp mu dheireadh. <br><br>Ma chuireas tu an còd PUK cearr a-"
-#~ "steach a-rithist, bidh feum agad air SIM ùr.<br><br>Cuir fios gu solaraiche "
-#~ "an lìonraidh agad."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "Tha an SIM agad glaiste a-nis.<br><br>Cuir a-steach an còd PUK gus a' ghlas "
-#~ "a thoirt dheth.<br><br>Faodaidh gum bi agad ri faighneachd de sholaraiche an "
-#~ "lìonraidh agad dè am PUK agad."
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Oidhirp %d à %d"
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Murt!<br>Chuir thu a-steach PUK cearr."
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "Murt!<br>Chuir thu a-steach PIN cearr."
+#~ "Tha an SIM agad glaiste gu bràth a-nis agus bidh feum agad air fear ùr."
+#~ "<br><br>Cuir fios gu solaraiche an lìonraidh agad."

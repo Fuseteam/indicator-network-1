@@ -7,68 +7,76 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-07 20:43+0300\n"
+"POT-Creation-Date: 2015-05-19 18:21+0300\n"
 "PO-Revision-Date: 2014-10-13 10:43+0000\n"
 "Last-Translator: Timo Jyrinki <timo.jyrinki@canonical.com>\n"
 "Language-Team: Finnish <fi@li.org>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Launchpad-Export-Date: 2014-10-16 05:51+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
-"Language: fi\n"
 
-#: src/indicator/quick-access-section.cpp:48
+#: ../src/indicator/sim-unlock-dialog.cpp:317
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "1 yritys jäljellä"
+msgstr[1] "%d yritystä jäljellä"
+
+#: ../src/indicator/agent/SecretRequest.cpp:81
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: ../src/indicator/sections/wwan-section.cpp:96
+msgid "Cellular settings…"
+msgstr "Mobiiliverkon asetukset…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:336
+msgid "Confirm new %{1} PIN"
+msgstr "Vahvista uusi %{1} PIN"
+
+#: ../src/indicator/agent/SecretRequest.cpp:80
+msgid "Connect"
+msgstr "Yhdistä"
+
+#: ../src/indicator/agent/SecretRequest.cpp:67
+msgid "Connect to “%1”"
+msgstr "Yhdistä verkkoon “%1”"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+msgid "Denied"
+msgstr "Estetty"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:295
+msgid "Enter %{1} PIN"
+msgstr "Syötä %{1} PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:303
+msgid "Enter PUK code"
+msgstr "Anna PUK-koodi"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:307
+msgid "Enter PUK code for %{1}"
+msgstr "Syötä PUK-koodi – %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:328
+msgid "Enter new %{1} PIN"
+msgstr "Syötä uusi %{1} PIN"
+
+#: ../src/indicator/sections/quick-access-section.cpp:83
 msgid "Flight Mode"
 msgstr "Lentotila"
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: src/indicator/root-state.cpp:296
-msgid "Network"
-msgstr "Verkko"
-
-#: src/indicator/sim-unlock-dialog.cpp:115
-msgid "Sorry, incorrect PIN"
-msgstr "Väärä PIN-koodi"
-
-#: src/indicator/sim-unlock-dialog.cpp:136
-msgid "Sorry, incorrect PUK"
-msgstr "Väärä PUK-koodi"
-
-#: src/indicator/sim-unlock-dialog.cpp:151
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "Pahoittelut, väärä %{1} PIN."
-
-#: src/indicator/sim-unlock-dialog.cpp:156
-#: src/indicator/sim-unlock-dialog.cpp:185
-msgid "This will be your last attempt."
-msgstr "Tämä on viimeinen yritys."
-
-#: src/indicator/sim-unlock-dialog.cpp:158
+#: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
 "Jos %{1} PIN syötetään väärin, PUK-koodia tarvitaan lukituksen avaamiseen."
 
-#: src/indicator/sim-unlock-dialog.cpp:168
-msgid "Sorry, your %{1} is now blocked."
-msgstr "Valitettavasti %{1} on nyt lukittu."
-
-#: src/indicator/sim-unlock-dialog.cpp:173
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr "Anna PUK-koodi avataksesi SIM-kortin lukituksen."
-
-#: src/indicator/sim-unlock-dialog.cpp:175
-msgid "You may need to contact your network provider for PUK code."
-msgstr "Ota yhteys palveluntarjoajaan saadaksesi PUK-koodin."
-
-#: src/indicator/sim-unlock-dialog.cpp:183
-#: src/indicator/sim-unlock-dialog.cpp:197
-msgid "Sorry, incorrect PUK."
-msgstr "Väärä PUK-koodi."
-
-#: src/indicator/sim-unlock-dialog.cpp:187
+#: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
@@ -76,142 +84,127 @@ msgstr ""
 "Jos annettava PUK-koodi on virheellinen, SIM-kortti lukkiutuu ja se pitää "
 "vaihtaa uuteen."
 
-#: src/indicator/sim-unlock-dialog.cpp:189
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:349
+msgid "Network"
+msgstr "Verkko"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:92
+msgid "No SIM"
+msgstr "Ei SIM-korttia"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:140
+msgid "No Signal"
+msgstr "Ei signaalia"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:146
+#: ../src/indicator/menuitems/wwan-link-item.cpp:152
+msgid "Offline"
+msgstr "Ei verkossa"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "Muu verkko…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:375
+msgid "PIN codes did not match."
+msgstr "PIN-koodit eivät täsmänneet."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:182
 msgid "Please contact your network provider."
 msgstr "Ota yhteys palveluntarjoajaan."
 
-#: src/indicator/sim-unlock-dialog.cpp:199
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Ole yhteydessä palveluntarjoajaasi."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Anna PUK-koodi avataksesi SIM-kortin lukituksen."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:98
+msgid "SIM Error"
+msgstr "SIM-virhe"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM lukittu"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:129
+msgid "Searching"
+msgstr "Etsitään"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Pahoittelut, väärä %{1} PIN."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:220
+msgid "Sorry, incorrect PIN"
+msgstr "Väärä PIN-koodi"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:232
+msgid "Sorry, incorrect PUK"
+msgstr "Väärä PUK-koodi"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Väärä PUK-koodi."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Valitettavasti %{1} on nyt lukittu."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Tämä on viimeinen yritys."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:121
+msgid "Unknown"
+msgstr "Tuntematon"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:117
+msgid "Unregistered"
+msgstr "Rekisteröitymätön"
+
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:72
+msgid "WPA"
+msgstr "WPA"
+
+#: ../src/indicator/sections/wifi-section.cpp:58
+msgid "Wi-Fi"
+msgstr "Wifi"
+
+#: ../src/indicator/sections/wifi-section.cpp:72
+msgid "Wi-Fi settings…"
+msgstr "Wifi-asetukset…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr "Ota yhteys palveluntarjoajaan saadaksesi PUK-koodin."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
 msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
 "SIM-kortti on nyt lukittu pysyvästi, joten se tulee korvata uudella SIM-"
 "kortilla."
 
-#: src/indicator/sim-unlock-dialog.cpp:201
-msgid "Please contact your service provider."
-msgstr "Ole yhteydessä palveluntarjoajaasi."
+#~ msgid "Confirm new PIN code"
+#~ msgstr "Vahvista uusi PIN-koodi"
 
-#: src/indicator/sim-unlock-dialog.cpp:265
-msgid "Enter %{1} PIN"
-msgstr "Syötä %{1} PIN"
+#~ msgid "Enter SIM PIN"
+#~ msgstr "Anna SIM-kortin PIN-koodi"
 
-#: src/indicator/sim-unlock-dialog.cpp:272
-msgid "Enter PUK code"
-msgstr "Anna PUK-koodi"
+#~ msgid "Enter new PIN code"
+#~ msgstr "Anna uusi PIN-koodi"
 
-#: src/indicator/sim-unlock-dialog.cpp:274
-msgid "Enter PUK code for %{1}"
-msgstr "Syötä PUK-koodi – %{1}"
-
-#: src/indicator/sim-unlock-dialog.cpp:282
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] "1 yritys jäljellä"
-msgstr[1] "%d yritystä jäljellä"
-
-#: src/indicator/sim-unlock-dialog.cpp:293
-msgid "Enter new %{1} PIN"
-msgstr "Syötä uusi %{1} PIN"
-
-#: src/indicator/sim-unlock-dialog.cpp:301
-msgid "Confirm new %{1} PIN"
-msgstr "Vahvista uusi %{1} PIN"
-
-#: src/indicator/sim-unlock-dialog.cpp:340
-#: src/indicator/sim-unlock-dialog.cpp:515
-msgid "PIN codes did not match."
-msgstr "PIN-koodit eivät täsmänneet."
-
-#: src/indicator/sim-unlock-dialog.cpp:495
-#: src/indicator/sim-unlock-dialog.cpp:523
-msgid "Enter SIM PIN"
-msgstr "Anna SIM-kortin PIN-koodi"
-
-#: src/indicator/sim-unlock-dialog.cpp:506
-#: src/indicator/sim-unlock-dialog.cpp:516
-msgid "Enter new PIN code"
-msgstr "Anna uusi PIN-koodi"
-
-#: src/indicator/sim-unlock-dialog.cpp:510
-msgid "Confirm new PIN code"
-msgstr "Vahvista uusi PIN-koodi"
-
-#: src/indicator/sim-unlock-dialog.cpp:522
-msgid "Failed to change PIN."
-msgstr "PIN-koodin vaihtaminen epäonnistui."
-
-#: src/indicator/wifi-link-item.h:88
-msgid "Wi-Fi"
-msgstr "Wifi"
-
-#: src/indicator/wifi-link-item.h:152
-msgid "Other network…"
-msgstr "Muu verkko…"
-
-#: src/indicator/wifi-section.cpp:60
-msgid "Wi-Fi settings…"
-msgstr "Wifi-asetukset…"
-
-#: src/indicator/wwan-link-item.cpp:87
-msgid "No SIM"
-msgstr "Ei SIM-korttia"
-
-#: src/indicator/wwan-link-item.cpp:93
-msgid "SIM Error"
-msgstr "SIM-virhe"
-
-#: src/indicator/wwan-link-item.cpp:100
-msgid "SIM Locked"
-msgstr "SIM lukittu"
-
-#: src/indicator/wwan-link-item.cpp:112
-msgid "Unregistered"
-msgstr "Rekisteröitymätön"
-
-#: src/indicator/wwan-link-item.cpp:116
-msgid "Unknown"
-msgstr "Tuntematon"
-
-#: src/indicator/wwan-link-item.cpp:120
-msgid "Denied"
-msgstr "Estetty"
-
-#: src/indicator/wwan-link-item.cpp:124
-msgid "Searching"
-msgstr "Etsitään"
-
-#: src/indicator/wwan-link-item.cpp:135
-msgid "No Signal"
-msgstr "Ei signaalia"
-
-#: src/indicator/wwan-link-item.cpp:141
-msgid "Offline"
-msgstr "Ei verkossa"
-
-#: src/indicator/wwan-section.cpp:79
-msgid "Cellular settings…"
-msgstr "Mobiiliverkon asetukset…"
-
-#: src/secret-agent/SecretRequest.cpp:62
-#, qt-format
-msgid "Connect to “%1”"
-msgstr "Yhdistä verkkoon “%1”"
-
-#: src/secret-agent/SecretRequest.cpp:67
-msgid "WPA"
-msgstr "WPA"
-
-#: src/secret-agent/SecretRequest.cpp:69
-msgid "WEP"
-msgstr "WEP"
-
-#: src/secret-agent/SecretRequest.cpp:75
-msgid "Connect"
-msgstr "Yhdistä"
-
-#: src/secret-agent/SecretRequest.cpp:76
-msgid "Cancel"
-msgstr "Peruuta"
+#~ msgid "Failed to change PIN."
+#~ msgstr "PIN-koodin vaihtaminen epäonnistui."
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "Avaa SIM-lukitus…"
