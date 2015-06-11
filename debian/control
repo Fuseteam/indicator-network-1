@@ -53,7 +53,6 @@ Depends: ${misc:Depends},
          ubuntu-mobile-icons (>= 13.04+13.10.20131014),
 # For apport hook
          python3-xdg,
-         unity8 (>= 8.00+14.10.20140806),
          urfkill,
 Conflicts: chewie,
            indicators-client-plugin-network,
