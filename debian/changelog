@@ -1,3 +1,13 @@
+indicator-network (0.5.1+15.04.20150611-0ubuntu1) vivid; urgency=medium
+
+  [ CI Train Bot ]
+  * New rebuild forced.
+
+  [ Michael Zanetti ]
+  * backport pete-wood's fix for the looping dependency to unity8
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Thu, 11 Jun 2015 16:26:53 +0000
+
 indicator-network (0.5.1+15.04.20150520-0ubuntu1) vivid; urgency=medium
 
   [ Antti Kaijanmäki ]
