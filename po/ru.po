@@ -9,111 +9,116 @@ msgstr ""
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
 "PO-Revision-Date: 2014-08-26 11:40+0000\n"
-"Last-Translator: Jay ZDLin <Unknown>\n"
+"Last-Translator: ☠Jay ZDLin☠ <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2015-09-04 05:37+0000\n"
+"X-Generator: Launchpad (build 17706)\n"
 
-#: src/indicator/quick-access-section.cpp:48
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:141
 msgid "Flight Mode"
 msgstr "Режим полёта"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: src/indicator/root-state.cpp:296
+#: ../src/indicator/root-state.cpp:306
 msgid "Network"
 msgstr "Сеть"
 
-#: src/indicator/sim-unlock-dialog.cpp:115
+#: ../src/indicator/sim-unlock-dialog.cpp:218
 msgid "Sorry, incorrect PIN"
-msgstr ""
+msgstr "Извините, неправильный PIN-код"
 
-#: src/indicator/sim-unlock-dialog.cpp:136
+#: ../src/indicator/sim-unlock-dialog.cpp:230
 msgid "Sorry, incorrect PUK"
-msgstr ""
+msgstr "Извините, неправильный PUK-код"
 
-#: src/indicator/sim-unlock-dialog.cpp:151
+#: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
+msgstr "Извините, неправильный PIN-код %{1}."
 
-#: src/indicator/sim-unlock-dialog.cpp:156
-#: src/indicator/sim-unlock-dialog.cpp:185
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "Осталась последняя попытка."
 
-#: src/indicator/sim-unlock-dialog.cpp:158
+#: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
+"Если PIN-код %{1} введён неправильно, для разблокирования вам потребуется "
+"PUK-код."
 
-#: src/indicator/sim-unlock-dialog.cpp:168
+#: ../src/indicator/sim-unlock-dialog.cpp:161
 msgid "Sorry, your %{1} is now blocked."
-msgstr ""
+msgstr "Извините, операции на %{1} заблокированы."
 
-#: src/indicator/sim-unlock-dialog.cpp:173
+#: ../src/indicator/sim-unlock-dialog.cpp:166
 msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
+msgstr "Введите PUK-код, чтобы разблокировать SIM-карту."
 
-#: src/indicator/sim-unlock-dialog.cpp:175
+#: ../src/indicator/sim-unlock-dialog.cpp:168
 msgid "You may need to contact your network provider for PUK code."
-msgstr ""
+msgstr "Для получения PUKкода вам необходимо обратиться к оператору связи."
 
-#: src/indicator/sim-unlock-dialog.cpp:183
-#: src/indicator/sim-unlock-dialog.cpp:197
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
 msgid "Sorry, incorrect PUK."
-msgstr ""
+msgstr "Неправильный PUK-код."
 
-#: src/indicator/sim-unlock-dialog.cpp:187
+#: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
+"В случае введения неправильного PUK-кода, SIM-карта будет заблокирована и "
+"потребуется её замена."
 
-#: src/indicator/sim-unlock-dialog.cpp:189
+#: ../src/indicator/sim-unlock-dialog.cpp:182
 msgid "Please contact your network provider."
-msgstr ""
+msgstr "Пожалуйста, обратитесь к оператору связи."
 
-#: src/indicator/sim-unlock-dialog.cpp:199
+#: ../src/indicator/sim-unlock-dialog.cpp:192
 msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
+msgstr "Ваша SIM-карта необратимо заблокирована и необходима её замена."
 
-#: src/indicator/sim-unlock-dialog.cpp:201
+#: ../src/indicator/sim-unlock-dialog.cpp:194
 msgid "Please contact your service provider."
-msgstr ""
+msgstr "Пожалуйста, обратитесь к поставщику услуги."
 
-#: src/indicator/sim-unlock-dialog.cpp:265
+#: ../src/indicator/sim-unlock-dialog.cpp:292
 msgid "Enter %{1} PIN"
-msgstr ""
+msgstr "Введите PIN-код %{1}"
 
-#: src/indicator/sim-unlock-dialog.cpp:272
+#: ../src/indicator/sim-unlock-dialog.cpp:300
 msgid "Enter PUK code"
 msgstr "Введите PUK-код"
 
-#: src/indicator/sim-unlock-dialog.cpp:274
+#: ../src/indicator/sim-unlock-dialog.cpp:304
 msgid "Enter PUK code for %{1}"
-msgstr ""
+msgstr "Введите PUKкод для %{1}"
 
-#: src/indicator/sim-unlock-dialog.cpp:282
+#: ../src/indicator/sim-unlock-dialog.cpp:315
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Осталась 1 попытка"
+msgstr[1] "Осталось %d попытки"
+msgstr[2] "Осталось %d попыток"
 
-#: src/indicator/sim-unlock-dialog.cpp:293
+#: ../src/indicator/sim-unlock-dialog.cpp:326
 msgid "Enter new %{1} PIN"
-msgstr ""
+msgstr "Введите новый PIN-код %{1}"
 
-#: src/indicator/sim-unlock-dialog.cpp:301
+#: ../src/indicator/sim-unlock-dialog.cpp:334
 msgid "Confirm new %{1} PIN"
-msgstr ""
+msgstr "Подтвердите новый PIN-код %{1} PIN"
 
-#: src/indicator/sim-unlock-dialog.cpp:340
-#: src/indicator/sim-unlock-dialog.cpp:515
+#: ../src/indicator/sim-unlock-dialog.cpp:373
 msgid "PIN codes did not match."
 msgstr "PIN-коды не совпадают."
 
@@ -135,118 +140,79 @@ msgstr "Подтвердите новый PIN-код"
 msgid "Failed to change PIN."
 msgstr "Не удалось изменить PIN-код."
 
-#: src/indicator/wifi-link-item.h:88
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:130
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
-#: src/indicator/wifi-link-item.h:152
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
 msgid "Other network…"
 msgstr "Другая сеть..."
 
-#: src/indicator/wifi-section.cpp:60
+#: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Настройки Wi-Fi..."
 
-#: src/indicator/wwan-link-item.cpp:87
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
 msgstr "Отсутствует SIM-карта"
 
-#: src/indicator/wwan-link-item.cpp:93
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
 msgid "SIM Error"
 msgstr "Ошибка SIM-карты"
 
-#: src/indicator/wwan-link-item.cpp:100
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
 msgid "SIM Locked"
 msgstr "SIM-карта заблокирована"
 
-#: src/indicator/wwan-link-item.cpp:112
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
 msgid "Unregistered"
-msgstr ""
+msgstr "Незарегистрированный"
 
-#: src/indicator/wwan-link-item.cpp:116
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
 msgid "Unknown"
-msgstr ""
+msgstr "Неизвестный"
 
-#: src/indicator/wwan-link-item.cpp:120
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
 msgid "Denied"
 msgstr "Отказ"
 
-#: src/indicator/wwan-link-item.cpp:124
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
 msgid "Searching"
 msgstr "Поиск"
 
-#: src/indicator/wwan-link-item.cpp:135
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
 msgid "No Signal"
 msgstr "Нет сигнала"
 
-#: src/indicator/wwan-link-item.cpp:141
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
 msgid "Offline"
 msgstr "Автономно"
 
-#: src/indicator/wwan-section.cpp:79
+#: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
 msgstr "Настройки сотовой сети..."
 
-#: src/secret-agent/SecretRequest.cpp:62
-#, qt-format
+#: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
 msgstr "Подключиться к “%1”"
 
-#: src/secret-agent/SecretRequest.cpp:67
+#: ../src/indicator/agent/SecretRequest.cpp:66
 msgid "WPA"
 msgstr "WPA"
 
-#: src/secret-agent/SecretRequest.cpp:69
+#: ../src/indicator/agent/SecretRequest.cpp:68
 msgid "WEP"
 msgstr "WEP"
 
-#: src/secret-agent/SecretRequest.cpp:75
+#: ../src/indicator/agent/SecretRequest.cpp:74
 msgid "Connect"
 msgstr "Подключиться"
 
-#: src/secret-agent/SecretRequest.cpp:76
+#: ../src/indicator/agent/SecretRequest.cpp:75
 msgid "Cancel"
 msgstr "Отменить"
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "Разблокировать SIM-карту..."
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Попытка %d из %d"
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Ой!<br>Введён неправильный PUK-код."
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "Ой!<br>Введён неправильный PIN-код."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr ""
-#~ "SIM-карта окончательно заблокирована и требует замены.<br><br>Свяжитесь с "
-#~ "вашим оператором."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-#~ msgstr ""
-#~ "Осталась последняя попытка.<br><br>Если PIN-код будет введён неверно, SIM-"
-#~ "карта заблокируется, а для разблокировки потребуется ввести PUK-код."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "Осталась последняя попытка.<br><br>Если PUK-код будет введён неверно, SIM-"
-#~ "карту придётся заменить.<br><br>Свяжитесь с вашим оператором."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "SIM-карта заблокирована.<br><br>Введите PUK-код для "
-#~ "разблокировки.<br><br>Для получения PUK-кода попробуйте обратиться к вашему "
-#~ "оператору."
