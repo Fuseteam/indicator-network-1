@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2016-01-14 06:16+0000\n"
-"X-Generator: Launchpad (build 17886)\n"
+"X-Launchpad-Export-Date: 2016-02-20 05:44+0000\n"
+"X-Generator: Launchpad (build 17925)\n"
 "Language: fr\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -167,10 +167,14 @@ msgstr ""
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"La connexion au réseau privé virtuel « %1 » a échoué car il n'y avait aucun "
+"identifiant valide."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
 msgstr ""
+"La connexion au réseau privé virtuel « %1 » a échoué car les identifiants "
+"sont invalides."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"

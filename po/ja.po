@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-01-14 06:16+0000\n"
-"X-Generator: Launchpad (build 17886)\n"
+"X-Launchpad-Export-Date: 2016-02-20 05:44+0000\n"
+"X-Generator: Launchpad (build 17925)\n"
 "Language: ja\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -223,7 +223,7 @@ msgstr "その他のネットワーク..."
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "VPN 接続 %1"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
@@ -250,4 +250,4 @@ msgstr "セルラー設定…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr ""
+msgstr "VPN 設定..."

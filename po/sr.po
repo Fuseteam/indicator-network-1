@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2016-01-14 06:16+0000\n"
-"X-Generator: Launchpad (build 17886)\n"
+"X-Launchpad-Export-Date: 2016-02-20 05:44+0000\n"
+"X-Generator: Launchpad (build 17925)\n"
 "Language: sr\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -114,52 +114,58 @@ msgstr "ПИН код није тачан."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "ВПН конекција '%1' је неуспешна"
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
-msgstr ""
+msgstr "ВПН конекција '%1' је неуспешна јер је мрежна конекција прекинута."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"ВПН конекција '%1' је неуспешна јер је ВПНсервис заустављен неочекивано."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"ВПН конекција '%1' је неуспешна јер је ВПН сервис вратио погрешну "
+"конфигурацију."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"ВПН конекција '%1' је неуспешна јер је покушај успостављања везе истекао."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"ВПН конекција '%1' је неуспешна јер ВПН сервис није покренут на време."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"ВПН конекција '%1' је неуспешна јер ВПН сервис није успео да се стартује."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr ""
+msgstr "ВПН конекција '%1' је неуспешна јер нема исправних ВПН тајни."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "ВПН конекција '%1' је неуспешна због погрешне ВПН тајне."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "ВПН конекција је неуспешна"
 
 #: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -229,7 +235,7 @@ msgstr "Друга мрежа..."
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "ВПН конекција %1"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187

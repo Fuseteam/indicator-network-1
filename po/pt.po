@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-01-14 06:16+0000\n"
-"X-Generator: Launchpad (build 17886)\n"
+"X-Launchpad-Export-Date: 2016-02-20 05:44+0000\n"
+"X-Generator: Launchpad (build 17925)\n"
 "Language: pt\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -67,7 +67,7 @@ msgstr "Por favor, contacte a sua operadora."
 #: ../src/indicator/sim-unlock-dialog.cpp:192
 msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
-"O seu cartão SIM está agora permanentemente bloqueado e necessita de ser "
+"O cartão SIM está agora permanentemente bloqueado e necessita de ser "
 "substituído."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:194

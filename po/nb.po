@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-01-14 06:16+0000\n"
-"X-Generator: Launchpad (build 17886)\n"
+"X-Launchpad-Export-Date: 2016-02-20 05:44+0000\n"
+"X-Generator: Launchpad (build 17925)\n"
 "Language: nb\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -113,52 +113,59 @@ msgstr "PIN-kodene samsvarer ikke."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "VPN-tilkoblinga «%1» mislyktes."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
-msgstr ""
+msgstr "VPN-tilkoblinga «%1» mislyktes fordi nettverkstilkoblinga ble brutt."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr ""
+msgstr "VPN-tilkoblinga «%1» mislyktes fordi VPN-tjenesten stopped uventet."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"VPN-tilkoblinga «%1» mislyktes fordi VPN-tjenesten har ugyldig oppsett."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"VPN-tilkoblinga «%1» mislyktes fordi tilkoblingsforsøket gikk ut på tid."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"VPN-tilkoblinga «%1» mislyktes fordi VPN-tjenesten ikke startet i tide."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"VPN-tilkoblinga «%1» mislyktes fordi VPN-tjenesten ikke klarte å starte."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"VPN-tilkoblinga «%1» mislyktes fordi det ikke finnes noen hemmelige VPN-"
+"nøkler."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
 msgstr ""
+"VPN-tilkoblinga «%1» mislyktes på grunn av ugyldige hemmelige VPN-nøkler."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "VPN-tilkobling mislyktes"
 
 #: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -228,7 +235,7 @@ msgstr "Annet nettverk …"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "VPN-tilkobling %1"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
@@ -243,7 +250,7 @@ msgstr "Flymodus"
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:209
 msgid "Hotspot"
-msgstr ""
+msgstr "Delt trådløst"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
@@ -255,4 +262,4 @@ msgstr "Mobilnett-innstillinger …"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr ""
+msgstr "VPN-innstillinger …"

@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2016-01-14 06:16+0000\n"
-"X-Generator: Launchpad (build 17886)\n"
+"X-Launchpad-Export-Date: 2016-02-20 05:44+0000\n"
+"X-Generator: Launchpad (build 17925)\n"
 "Language: am\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -109,52 +109,52 @@ msgstr "የ ፒን ኮዶቹ አይመሳሰሉም"
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "የ VPN ግንኙነት '%1' ወድቋል"
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
-msgstr ""
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ ኔትዎርክ ግንኙነት ተቋርጧል"
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr ""
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት በድንገት ተቋርጧል"
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
-msgstr ""
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት ዋጋ የለውም"
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
-msgstr ""
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም ግንኙነት ጊዜው አልፏል"
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr ""
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት በጊዜው ስራ አልጀመረም"
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት ማስጀመር አልተቻለም"
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr ""
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም ዋጋ ያለው VPN ግልጋሎት አልተገኘም"
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም VPN ዋጋ የለውም"
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "የ VPN ግንኙነት ወድቋል"
 
 #: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -224,7 +224,7 @@ msgstr "ሌሎች ኔትዎርኮች..."
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "የ VPN ግንኙነት %1"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187

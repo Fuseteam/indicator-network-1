@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2016-01-19 05:55+0000\n"
-"X-Generator: Launchpad (build 17886)\n"
+"X-Launchpad-Export-Date: 2016-02-20 05:44+0000\n"
+"X-Generator: Launchpad (build 17925)\n"
 "Language: pl\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -123,32 +123,43 @@ msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
 msgstr ""
+"Połączenie VPN '%1' nie powiodło się, ponieważ połączenie internetowe "
+"zostało przerwane."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"Połączenie VPN '%1' nie powiodło się, ponieważ usługa VPN została "
+"niespodziewanie zatrzymana."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"Połączenie VPN '%1' nie powiodło się, ponieważ usługa VPN zwróciła "
+"nieprawidłową konfigurację."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"Połączenie VPN '%1' nie powiodło się, ponieważ przekroczono limit czasu "
+"próby połączenia."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"Połączenie VPN '%1' nie powiodło się, ponieważ usługa VPN nie uruchomiła się "
+"na czas."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"Połączenie VPN '%1' nie powiodło się, ponieważ usługa VPN nie wystartowała."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
