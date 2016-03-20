@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2016-03-09 05:39+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2016-03-19 20:14+0000\n"
+"Last-Translator: Ján Dráb <jan@drab.name>\n"
 "Language-Team: Slovak <sk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 1 : (n>=2 && n<=4) ? 2 : 0;\n"
-"X-Launchpad-Export-Date: 2016-03-10 06:06+0000\n"
-"X-Generator: Launchpad (build 17936)\n"
+"X-Launchpad-Export-Date: 2016-03-20 05:44+0000\n"
+"X-Generator: Launchpad (build 17947)\n"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:198
@@ -123,20 +123,20 @@ msgstr "PIN kódy sa nezhodujú."
 #: src/indicator/sim-unlock-dialog.cpp:495
 #: src/indicator/sim-unlock-dialog.cpp:523
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "Zadajte SIM PIN"
 
 #: src/indicator/sim-unlock-dialog.cpp:506
 #: src/indicator/sim-unlock-dialog.cpp:516
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "Zadajte nový PIN kód"
 
 #: src/indicator/sim-unlock-dialog.cpp:510
 msgid "Confirm new PIN code"
-msgstr ""
+msgstr "Potvrďte nový PIN kód"
 
 #: src/indicator/sim-unlock-dialog.cpp:522
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "Nepodarilo sa zmeniť PIN."
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
