@@ -200,6 +200,7 @@ protected:
     static QString firstModem();
 
     static unity::gmenuharness::MenuItemMatcher flightModeSwitch(bool toggled = false);
+    static unity::gmenuharness::MenuItemMatcher mobileDataSwitch(bool toggled = false);
 
     static unity::gmenuharness::MenuItemMatcher accessPoint(const std::string& ssid, Secure secure,
                 ApMode apMode, ConnectionStatus connectionStatus, uchar strength = 100);

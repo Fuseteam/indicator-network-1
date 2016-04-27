@@ -13,6 +13,8 @@ set(
     test-indicator.cpp
     test-indicator-vpn.cpp
     test-connectivity-api.cpp
+    test-connectivity-api-modem.cpp
+    test-connectivity-api-sim.cpp
     test-connectivity-api-vpn.cpp
 )
 
