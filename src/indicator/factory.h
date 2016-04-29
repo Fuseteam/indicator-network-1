@@ -68,6 +68,8 @@ public:
 
     virtual SwitchItem::UPtr newWifiSwitch();
 
+    virtual SwitchItem::UPtr newMobileDataSwitch();
+
     virtual SwitchItem::UPtr newFlightModeSwitch();
 
     virtual SwitchItem::UPtr newHotspotSwitch();
