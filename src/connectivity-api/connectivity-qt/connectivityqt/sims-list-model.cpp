@@ -121,7 +121,7 @@ public:
     QList<QDBusObjectPath> m_dbus_paths;
     QList<Sim::SPtr> m_sims;
 
-    const QDBusConnection &m_connection;
+    QDBusConnection m_connection;
 };
 
 SimsListModel::SimsListModel(const QDBusConnection& connection, QObject *parent) :

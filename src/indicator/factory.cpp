@@ -203,6 +203,12 @@ SwitchItem::UPtr Factory::newFlightModeSwitch()
     return flightModeSwitch;
 }
 
+SwitchItem::UPtr Factory::newMobileDataSwitch()
+{
+    auto s = make_unique<SwitchItem>(_("Cellular data"), "mobiledata", "enabled");
+    return s;
+}
+
 SwitchItem::UPtr Factory::newHotspotSwitch()
 {
     // TODO Move this into a new class

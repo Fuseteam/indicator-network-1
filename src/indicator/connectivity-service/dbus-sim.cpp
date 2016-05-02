@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -14,7 +14,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *     Pete Woods <pete.woods@canonical.com>
+ *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
 #include <connectivity-service/dbus-sim.h>
@@ -86,7 +86,7 @@ QString DBusSim::primaryPhoneNumber() const
 
 bool DBusSim::locked() const
 {
-    return false;
+    return m_sim->locked();
 }
 
 bool DBusSim::present() const
@@ -136,7 +136,6 @@ void DBusSim::presentChanged()
 
 void DBusSim::dataRoamingEnabledChanged()
 {
-    qDebug() << "DATAROAMINGENABLEDCHANGED";
     notifyProperties({"DataRoamingEnabled"});
 }
 

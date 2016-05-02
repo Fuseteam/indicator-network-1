@@ -1,3 +1,10 @@
+indicator-network (0.7.1+16.04.20160429-0ubuntu1) xenial; urgency=medium
+
+  * Add cellular data switch to the factory to introduce the
+    translatable string. (LP: #1373463)
+
+ -- Antti Kaijanmäki <antti.kaijanmaki@canonical.com>  Fri, 29 Apr 2016 14:24:07 +0000
+
 indicator-network (0.7.1+16.04.20160406.1-0ubuntu1) xenial; urgency=medium
 
   * Use tethering Android property for hotspot interface

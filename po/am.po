@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-17 10:40+0000\n"
+"POT-Creation-Date: 2016-04-29 12:38+0300\n"
 "PO-Revision-Date: 2016-02-15 17:40+0000\n"
 "Last-Translator: samson <Unknown>\n"
 "Language-Team: Amharic <am@li.org>\n"
@@ -15,9 +15,89 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2016-04-14 06:28+0000\n"
-"X-Generator: Launchpad (build 17990)\n"
+"X-Launchpad-Export-Date: 2016-05-01 05:55+0000\n"
+"X-Generator: Launchpad (build 17995)\n"
 "Language: am\n"
+
+#: ../src/agent/SecretRequest.cpp:61
+msgid "Connect to “%1”"
+msgstr "መገናኛ ወደ “%1”"
+
+#: ../src/agent/SecretRequest.cpp:66
+msgid "WPA"
+msgstr "WPA"
+
+#: ../src/agent/SecretRequest.cpp:68
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/agent/SecretRequest.cpp:74
+msgid "Connect"
+msgstr "መገናኛ"
+
+#: ../src/agent/SecretRequest.cpp:75
+msgid "Cancel"
+msgstr "መሰረዣ"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "ሌሎች ኔትዎርኮች..."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "ሲም አልተገኘም"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "የ ሲም ስህተት"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "ሲም ተቆልፏል"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "ያልተመዘገበ"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "ያልታወቀ"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "ተከልክሏል"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "በ መፈለግ ላይ"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "ምልክት የለም"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "ከመስመር ውጪ"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:187
+msgid "Wi-Fi"
+msgstr "ዋይ-ፋይ"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:198
+msgid "Flight Mode"
+msgstr "በ በረራ ዘዴ"
+
+#: ../src/indicator/factory.cpp:208
+msgid "Cellular data"
+msgstr ""
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:215
+msgid "Hotspot"
+msgstr "Hotspot"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -156,95 +236,6 @@ msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም VPN ዋጋ 
 msgid "VPN Connection Failed"
 msgstr "የ VPN ግንኙነት ወድቋል"
 
-#: ../src/agent/SecretRequest.cpp:61
-msgid "Connect to “%1”"
-msgstr "መገናኛ ወደ “%1”"
-
-#: ../src/agent/SecretRequest.cpp:66
-msgid "WPA"
-msgstr "WPA"
-
-#: ../src/agent/SecretRequest.cpp:68
-msgid "WEP"
-msgstr "WEP"
-
-#: ../src/agent/SecretRequest.cpp:74
-msgid "Connect"
-msgstr "መገናኛ"
-
-#: ../src/agent/SecretRequest.cpp:75
-msgid "Cancel"
-msgstr "መሰረዣ"
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:306
-msgid "Network"
-msgstr "ኔትዎርክ"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "ሲም አልተገኘም"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "የ ሲም ስህተት"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "ሲም ተቆልፏል"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "ያልተመዘገበ"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "ያልታወቀ"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "ተከልክሏል"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "በ መፈለግ ላይ"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "ምልክት የለም"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "ከመስመር ውጪ"
-
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "ሌሎች ኔትዎርኮች..."
-
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "የ VPN ግንኙነት %1"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:187
-msgid "Wi-Fi"
-msgstr "ዋይ-ፋይ"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:198
-msgid "Flight Mode"
-msgstr "በ በረራ ዘዴ"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:209
-msgid "Hotspot"
-msgstr "Hotspot"
-
-#: ../src/indicator/sections/wifi-section.cpp:65
-msgid "Wi-Fi settings…"
-msgstr "ዋይ-ፋይ ማሰናጃዎች…"
-
 #: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
 msgstr "ሴሉላር ማሰናጃዎች…"
@@ -252,3 +243,16 @@ msgstr "ሴሉላር ማሰናጃዎች…"
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
 msgstr "VPN ማሰናጃ…"
+
+#: ../src/indicator/sections/wifi-section.cpp:65
+msgid "Wi-Fi settings…"
+msgstr "ዋይ-ፋይ ማሰናጃዎች…"
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "ኔትዎርክ"
+
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "የ VPN ግንኙነት %1"

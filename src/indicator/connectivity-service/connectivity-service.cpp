@@ -223,7 +223,7 @@ public Q_SLOTS:
         for (auto i : m_manager->modems())
         {
             modems[i->serial()] = i;
-       }
+        }
         auto toAdd(modems.keys().toSet());
         toAdd.subtract(current_serials);
 

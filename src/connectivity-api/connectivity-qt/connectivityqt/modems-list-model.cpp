@@ -76,9 +76,11 @@ public:
             p.beginInsertRows(QModelIndex(), m_modems.size(), m_modems.size() + toAdd.size() - 1);
             for (const auto& path: toAdd)
             {
+                qDebug() << "ADDING " << path.path();
                 auto modem = std::make_shared<Modem>(path, m_connection, m_sims, this);
                 m_modems << modem;
                 connect(modem.get(), &Modem::simChanged, this, &Priv::simChanged);
+                qDebug() << "ADDED " << path.path();
             }
             p.endInsertRows();
         }
@@ -100,6 +102,7 @@ public:
 public Q_SLOTS:
     void simChanged(Sim *sim)
     {
+        Q_UNUSED(sim)
         auto idx = findModem(sender());
         p.dataChanged(idx, idx, {ModemsListModel::Roles::RoleSim});
     }
@@ -110,7 +113,7 @@ public:
     QList<QDBusObjectPath> m_dbus_paths;
     QList<Modem::SPtr> m_modems;
 
-    const QDBusConnection &m_connection;
+    QDBusConnection m_connection;
 };
 
 ModemsListModel::ModemsListModel(const QDBusConnection& connection, SimsListModel *sims, QObject *parent) :

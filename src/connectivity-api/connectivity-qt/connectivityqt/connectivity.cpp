@@ -107,8 +107,6 @@ public Q_SLOTS:
         {
             Q_EMIT p.initialized();
         }
-        QList<QDBusObjectPath> tmp;
-        qvariant_cast<QDBusArgument>(m_writePropertyCache->get("Modems")) >> tmp;
     }
 
     void propertyChanged(const QString& name, const QVariant& value)
@@ -180,20 +178,29 @@ public Q_SLOTS:
         else if (name == "SimForMobileData")
         {
             auto path = value.value<QDBusObjectPath>();
+            qDebug() << "Property Update: " << path.path();
             auto sim = m_simsModel->getSimByPath(path);
             p.setSimForMobileData(sim);
         }
         else if (name == "Modems")
         {
+            qDebug() << "FOO1";
             QList<QDBusObjectPath> tmp;
-            qvariant_cast<QDBusArgument>(m_writePropertyCache->get("Modems")) >> tmp;
+            qvariant_cast<QDBusArgument>(value) >> tmp;
+            qDebug() << "Bar";
             m_modemsModel->updateModemDBusPaths(tmp);
         }
         else if (name == "Sims")
         {
+             qDebug() << "FOO2";
             QList<QDBusObjectPath> tmp;
-            qvariant_cast<QDBusArgument>(m_writePropertyCache->get("Sims")) >> tmp;
+            qvariant_cast<QDBusArgument>(value) >> tmp;
+            qDebug() << "Bar2";
             m_simsModel->updateSimDBusPaths(tmp);
+
+            auto path = m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>();
+            auto sim = m_simsModel->getSimByPath(path);
+            p.setSimForMobileData(sim);
         }
 
     }
@@ -270,7 +277,9 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
         qvariant_cast<QDBusArgument>(d->m_writePropertyCache->get("Modems")) >> tmp;
         d->m_modemsModel->updateModemDBusPaths(tmp);
 
-        d->m_simForMobileData = d->m_simsModel->getSimByPath(d->m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>());
+        auto sim = d->m_simsModel->getSimByPath(d->m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>());
+        qDebug() << "Hot Start: " << sim->path().path();
+        d->m_simForMobileData = sim;
     }
 
     connect(d->m_writeInterface.get(),
@@ -280,6 +289,7 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
 
 Connectivity::~Connectivity()
 {
+    qDebug() << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 }
 
 bool Connectivity::flightMode() const
@@ -449,6 +459,7 @@ Sim *Connectivity::simForMobileData() const
 
 void Connectivity::setSimForMobileData(Sim *sim)
 {
+    qDebug() << "setSimForMobileData: " << sim;
     if (d->m_simForMobileData == sim)
     {
         return;

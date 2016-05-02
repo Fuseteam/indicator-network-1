@@ -381,6 +381,7 @@ public Q_SLOTS:
         if (simmgr)
         {
             m_connManager = std::make_shared<QOfonoConnectionManager>(this);
+            m_connManager->setModemPath(simmgr->modemPath());
             connManagerChanged(m_connManager);
         }
         else

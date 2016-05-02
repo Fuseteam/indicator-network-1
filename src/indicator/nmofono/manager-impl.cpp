@@ -377,7 +377,7 @@ public Q_SLOTS:
         m_simForMobileData = sim;
         if (m_simForMobileData)
         {
-            m_simForMobileData->setMobileDataEnabled(true);
+            m_simForMobileData->setMobileDataEnabled(p.mobileDataEnabled());
         }
 
         Q_EMIT p.simForMobileDataChanged();
