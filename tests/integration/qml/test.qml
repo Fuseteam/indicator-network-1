@@ -61,12 +61,24 @@ MainView {
                         Connectivity.simForMobileData = currentSim
                     }
                 }
-                Component.onCompleted: {
+                function setSelectedIndex() {
+                    console.log("SETTING SELECTEDINDEX")
                     for (var i = 0; i < sortedModems.count; i++) {
+                        console.log(sortedModems.get(i).Sim)
                         if (sortedModems.get(i).Sim == Connectivity.simForMobileData) {
+                            console.log("SETTING " + i)
                             modemSelector.selectedIndex = i
                         }
                     }
+                }
+                Connections {
+                    target: Connectivity
+                    onSimForMobileDataUpdated: {
+                        modemSelector.setSelectedIndex()
+                    }
+                }
+                Component.onCompleted: {
+                    setSelectedIndex()
                 }
             }
             ColumnLayout {
