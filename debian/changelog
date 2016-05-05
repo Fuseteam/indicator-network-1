@@ -1,3 +1,13 @@
+indicator-network (0.7.1+16.04.20160505.1-0ubuntu1) xenial; urgency=medium
+
+  * New Connectivity Service Private API for managing mobile data and
+    SIM cards. (LP: #1373463)
+  * New Connectivity Service Private API for managing mobile data and
+    SIM cards. Tests. (LP: #1373463)
+  * add mobile data switch (LP: #1373463)
+
+ -- Antti Kaijanmäki <antti.kaijanmaki@canonical.com>  Thu, 05 May 2016 14:23:24 +0000
+
 indicator-network (0.7.1+16.04.20160429-0ubuntu1) xenial; urgency=medium
 
   * Add cellular data switch to the factory to introduce the
