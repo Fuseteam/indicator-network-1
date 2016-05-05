@@ -30,8 +30,12 @@
 
 #include <connectivityqt/vpn-connections-list-model.h>
 
+#include <QDBusObjectPath>
+
 namespace connectivityqt
 {
+
+class Sim;
 
 class Q_DECL_EXPORT Connectivity: public QObject
 {
@@ -138,6 +142,32 @@ public:
     Q_PROPERTY(QAbstractItemModel* vpnConnections READ vpnConnections NOTIFY vpnConnectionsUpdated)
     QAbstractItemModel* vpnConnections() const;
 
+    Q_PROPERTY(bool mobileDataEnabled
+               READ mobileDataEnabled
+               WRITE setMobileDataEnabled
+               NOTIFY mobileDataEnabledUpdated
+               REVISION 1)
+    bool mobileDataEnabled() const;
+
+    Q_PROPERTY(Sim* simForMobileData
+               READ simForMobileData
+               WRITE setSimForMobileData
+               NOTIFY simForMobileDataUpdated
+               REVISION 1)
+    Sim* simForMobileData() const;
+
+    Q_PROPERTY(QAbstractItemModel* modems
+               READ modems
+               REVISION 1
+               CONSTANT)
+    QAbstractItemModel* modems() const;
+
+    Q_PROPERTY(QAbstractItemModel* sims
+               READ sims
+               REVISION 1
+               CONSTANT)
+    QAbstractItemModel* sims() const;
+
 public Q_SLOTS:
     void setFlightMode(bool enabled);
 
@@ -152,6 +182,10 @@ public Q_SLOTS:
     void setHotspotMode(const QString& mode);
 
     void setHotspotAuth(const QString& auth);
+
+    void setMobileDataEnabled(bool enabled);
+
+    void setSimForMobileData(Sim *sim);
 
 Q_SIGNALS:
     void flightModeUpdated(bool);
@@ -193,6 +227,10 @@ Q_SIGNALS:
     void initialized();
 
     void vpnConnectionsUpdated(QAbstractItemModel*);
+
+    void mobileDataEnabledUpdated(bool);
+
+    void simForMobileDataUpdated(Sim* sim);
 
 protected:
     class Priv;

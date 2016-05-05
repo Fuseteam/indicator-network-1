@@ -21,6 +21,12 @@
 #include <connectivityqt/connectivity.h>
 #include <connectivityqt/openvpn-connection.h>
 
+#include <connectivityqt/sim.h>
+
+#include <connectivityqt/modems-list-model.h>
+#include <connectivityqt/sims-list-model.h>
+
+
 #include <QtQml>
 
 namespace
@@ -44,10 +50,15 @@ QmlConnectivityNetworkingPlugin::registerTypes(const char *uri)
 {
     connectivityqt::Connectivity::registerMetaTypes();
     qmlRegisterSingletonType<connectivityqt::Connectivity>(uri, 1, 0, "NetworkingStatus", connectivitySingletonProvider);
-    qmlRegisterSingletonType<connectivityqt::Connectivity>(uri, 1, 0, "Connectivity", connectivitySingletonProvider);
+    qmlRegisterSingletonType<connectivityqt::Connectivity>(uri, 1, 1, "Connectivity", connectivitySingletonProvider);
     qmlRegisterUncreatableType<connectivityqt::VpnConnectionsListModel>(uri, 1, 0, "VpnConnectionsListModel", "Access VpnConnectionsListModel via Connectivity object");
     qmlRegisterUncreatableType<connectivityqt::VpnConnection>(uri, 1, 0, "VpnConnection", "Access VpnConnection via VpnConnectionsListModel object");
     qmlRegisterUncreatableType<connectivityqt::OpenvpnConnection>(uri, 1, 0, "OpenvpnConnection", "Access OpenvpnConnection via VpnConnectionsListModel object");
+
+    qmlRegisterUncreatableType<connectivityqt::Sim>(uri, 1, 1, "Sim", "");
+
+    qmlRegisterUncreatableType<connectivityqt::ModemsListModel>(uri, 1, 1, "ModemsListModel", "");
+    qmlRegisterUncreatableType<connectivityqt::ModemsListModel>(uri, 1, 1, "SimsListModel", "");
 }
 
 void

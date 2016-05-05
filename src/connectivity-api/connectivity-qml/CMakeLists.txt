@@ -8,7 +8,7 @@ include_directories(
 )
 
 set(CONNECTIVITY_QML_SRC
-  plugin.cpp
+    plugin.cpp
 )
 
 add_library(connectivity-qml SHARED

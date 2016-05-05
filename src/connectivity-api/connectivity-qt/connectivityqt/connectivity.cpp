@@ -20,6 +20,8 @@
 #include <connectivityqt/connectivity.h>
 #include <connectivityqt/internal/vpn-connection-list-model-parameters.h>
 #include <connectivityqt/vpn-connections-list-model.h>
+#include <connectivityqt/modems-list-model.h>
+#include <connectivityqt/sims-list-model.h>
 #include <dbus-types.h>
 #include <NetworkingStatusInterface.h>
 #include <NetworkingStatusPrivateInterface.h>
@@ -56,6 +58,11 @@ public:
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
 
     VpnConnectionsListModel::SPtr m_vpnConnectionsModel;
+
+    SimsListModel *m_simsModel;
+    ModemsListModel *m_modemsModel;
+
+    Sim *m_simForMobileData = nullptr;
 
     static QVector<Limitations> toLimitations(const QVariant& value)
     {
@@ -164,6 +171,38 @@ public Q_SLOTS:
         {
             Q_EMIT p.hotspotStoredUpdated(value.toBool());
         }
+        else if (name == "MobileDataEnabled")
+        {
+            Q_EMIT p.mobileDataEnabledUpdated(value.toBool());
+        }
+        else if (name == "SimForMobileData")
+        {
+            auto path = value.value<QDBusObjectPath>();
+            qDebug() << "Property Update: " << path.path();
+            auto sim = m_simsModel->getSimByPath(path);
+            p.setSimForMobileData(sim);
+        }
+        else if (name == "Modems")
+        {
+            qDebug() << "FOO1";
+            QList<QDBusObjectPath> tmp;
+            qvariant_cast<QDBusArgument>(value) >> tmp;
+            qDebug() << "Bar";
+            m_modemsModel->updateModemDBusPaths(tmp);
+        }
+        else if (name == "Sims")
+        {
+             qDebug() << "FOO2";
+            QList<QDBusObjectPath> tmp;
+            qvariant_cast<QDBusArgument>(value) >> tmp;
+            qDebug() << "Bar2";
+            m_simsModel->updateSimDBusPaths(tmp);
+
+            auto path = m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>();
+            auto sim = m_simsModel->getSimByPath(path);
+            p.setSimForMobileData(sim);
+        }
+
     }
 
 };
@@ -178,6 +217,8 @@ void Connectivity::registerMetaTypes()
 
     qRegisterMetaType<connectivityqt::VpnConnection*>("VpnConnection*");
     qRegisterMetaType<connectivityqt::VpnConnection::Type>("VpnConnection::Type");
+
+    qRegisterMetaType<connectivityqt::Sim*>("Sim*");
 }
 
 Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* parent) :
@@ -195,6 +236,9 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
         QObject(parent), d(new Priv(*this, sessionConnection))
 {
     d->m_objectOwner = objectOwner;
+
+    d->m_simsModel = new SimsListModel(sessionConnection, this);
+    d->m_modemsModel = new ModemsListModel(sessionConnection, d->m_simsModel, this);
 
     d->m_readInterface = make_shared<
             ComUbuntuConnectivity1NetworkingStatusInterface>(
@@ -225,6 +269,19 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
             &internal::DBusPropertyCache::initialized, d.get(),
             &Connectivity::Priv::interfaceInitialized);
 
+    if (d->m_writePropertyCache->isInitialized()) {
+        QList<QDBusObjectPath> tmp;
+        qvariant_cast<QDBusArgument>(d->m_writePropertyCache->get("Sims")) >> tmp;
+        d->m_simsModel->updateSimDBusPaths(tmp);
+        tmp.clear();
+        qvariant_cast<QDBusArgument>(d->m_writePropertyCache->get("Modems")) >> tmp;
+        d->m_modemsModel->updateModemDBusPaths(tmp);
+
+        auto sim = d->m_simsModel->getSimByPath(d->m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>());
+        qDebug() << "Hot Start: " << sim->path().path();
+        d->m_simForMobileData = sim;
+    }
+
     connect(d->m_writeInterface.get(),
             &ComUbuntuConnectivity1PrivateInterface::ReportError, this,
             &Connectivity::reportError);
@@ -232,6 +289,7 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
 
 Connectivity::~Connectivity()
 {
+    qDebug() << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 }
 
 bool Connectivity::flightMode() const
@@ -383,6 +441,51 @@ QAbstractItemModel* Connectivity::vpnConnections() const
     }
     return d->m_vpnConnectionsModel.get();
 }
+
+bool Connectivity::mobileDataEnabled() const
+{
+    return d->m_writePropertyCache->get("MobileDataEnabled").toBool();
+}
+
+void Connectivity::setMobileDataEnabled(bool enabled)
+{
+    d->m_writeInterface->setMobileDataEnabled(enabled);
+}
+
+Sim *Connectivity::simForMobileData() const
+{
+    return d->m_simForMobileData;
+}
+
+void Connectivity::setSimForMobileData(Sim *sim)
+{
+    qDebug() << "setSimForMobileData: " << sim;
+    if (d->m_simForMobileData == sim)
+    {
+        return;
+    }
+    d->m_simForMobileData = sim;
+    if (sim)
+    {
+        d->m_writeInterface->setSimForMobileData(sim->path());
+    }
+    else
+    {
+        d->m_writeInterface->setSimForMobileData(QDBusObjectPath("/"));
+    }
+    Q_EMIT simForMobileDataUpdated(sim);
+}
+
+QAbstractItemModel* Connectivity::modems() const
+{
+    return d->m_modemsModel;
+}
+
+QAbstractItemModel *Connectivity::sims() const
+{
+    return d->m_simsModel;
+}
+
 
 }
 

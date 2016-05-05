@@ -22,6 +22,10 @@ set(
     CONNECTIVITY_QT_SRC
     connectivityqt/internal/dbus-property-cache.cpp
     connectivityqt/connectivity.cpp
+    connectivityqt/modem.cpp
+    connectivityqt/modems-list-model.cpp
+    connectivityqt/sim.cpp
+    connectivityqt/sims-list-model.cpp
     connectivityqt/openvpn-connection.cpp
     connectivityqt/pptp-connection.cpp
     connectivityqt/vpn-connection.cpp
@@ -33,6 +37,8 @@ set_source_files_properties(
     "${DATA_DIR}/org.freedesktop.DBus.Properties.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.Modem.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.Sim.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.OpenVpn.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.Pptp.xml"
@@ -50,6 +56,18 @@ qt5_add_dbus_interface(
     CONNECTIVITY_QT_SRC
     "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
     NetworkingStatusPrivateInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_QT_SRC
+    "${DATA_DIR}/com.ubuntu.connectivity1.Modem.xml"
+    ModemInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_QT_SRC
+    "${DATA_DIR}/com.ubuntu.connectivity1.Sim.xml"
+    SimInterface
 )
 
 qt5_add_dbus_interface(
@@ -99,8 +117,8 @@ set_target_properties(
     ${CONNECTIVITY_QT_LIB_TARGET}
     PROPERTIES
     SOVERSION ${SO_VERSION}
-    LINK_FLAGS "-Wl,--version-script,${SYMBOL_MAP}"
-    LINK_DEPENDS "${SYMBOL_MAP}"
+#    LINK_FLAGS "-Wl,--version-script,${SYMBOL_MAP}"
+#    LINK_DEPENDS "${SYMBOL_MAP}"
 )
 
 install(
