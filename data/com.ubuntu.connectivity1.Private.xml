@@ -52,6 +52,14 @@
         
         <property name="VpnConnections" type="ao" access="read"/>
 
+        <property name="MobileDataEnabled" type="b" access="readwrite"/>
+
+        <property name="SimForMobileData" type="o" access="readwrite"/>
+
+        <property name="Modems" type="ao" access="read"/>
+
+        <property name="Sims" type="ao" access="read"/>
+
         <signal name="ReportError">
             <arg type="i" direction="out" name="reason"/>
         </signal>

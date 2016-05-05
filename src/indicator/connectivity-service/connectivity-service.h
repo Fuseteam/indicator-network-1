@@ -109,6 +109,18 @@ public:
     Q_PROPERTY(QList<QDBusObjectPath> VpnConnections READ vpnConnections)
     QList<QDBusObjectPath> vpnConnections() const;
 
+    Q_PROPERTY(bool MobileDataEnabled READ mobileDataEnabled WRITE setMobileDataEnabled)
+    bool mobileDataEnabled() const;
+
+    Q_PROPERTY(QDBusObjectPath SimForMobileData READ simForMobileData WRITE setSimForMobileData)
+    QDBusObjectPath simForMobileData() const;
+
+    Q_PROPERTY(QList<QDBusObjectPath> Modems READ modems)
+    QList<QDBusObjectPath> modems() const;
+
+    Q_PROPERTY(QList<QDBusObjectPath> Sims READ sims)
+    QList<QDBusObjectPath> sims() const;
+
 protected Q_SLOTS:
     void UnlockAllModems();
 
@@ -131,6 +143,11 @@ protected Q_SLOTS:
     QDBusObjectPath AddVpnConnection(int type);
 
     void RemoveVpnConnection(const QDBusObjectPath &path);
+
+    void setMobileDataEnabled(bool enabled);
+
+    void setSimForMobileData(const QDBusObjectPath &path);
+
 
 Q_SIGNALS:
     void ReportError(int reason);

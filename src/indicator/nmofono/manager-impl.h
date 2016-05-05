@@ -91,6 +91,14 @@ public:
 
     QString hotspotAuth() const override;
 
+    bool mobileDataEnabled() const override;
+
+    wwan::Sim::Ptr simForMobileData() const override;
+
+    QList<wwan::Modem::Ptr> modems() const override;
+
+    QList<wwan::Sim::Ptr> sims() const override;
+
     void setHotspotEnabled(bool) override;
 
     void setHotspotSsid(const QByteArray&) override;
@@ -100,6 +108,10 @@ public:
     void setHotspotMode(const QString&) override;
 
     void setHotspotAuth(const QString&) override;
+
+    void setMobileDataEnabled(bool) override;
+
+    void setSimForMobileData(wwan::Sim::Ptr) override;
 
 private Q_SLOTS:
     void device_added(const QDBusObjectPath &path);

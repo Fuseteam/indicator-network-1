@@ -23,6 +23,7 @@
 #include <nmofono/link.h>
 #include <nmofono/wifi/wifi-link.h>
 #include <nmofono/wwan/modem.h>
+#include <nmofono/wwan/sim.h>
 
 #include <memory>
 #include <QSet>
@@ -143,6 +144,19 @@ public:
     Q_PROPERTY(QString hotspotAuth READ hotspotAuth WRITE setHotspotAuth NOTIFY hotspotAuthChanged)
     virtual QString hotspotAuth() const = 0;
 
+    Q_PROPERTY(bool mobileDataEnabled READ mobileDataEnabled WRITE setMobileDataEnabled NOTIFY mobileDataEnabledChanged)
+    virtual bool mobileDataEnabled() const = 0;
+
+    Q_PROPERTY(wwan::Sim::Ptr simForMobileData READ simForMobileData WRITE setSimForMobileData NOTIFY simForMobileDataChanged)
+    virtual wwan::Sim::Ptr simForMobileData() const = 0;
+
+    Q_PROPERTY(QList<wwan::Modem::Ptr> modems READ modems NOTIFY modemsChanged)
+    virtual QList<wwan::Modem::Ptr> modems() const = 0;
+
+    Q_PROPERTY(QList<wwan::Sim::Ptr> sims READ sims NOTIFY simsChanged)
+    virtual QList<wwan::Sim::Ptr> sims() const = 0;
+
+
 Q_SIGNALS:
     void flightModeUpdated(bool);
 
@@ -174,6 +188,14 @@ Q_SIGNALS:
 
     void unstoppableOperationHappeningUpdated(bool);
 
+    void mobileDataEnabledChanged(bool);
+
+    void simForMobileDataChanged();
+
+    void modemsChanged();
+
+    void simsChanged();
+
 public Q_SLOTS:
     virtual void setWifiEnabled(bool) = 0;
 
@@ -188,6 +210,10 @@ public Q_SLOTS:
     virtual void setHotspotMode(const QString&) = 0;
 
     virtual void setHotspotAuth(const QString&) = 0;
+
+    virtual void setMobileDataEnabled(bool) = 0;
+
+    virtual void setSimForMobileData(wwan::Sim::Ptr) = 0;
 
 protected:
     /**

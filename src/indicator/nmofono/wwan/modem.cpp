@@ -96,6 +96,10 @@ public:
     bool m_requiredPinSet = false;
     bool m_retriesSet = false;
 
+    QString m_serial;
+    bool m_serialSet = false;
+    bool m_readyFired = false;
+
     QString m_operatorName;
     Modem::ModemStatus m_status;
     int8_t m_strength;
@@ -107,6 +111,8 @@ public:
     int m_index = -1;
 
     QSet<QString> m_interfaces;
+
+    Sim::Ptr m_sim;
 
     shared_ptr<QOfonoConnectionManager> m_connectionManager;
     shared_ptr<QOfonoNetworkRegistration> m_networkRegistration;
@@ -124,6 +130,9 @@ public:
 
         connect(m_ofonoModem.get(), &QOfonoModem::interfacesChanged, this, &Private::interfacesChanged);
         interfacesChanged(m_ofonoModem->interfaces());
+
+        connect(m_ofonoModem.get(), &QOfonoModem::serialChanged, this, &Private::serialChanged);
+        serialChanged(m_ofonoModem->serial());
 
         /// @todo hook up with system-settings to allow changing the identifier.
         ///       for now just provide the defaults
@@ -154,6 +163,28 @@ public Q_SLOTS:
             m_shouldTriggerUnlock = false;
             Q_EMIT p.readyToUnlock(p.name());
         }
+
+        if (m_serialSet && !m_readyFired)
+        {
+            m_readyFired = true;
+            Q_EMIT p.ready();
+        }
+    }
+
+    void serialChanged(const QString &value) {
+        if (m_serial == value)
+        {
+            return;
+        }
+        if (m_serialSet)
+        {
+            qWarning() << "Unexpected update on SERIAL: " << m_serial << ", " << value;
+        }
+
+        m_serial = value;
+        m_serialSet = true;
+
+        update();
     }
 
     void connectionManagerChanged(shared_ptr<QOfonoConnectionManager> conmgr)
@@ -662,6 +693,12 @@ Modem::index() const
 QString
 Modem::name() const
 {
+    return ofonoPath();
+}
+
+QString
+Modem::ofonoPath() const
+{
     return d->m_ofonoModem->modemPath();
 }
 
@@ -725,8 +762,32 @@ Modem::notifyWhenReadyToUnlock()
 {
     d->m_shouldTriggerUnlock = true;
 }
+
+Sim::Ptr Modem::sim() const
+{
+    return d->m_sim;
 }
 
+void
+Modem::setSim(Sim::Ptr sim)
+{
+    if (d->m_sim == sim)
+    {
+        return;
+    }
+    d->m_sim = sim;
+    Q_EMIT simUpdated();
+}
+
+QString
+Modem::serial() const
+{
+    return d->m_serial;
+}
+
+
+
+}
 }
 
 #include "modem.moc"

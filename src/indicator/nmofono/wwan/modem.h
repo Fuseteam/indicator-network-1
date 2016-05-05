@@ -21,6 +21,8 @@
 
 #include <nmofono/wwan/wwan-link.h>
 
+#include <nmofono/wwan/sim.h>
+
 #include <map>
 #include <memory>
 
@@ -127,8 +129,12 @@ public:
     const QString &simIdentifier() const;
 
     int index() const;
+    Sim::Ptr sim() const;
+    void setSim(Sim::Ptr sim);
+    QString serial() const;
 
     QString name() const override;
+    QString ofonoPath() const;
 
     WwanType wwanType() const override;
 
@@ -176,6 +182,10 @@ Q_SIGNALS:
     void resetPinFailed(const QString& error);
 
     bool readyToUnlock(const QString& name);
+
+    void simUpdated();
+
+    void ready();
 };
 
 }

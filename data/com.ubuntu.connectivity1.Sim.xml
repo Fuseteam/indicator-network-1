@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node>
+    <interface name="com.ubuntu.connectivity1.Sim">
+        <property name="Imsi" type="s" access="read" />
+        <property name="PrimaryPhoneNumber" type="s" access="read" />
+        <property name="Locked" type="b" access="read" />
+        <property name="Present" type="b" access="read" />
+        <property name="Mcc" type="s" access="read" />
+        <property name="Mnc" type="s" access="read" />
+        <property name="PreferredLanguages" type="as" access="read" />
+        <property name="DataRoamingEnabled" type="b" access="readwrite" />
+
+        <method name="Unlock" />
+    </interface>
+</node>

@@ -47,6 +47,19 @@ namespace DBusTypes
         return path.arg(counter++);
     }
 
+    inline QString modemPath(const QString &serial)
+    {
+        static QString path{"/com/ubuntu/connectivity1/modem/%1"};
+        return path.arg(serial);
+    }
+
+    inline QString simPath(const QString &imsi)
+    {
+        static QString path{"/com/ubuntu/connectivity1/sim/%1"};
+        return path.arg(imsi);
+    }
+
+
     static constexpr char const* WPASUPPLICANT_DBUS_NAME = "fi.w1.wpa_supplicant1";
 
     static constexpr char const* WPASUPPLICANT_DBUS_INTERFACE = "fi.w1.wpa_supplicant1";

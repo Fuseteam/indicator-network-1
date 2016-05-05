@@ -139,3 +139,5 @@ enable_coverage_report(
 )
 
 endif()
+
+add_subdirectory(scripts)

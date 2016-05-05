@@ -19,6 +19,8 @@
  */
 
 #include <connectivity-service/connectivity-service.h>
+#include <connectivity-service/dbus-modem.h>
+#include <connectivity-service/dbus-sim.h>
 #include <connectivity-service/dbus-vpn-connection.h>
 #include <connectivity-service/dbus-openvpn-connection.h>
 #include <connectivity-service/dbus-pptp-connection.h>
@@ -47,6 +49,9 @@ public:
     vpn::VpnManager::SPtr m_vpnManager;
 
     QMap<QDBusObjectPath, DBusVpnConnection::SPtr> m_vpnConnections;
+
+    QMap<QString, DBusModem::SPtr> m_modems;
+    QMap<QString, DBusSim::SPtr> m_sims;
 
     shared_ptr<PrivateService> m_privateService;
 
@@ -164,6 +169,102 @@ public Q_SLOTS:
         notifyProperties({
             "HotspotStored"
         });
+    }
+
+    void mobileDataEnabledUpdated(bool value)
+    {
+        Q_UNUSED(value)
+        notifyPrivateProperties({
+            "MobileDataEnabled"
+        });
+    }
+
+    void simForMobileDataUpdated()
+    {
+        notifyPrivateProperties({
+            "SimForMobileData"
+        });
+    }
+
+    void updateSims()
+    {
+        auto current_imsis = m_sims.keys().toSet();
+        QMap<QString, nmofono::wwan::Sim::Ptr> sims;
+        for (auto i : m_manager->sims())
+        {
+            sims[i->imsi()] = i;
+        }
+        auto toAdd(sims.keys().toSet());
+        toAdd.subtract(current_imsis);
+
+        auto toRemove(current_imsis);
+        toRemove.subtract(sims.keys().toSet());
+
+        for (auto imsi : toRemove)
+        {
+            m_sims.remove(imsi);
+        }
+
+        for (auto imsi : toAdd)
+        {
+            DBusSim::SPtr dbussim = make_shared<DBusSim>(sims[imsi], m_connection);
+            m_sims[imsi] = dbussim;
+        }
+
+        notifyPrivateProperties({
+            "Sims"
+        });
+    }
+
+    void updateModems()
+    {
+        auto current_serials = m_modems.keys().toSet();
+        QMap<QString, nmofono::wwan::Modem::Ptr> modems;
+        for (auto i : m_manager->modems())
+        {
+            modems[i->serial()] = i;
+        }
+        auto toAdd(modems.keys().toSet());
+        toAdd.subtract(current_serials);
+
+        auto toRemove(current_serials);
+        toRemove.subtract(modems.keys().toSet());
+
+        for (auto serial : toRemove)
+        {
+            m_modems.remove(serial);
+        }
+
+        for (auto serial : toAdd)
+        {
+            wwan::Modem::Ptr m = modems[serial];
+
+            DBusModem::SPtr dbusmodem = make_shared<DBusModem>(m, m_connection);
+            m_modems[serial] = dbusmodem;
+            updateModemSimPath(dbusmodem, m->sim());
+            connect(m.get(), &wwan::Modem::simUpdated, this, &Private::modemSimUpdated);
+        }
+        notifyPrivateProperties({
+            "Modems"
+        });
+    }
+
+    void modemSimUpdated()
+    {
+        auto modem_raw = qobject_cast<wwan::Modem*>(sender());
+        updateModemSimPath(m_modems[modem_raw->serial()], modem_raw->sim());
+    }
+
+    void updateModemSimPath(DBusModem::SPtr modem, wwan::Sim::Ptr sim)
+    {
+        if (!sim)
+        {
+            modem->setSim(QDBusObjectPath("/"));
+        }
+        else
+        {
+            modem->setSim(m_sims[sim->imsi()]->path());
+        }
     }
 
     void updateNetworkingStatus()
@@ -293,10 +394,17 @@ ConnectivityService::ConnectivityService(Manager::Ptr manager,
     connect(d->m_manager.get(), &Manager::hotspotAuthChanged, d.get(), &Private::hotspotAuthUpdated);
     connect(d->m_manager.get(), &Manager::hotspotStoredChanged, d.get(), &Private::hotspotStoredUpdated);
 
+    connect(d->m_manager.get(), &Manager::mobileDataEnabledChanged, d.get(), &Private::mobileDataEnabledUpdated);
+    connect(d->m_manager.get(), &Manager::simsChanged, d.get(), &Private::updateSims);
+    connect(d->m_manager.get(), &Manager::modemsChanged, d.get(), &Private::updateModems);
+    connect(d->m_manager.get(), &Manager::simForMobileDataChanged, d.get(), &Private::simForMobileDataUpdated);
+
     connect(d->m_manager.get(), &Manager::reportError, d->m_privateService.get(), &PrivateService::ReportError);
 
     connect(d->m_vpnManager.get(), &vpn::VpnManager::connectionsChanged, d.get(), &Private::updateVpnList);
 
+    d->updateSims();
+    d->updateModems();
     d->updateNetworkingStatus();
     d->updateVpnList();
 
@@ -504,6 +612,73 @@ QList<QDBusObjectPath> PrivateService::vpnConnections() const
     for (const auto& vpnConnection: p.d->m_vpnConnections)
     {
         paths << vpnConnection->path();
+    }
+    return paths;
+}
+
+bool PrivateService::mobileDataEnabled() const
+{
+    return p.d->m_manager->mobileDataEnabled();
+}
+
+void PrivateService::setMobileDataEnabled(bool enabled)
+{
+    p.d->m_manager->setMobileDataEnabled(enabled);
+}
+
+QDBusObjectPath PrivateService::simForMobileData() const
+{
+    wwan::Sim::Ptr sim = p.d->m_manager->simForMobileData();
+    if (!sim)
+    {
+        return QDBusObjectPath("/");
+    }
+
+    Q_ASSERT(p.d->m_sims.contains(sim->imsi()));
+    return p.d->m_sims[sim->imsi()]->path();
+}
+
+void PrivateService::setSimForMobileData(const QDBusObjectPath &path)
+{
+    if (path.path() == "/")
+    {
+        p.d->m_manager->setSimForMobileData(wwan::Sim::Ptr());
+        return;
+    }
+
+    bool found = false;
+    for (DBusSim::SPtr dbussim: p.d->m_sims)
+    {
+        if (dbussim->path() == path)
+        {
+            found = true;
+            p.d->m_manager->setSimForMobileData(dbussim->sim());
+        }
+    }
+
+    if (!found)
+    {
+        sendErrorReply(QDBusError::UnknownObject);
+    }
+}
+
+QList<QDBusObjectPath> PrivateService::modems() const
+{
+    auto list = QList<QDBusObjectPath>();
+    for (DBusModem::SPtr modem : p.d->m_modems)
+    {
+        list << modem->path();
+    }
+    return list;
+}
+
+QList<QDBusObjectPath> PrivateService::sims() const
+{
+    QList<QDBusObjectPath> paths;
+
+    for (auto dbussim : p.d->m_sims)
+    {
+        paths.append(dbussim->path());
     }
     return paths;
 }

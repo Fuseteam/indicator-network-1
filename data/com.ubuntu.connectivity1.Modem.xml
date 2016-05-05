@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node>
+    <interface name="com.ubuntu.connectivity1.Modem">
+        <property name="Index" type="i" access="read" />
+        <property name="Serial" type="s" access="read" />
+        <property name="Sim" type="o" access="read" />
+    </interface>
+</node>

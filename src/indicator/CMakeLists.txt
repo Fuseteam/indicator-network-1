@@ -32,6 +32,9 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/wifi/grouped-access-point.cpp
     nmofono/wifi/wifi-link-impl.cpp
     nmofono/wwan/modem.cpp
+    nmofono/wwan/sim.cpp
+    nmofono/wwan/sim-manager.cpp
+    nmofono/wwan/qofono-sim-wrapper.cpp
     nmofono/vpn/openvpn-connection.cpp
     nmofono/vpn/pptp-connection.cpp
     nmofono/vpn/vpn-connection.cpp
@@ -53,6 +56,8 @@ set(NETWORK_SERVICE_SOURCES
     connectivity-service/dbus-openvpn-connection.cpp
     connectivity-service/dbus-pptp-connection.cpp
     connectivity-service/dbus-vpn-connection.cpp
+    connectivity-service/dbus-modem.cpp
+    connectivity-service/dbus-sim.cpp
 
     menuitems/access-point-item.cpp
     menuitems/switch-item.cpp
@@ -69,6 +74,22 @@ qt5_add_dbus_adaptor(
     connectivity-service/connectivity-service.h
     connectivity_service::ConnectivityService
     NetworkingStatusAdaptor
+)
+
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/com.ubuntu.connectivity1.Modem.xml"
+    connectivity-service/dbus-modem.h
+    connectivity_service::DBusModem
+    ModemAdaptor
+)
+
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/com.ubuntu.connectivity1.Sim.xml"
+    connectivity-service/dbus-sim.h
+    connectivity_service::DBusSim
+    SimAdaptor
 )
 
 qt5_add_dbus_adaptor(
