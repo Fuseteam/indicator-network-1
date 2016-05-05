@@ -764,4 +764,25 @@ TEST_F(TestConnectivityApi, HotspotModemAvailable)
 
     EXPECT_TRUE(connectivity->modemAvailable());
 }
+
+TEST_F(TestConnectivityApi, MobileDataEnabled)
+{
+
+}
+
+TEST_F(TestConnectivityApi, SimForMobileData)
+{
+
+}
+
+TEST_F(TestConnectivityApi, Modems)
+{
+
+}
+
+TEST_F(TestConnectivityApi, Sims)
+{
+
+}
+
 }

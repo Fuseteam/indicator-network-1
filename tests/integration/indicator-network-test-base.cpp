@@ -483,6 +483,14 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::flightModeSwitch(bool toggled)
         .toggled(toggled);
 }
 
+mh::MenuItemMatcher IndicatorNetworkTestBase::mobileDataSwitch(bool toggled)
+{
+    return mh::MenuItemMatcher::checkbox()
+        .label("Cellular data")
+        .action("indicator.mobiledata.enabled")
+        .toggled(toggled);
+}
+
 mh::MenuItemMatcher IndicatorNetworkTestBase::accessPoint(const string& ssid, Secure secure,
             ApMode apMode, ConnectionStatus connectionStatus, uchar strength)
 {
