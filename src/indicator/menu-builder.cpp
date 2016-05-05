@@ -43,6 +43,7 @@ public:
     RootState::Ptr m_rootState;
 
     SwitchItem::Ptr m_flightModeSwitch;
+    SwitchItem::Ptr m_mobileDataSwitch;
     SwitchItem::Ptr m_hotspotSwitch;
     SwitchItem::Ptr m_wifiSwitch;
 
@@ -111,6 +112,7 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
     d->m_ubiquityMenu = factory.newIndicatorMenu(d->m_rootState, "ubiquity");
 
     d->m_flightModeSwitch = factory.newFlightModeSwitch();
+    d->m_mobileDataSwitch = factory.newMobileDataSwitch();
     d->m_hotspotSwitch = factory.newHotspotSwitch();
     d->m_wifiSwitch = factory.newWifiSwitch();
 
@@ -125,7 +127,7 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
             d.get(), &Priv::updateHotspotSwitch);
 
     d->m_quickAccessSection = factory.newQuickAccessSection(d->m_flightModeSwitch);
-    d->m_wwanSection = factory.newWwanSection(d->m_hotspotSwitch);
+    d->m_wwanSection = factory.newWwanSection(d->m_mobileDataSwitch, d->m_hotspotSwitch);
     d->m_wifiSection = factory.newWiFiSection(d->m_wifiSwitch);
     d->m_vpnSection = factory.newVpnSection();
 

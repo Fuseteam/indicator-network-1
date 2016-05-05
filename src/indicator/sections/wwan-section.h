@@ -30,7 +30,7 @@ class WwanSection : public Section
 
 public:
     typedef std::shared_ptr<WwanSection> Ptr;
-    explicit WwanSection(nmofono::Manager::Ptr modemManager, SwitchItem::Ptr hotspotSwitch);
+    explicit WwanSection(nmofono::Manager::Ptr modemManager, SwitchItem::Ptr mobileDataSwitch, SwitchItem::Ptr hotspotSwitch);
     virtual ~WwanSection();
 
     virtual ActionGroup::Ptr actionGroup();
