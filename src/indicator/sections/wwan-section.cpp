@@ -54,13 +54,14 @@ public:
 
     Manager::Ptr m_manager;
 
+    SwitchItem::Ptr m_mobileDataSwitch;
     SwitchItem::Ptr m_hotspotSwitch;
     TextItem::Ptr m_openCellularSettings;
 
     QMap<wwan::Modem::Ptr, WwanLinkItem::Ptr> m_items;
 
     Private() = delete;
-    Private(Manager::Ptr modemManager, SwitchItem::Ptr hotspotSwitch);
+    Private(Manager::Ptr modemManager, SwitchItem::Ptr mobileDataSwitch ,SwitchItem::Ptr hotspotSwitch);
 
 public Q_SLOTS:
     void modemsChanged();
@@ -77,8 +78,8 @@ public Q_SLOTS:
     }
 };
 
-WwanSection::Private::Private(Manager::Ptr modemManager, SwitchItem::Ptr hotspotSwitch)
-    : QObject(nullptr), m_manager{modemManager}, m_hotspotSwitch{hotspotSwitch}
+WwanSection::Private::Private(Manager::Ptr modemManager, SwitchItem::Ptr mobileDataSwitch,SwitchItem::Ptr hotspotSwitch)
+    : QObject(nullptr), m_manager{modemManager}, m_mobileDataSwitch{mobileDataSwitch}, m_hotspotSwitch{hotspotSwitch}
 {
     m_actionGroupMerger = make_shared<ActionGroupMerger>();
     m_menuMerger = make_shared<MenuMerger>();
@@ -90,6 +91,9 @@ WwanSection::Private::Private(Manager::Ptr modemManager, SwitchItem::Ptr hotspot
     m_menuMerger->append(m_upperMenu);
     m_menuMerger->append(m_linkMenuMerger);
     m_menuMerger->append(m_bottomMenu);
+
+    m_upperMenu->append(m_mobileDataSwitch->menuItem());
+    m_actionGroupMerger->add(m_mobileDataSwitch->actionGroup());
 
     // have the modem list in their own section.
     m_topItem = MenuItem::newSection(m_menuMerger);
@@ -186,8 +190,8 @@ WwanSection::Private::modemsChanged()
     }
 }
 
-WwanSection::WwanSection(nmofono::Manager::Ptr manager, SwitchItem::Ptr hotspotSwitch)
-    : d{new Private(manager, hotspotSwitch)}
+WwanSection::WwanSection(nmofono::Manager::Ptr manager, SwitchItem::Ptr mobileDataSwitch, SwitchItem::Ptr hotspotSwitch)
+    : d{new Private(manager, mobileDataSwitch, hotspotSwitch)}
 {
 }
 

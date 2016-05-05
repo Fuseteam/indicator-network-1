@@ -56,7 +56,7 @@ public:
 
     virtual std::unique_ptr<QuickAccessSection> newQuickAccessSection(SwitchItem::Ptr flightModeSwitch);
 
-    virtual std::unique_ptr<WwanSection> newWwanSection(SwitchItem::Ptr hotspotSwitch);
+    virtual std::unique_ptr<WwanSection> newWwanSection(SwitchItem::Ptr mobileDataSwitch, SwitchItem::Ptr hotspotSwitch);
 
     virtual std::unique_ptr<WifiSection> newWiFiSection(SwitchItem::Ptr wifiSwitch);
 
