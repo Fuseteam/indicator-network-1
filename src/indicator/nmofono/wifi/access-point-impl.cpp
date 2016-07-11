@@ -22,6 +22,10 @@
 #include <QTextCodec>
 #include <NetworkManager.h>
 
+#ifndef NM_802_11_AP_SEC_KEY_MGMT_WAPI_CERT
+#define NM_802_11_AP_SEC_KEY_MGMT_WAPI_CERT 0x00002000
+#endif
+
 namespace nmofono {
 namespace wifi {
 
@@ -116,9 +120,21 @@ QByteArray AccessPointImpl::raw_ssid() const
     return m_raw_ssid;
 }
 
-bool AccessPointImpl::enterprise() const
+AccessPoint::KeyManagementType AccessPointImpl::keyManagementType() const
 {
-    return (m_secflags & NM_802_11_AP_SEC_KEY_MGMT_802_1X) > 0;
+    if ((m_secflags & NM_802_11_AP_SEC_KEY_MGMT_802_1X) > 0)
+    {
+        return KeyManagementType::ieee8021x;
+    }
+    else if ((m_secflags & NM_802_11_AP_SEC_KEY_MGMT_802_1X) > 0)
+    {
+        return KeyManagementType::wpa_eap;
+    }
+    else if ((m_secflags & NM_802_11_AP_SEC_KEY_MGMT_WAPI_CERT) > 0)
+    {
+        return KeyManagementType::wapi_cert;
+    }
+    return  KeyManagementType::psk;
 }
 
 bool AccessPointImpl::secured() const

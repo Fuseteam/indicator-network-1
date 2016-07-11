@@ -61,7 +61,7 @@ public:
         m_item->setAttribute("x-canonical-type", TypedVariant<std::string>("unity.widgets.systemsettings.tablet.accesspoint"));
         m_item->setAttribute("x-canonical-wifi-ap-is-adhoc", TypedVariant<bool>(m_accessPoint->adhoc()));
         m_item->setAttribute("x-canonical-wifi-ap-is-secure", TypedVariant<bool>(m_accessPoint->secured()));
-        m_item->setAttribute("x-canonical-wifi-ap-is-enterprise", TypedVariant<bool>(m_accessPoint->enterprise()));
+        m_item->setAttribute("x-canonical-wifi-ap-is-enterprise", TypedVariant<bool>(m_accessPoint->keyManagementType() != wifi::AccessPoint::KeyManagementType::psk));
         m_item->setAttribute("x-canonical-wifi-ap-strength-action", TypedVariant<std::string>(("indicator." + strengthActionId).toStdString()));
 
         m_actionStrength = std::make_shared<Action>(strengthActionId,

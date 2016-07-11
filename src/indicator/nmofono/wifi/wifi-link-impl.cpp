@@ -486,12 +486,21 @@ WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
                                            QDBusObjectPath(d->m_dev->path()),
                                            accessPoint->object_path());
         } else {
-            if (accessPoint->enterprise()) {
+            auto keyManagementType = accessPoint->keyManagementType();
+            if (keyManagementType != AccessPoint::KeyManagementType::psk) {
                 qDebug() << "New connection to enterprise access point";
+
+                const static QMap<AccessPoint::KeyManagementType, QString> typeMap {
+                    {AccessPoint::KeyManagementType::ieee8021x, "ieee8021x"},
+                    {AccessPoint::KeyManagementType::wpa_eap, "wpa-eap"},
+                    {AccessPoint::KeyManagementType::wapi_cert, "wapi-cert"},
+                };
+
                 // activate system settings URI
                 QUrlQuery q;
                 q.addQueryItem("ssid", accessPoint->raw_ssid());
                 q.addQueryItem("bssid", accessPoint->bssid());
+                q.addQueryItem("key-mgmt", typeMap[keyManagementType]);
                 QString url = "settings:///system/wifi?" + q.query(QUrl::FullyEncoded);
 
                 UrlDispatcher::send(url.toStdString(), [](string url, bool success) {
@@ -516,7 +525,7 @@ WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
             }
         }
         // For enterprise access points, the system settings app will perform the connection
-        if (!accessPoint->enterprise()) {
+        if (accessPoint->keyManagementType() == AccessPoint::KeyManagementType::psk) {
             d->updateActiveConnection(ac);
         }
         d->m_connecting = false;

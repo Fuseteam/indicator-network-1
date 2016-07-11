@@ -37,8 +37,17 @@ class CONNECTIVITY_CPP_EXPORT
 AccessPoint: public QObject
 {
     Q_OBJECT
+    Q_ENUMS(EnterpriseType)
 
 public:
+    enum KeyManagementType
+    {
+        psk,
+        ieee8021x,
+        wpa_eap,
+        wapi_cert
+    };
+
     typedef std::shared_ptr<AccessPoint> Ptr;
     AccessPoint();
     virtual ~AccessPoint();
@@ -54,7 +63,7 @@ public:
     virtual QByteArray raw_ssid()     const = 0;
     virtual QDBusObjectPath object_path()     const = 0;
     virtual bool secured()            const = 0;
-    virtual bool enterprise()         const = 0;
+    virtual KeyManagementType keyManagementType()         const = 0;
     virtual bool adhoc()              const = 0;
 
 Q_SIGNALS:

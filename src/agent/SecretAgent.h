@@ -90,6 +90,7 @@ public:
 	static constexpr char const* NM_KEY_MGMT_WPA_NONE = "wpa-none";
 	static constexpr char const* NM_KEY_MGMT_WPA_PSK = "wpa-psk";
 	static constexpr char const* NM_KEY_MGMT_NONE = "none";
+	static constexpr char const* NM_KEY_MGMT_WAPI_PSK = "wapi-psk";
 
 	explicit SecretAgent(std::shared_ptr<notify::NotificationManager> notificationManager,
 			CredentialStore::SPtr credentialStore,
