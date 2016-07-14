@@ -2006,7 +2006,7 @@ TEST_F(TestIndicator, EnterpriseWifiConnect)
             << QVariant("DispatchURL")
             << QVariant(
                 QVariantList()
-                    << QVariant("settings:///system/wifi?ssid=ABC&bssid=11:22:33:44:55:66")
+                    << QVariant("settings:///system/wifi?ssid=ABC&bssid=11:22:33:44:55:66&key-mgmt=wpa-eap")
                     << QVariant("")
                )
     );

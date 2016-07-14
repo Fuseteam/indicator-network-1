@@ -66,7 +66,9 @@ SecretRequest::SecretRequest(SecretAgent &secretAgent,
 		subject = _("WPA");
 	} else if (keyMgmt == SecretAgent::NM_KEY_MGMT_NONE) {
 		subject = _("WEP");
-	}
+	} else if (keyMgmt == SecretAgent::NM_KEY_MGMT_WAPI_PSK) {
+        subject = _("WAPI");
+    }
 
 	m_notification = m_secretAgent.notifications()->notify(
 			title.arg(conn[SecretAgent::NM_CONNECTION_ID].toString()), subject,
@@ -104,7 +106,8 @@ void SecretRequest::actionInvoked(const QString &actionKey) {
 			wirelessSecurity->value(SecretAgent::NM_WIRELESS_SECURITY_KEY_MGMT).toString());
 
 	if (keyMgmt == SecretAgent::NM_KEY_MGMT_WPA_NONE
-			|| keyMgmt == SecretAgent::NM_KEY_MGMT_WPA_PSK) {
+			|| keyMgmt == SecretAgent::NM_KEY_MGMT_WPA_PSK
+			|| keyMgmt == SecretAgent::NM_KEY_MGMT_WAPI_PSK) {
 		wirelessSecurity->insert(SecretAgent::NM_WIRELESS_SECURITY_PSK, key);
 	} else if (keyMgmt == SecretAgent::NM_KEY_MGMT_NONE) {
 		wirelessSecurity->insert(SecretAgent::NM_WIRELESS_SECURITY_WEP_KEY0, key);

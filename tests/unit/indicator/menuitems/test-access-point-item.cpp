@@ -48,7 +48,7 @@ public:
 
     MOCK_CONST_METHOD0(secured, bool());
 
-    MOCK_CONST_METHOD0(enterprise, bool());
+    MOCK_CONST_METHOD0(keyManagementType, KeyManagementType());
 
     MOCK_CONST_METHOD0(adhoc, bool());
 
@@ -68,6 +68,7 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
     ON_CALL(*accessPoint, ssid()).WillByDefault(Return(QString("the ssid")));
     ON_CALL(*accessPoint, secured()).WillByDefault(Return(true));
     ON_CALL(*accessPoint, adhoc()).WillByDefault(Return(false));
+    ON_CALL(*accessPoint, keyManagementType()).WillByDefault(Return(wifi::AccessPoint::KeyManagementType::psk));
     ON_CALL(*accessPoint, strength()).WillByDefault(Return(70.0));
 
     auto accessPointItem = make_shared<AccessPointItem>(accessPoint);

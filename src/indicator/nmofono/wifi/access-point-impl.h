@@ -90,7 +90,7 @@ public:
     std::uint32_t mode() const;
 
     bool secured() const override;
-    bool enterprise() const override;
+    KeyManagementType keyManagementType() const override;
     bool adhoc() const override;
 
     QDBusObjectPath object_path() const override;

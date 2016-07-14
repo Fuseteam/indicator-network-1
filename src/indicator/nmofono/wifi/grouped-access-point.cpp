@@ -199,14 +199,14 @@ bool GroupedAccessPoint::secured() const
     return p->aplist.at(0)->secured();
 }
 
-bool GroupedAccessPoint::enterprise() const
+AccessPoint::KeyManagementType GroupedAccessPoint::keyManagementType() const
 {
     if (p->aplist.empty())
     {
-        return false;
+        return KeyManagementType::psk;
     }
 
-    return p->aplist.at(0)->enterprise();
+    return p->aplist.at(0)->keyManagementType();
 }
 
 bool GroupedAccessPoint::adhoc() const
