@@ -1,3 +1,9 @@
+indicator-network (0.8.0+16.10.20160714-0ubuntu1) yakkety; urgency=medium
+
+  * Add support for new WAPI settings keys (LP: #1597681)
+
+ -- Pete Woods <pete.woods@canonical.com>  Thu, 14 Jul 2016 10:04:23 +0000
+
 indicator-network (0.8.0+16.10.20160705.1-0ubuntu1) yakkety; urgency=medium
 
   [ Pete Woods ]
