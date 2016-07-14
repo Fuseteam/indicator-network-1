@@ -504,8 +504,13 @@ WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
                 QString url = "settings:///system/wifi?" + q.query(QUrl::FullyEncoded);
 
                 UrlDispatcher::send(url.toStdString(), [](string url, bool success) {
-                    if (!success) {
-                        cerr << "URL Dispatcher failed on " << url << endl;
+                    if (success)
+                    {
+                        qDebug() << "Activated URL for USS" << QString::fromStdString(url);
+                    }
+                    else
+                    {
+                        qDebug() << "URL Dispatcher failed on" << QString::fromStdString(url);
                     }
                 });
             } else {
