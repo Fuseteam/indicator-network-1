@@ -1,3 +1,14 @@
+indicator-network (0.8.0+16.10.20160727.2-0ubuntu1) yakkety; urgency=medium
+
+  [ Antti Kaijanmäki ]
+  * Add qttools5-dev-tools to build dependencies to get qdoc.
+
+  [ Stephen M. Webb ]
+  * Update the DESKTOP_SESSION string used to identify a Unity 8 session
+    on Ubuntu desktop. (LP: #1603453)
+
+ -- Antti Kaijanmäki <antti@kaijanmaki.net>  Wed, 27 Jul 2016 15:32:26 +0000
+
 indicator-network (0.8.0+16.10.20160722-0ubuntu1) yakkety; urgency=medium
 
   * Don't expect to have PreferredLanguages on a SIM.
