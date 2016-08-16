@@ -93,9 +93,48 @@ public:
 
     ConnectivityServiceSettings::Ptr m_settings;
 
+    QTimer m_checkSimForMobileDataTimer;
+
     Private(Manager& parent) :
         p(parent)
     {
+    }
+
+
+public Q_SLOTS:
+
+    void startCheckSimForMobileDataTimer()
+    {
+        m_checkSimForMobileDataTimer.start();
+    }
+
+    void checkSimForMobileData()
+    {
+        if (m_simForMobileData && m_simForMobileData->present())
+        {
+            return;
+        }
+
+        int presentSimCount = 0;
+        for (auto modem : m_modems)
+        {
+            if (modem->sim())
+            {
+                presentSimCount++;
+            }
+        }
+
+        if (presentSimCount == 1)
+        {
+            for (auto modem : m_modems)
+            {
+                if (modem->sim())
+                {
+                    setSimForMobileData(modem->sim());
+                    break;
+                }
+            }
+        }
     }
 
     void matchModemsAndSims()
@@ -132,6 +171,7 @@ public:
     {
         m_sims.append(sim);
         connect(sim.get(), &wwan::Sim::presentChanged, this, &Private::matchModemsAndSims);
+        connect(sim.get(), &wwan::Sim::presentChanged, this, &Private::startCheckSimForMobileDataTimer);
         Q_EMIT p.simsChanged();
 
         QString iccid = m_settings->simForMobileData().toString();
@@ -143,6 +183,7 @@ public:
         }
 
         matchModemsAndSims();
+        m_checkSimForMobileDataTimer.start();
     }
 
     void initialDataOnSet()
@@ -183,6 +224,8 @@ public:
 
         m_modems.append(modem);
         Q_EMIT p.modemsChanged();
+
+        m_checkSimForMobileDataTimer.start();
     }
 
     void setUnstoppableOperationHappening(bool happening)
@@ -240,7 +283,6 @@ public:
         }
     }
 
-public Q_SLOTS:
     void updateHasWifi()
     {
         if (m_killSwitch->state() != KillSwitch::State::not_available)
@@ -521,6 +563,14 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
     d->loadSettings();
 
     d->updateHasWifi();
+
+    d->m_checkSimForMobileDataTimer.setInterval(5000);
+    d->m_checkSimForMobileDataTimer.setSingleShot(true);
+    connect(&d->m_checkSimForMobileDataTimer, &QTimer::timeout, d.get(), &Private::checkSimForMobileData);
+    for(auto sim : d->m_sims) {
+        connect(sim.get(), &wwan::Sim::presentChanged, d.get(), &Private::startCheckSimForMobileDataTimer);
+    }
+    d->m_checkSimForMobileDataTimer.start();
 }
 
 bool
