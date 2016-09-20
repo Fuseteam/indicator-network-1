@@ -49,8 +49,8 @@ Depends: ${misc:Depends},
          network-manager-openvpn,
          network-manager-pptp,
          ubuntu-mobile-icons (>= 13.04+13.10.20131014),
-         urfkill,
-Suggests: ofono
+Suggests: ofono,
+          urfkill
 Conflicts: chewie,
            indicators-client-plugin-network,
            indicator-network-autopilot (<< 0.8.0+16.10.20160817.2-0ubuntu1),
