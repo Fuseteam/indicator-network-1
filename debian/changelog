@@ -1,3 +1,11 @@
+indicator-network (0.8.0+16.10.20160920-0ubuntu1) yakkety; urgency=medium
+
+  [ Charles Kerr ]
+  * Don't require urfkill, and handle flight mode gracefully when not
+    present
+
+ -- charles.kerr@canonical.com <charles.kerr@canonical.com>  Tue, 20 Sep 2016 18:15:06 +0000
+
 indicator-network (0.8.0+16.10.20160915-0ubuntu1) yakkety; urgency=medium
 
   * Remove lots of dead code, resources, and change ofono dependency to
