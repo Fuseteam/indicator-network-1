@@ -1,7 +1,9 @@
 usr/share/upstart/xdg/autostart/indicator-network.desktop
 usr/share/upstart/sessions/*
+usr/share/upstart/systemd-session
 usr/share/glib-2.0/schemas/com.canonical.indicator.network.gschema.xml
 usr/share/unity/indicators/com.canonical.indicator.network
 usr/lib/*/indicator-network/*
+usr/lib/systemd
 etc/xdg/autostart/indicator-network.desktop
 usr/share/locale

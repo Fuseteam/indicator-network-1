@@ -1,0 +1,9 @@
+[Unit]
+Description=Indicator Network Backend
+PartOf=graphical-session.target
+After=indicators-pre.target
+Wants=indicator-network-secret-agent.service
+
+[Service]
+ExecStart=@NETWORK_SERVICE@
+Restart=on-failure
