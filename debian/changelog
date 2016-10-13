@@ -1,3 +1,11 @@
+indicator-network (0.8.0+16.10.20161013.3-0ubuntu1) yakkety; urgency=medium
+
+  * Fix memory corruption inside unix signal handler (LP: #1632275)
+  * Add main exception handler to avoid crashes during startup (LP:
+    #1629703)
+
+ -- Pete Woods <pete.woods@canonical.com>  Thu, 13 Oct 2016 18:26:50 +0000
+
 indicator-network (0.8.0+16.10.20161013-0ubuntu1) yakkety; urgency=medium
 
   [ Iain Lane ]
