@@ -1,3 +1,9 @@
+indicator-network (0.8.0+17.04.20161030-0ubuntu1) zesty; urgency=medium
+
+  * blah blah
+
+ -- Antti Kaijanmäki <antti@kaijanmaki.net>  Sun, 30 Oct 2016 16:34:20 +0000
+
 indicator-network (0.8.0+17.04.20161021-0ubuntu1) zesty; urgency=medium
 
   [ Martin Pitt, Ted Gould ]
