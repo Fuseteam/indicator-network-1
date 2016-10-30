@@ -23,5 +23,5 @@ endif
 	dh $@ --parallel --fail-missing --with python3
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DENABLE_TESTS=${ENABLE_TESTS}
+	dh_auto_configure -- -DENABLE_TESTS=${ENABLE_TESTS} -DCMAKE_BUILD_TYPE=debug
 

@@ -137,6 +137,9 @@ public:
 
 protected:
     void SetUp() override;
+    void TearDown() override;
+
+    void setDataUsageIndicationSetting(bool value);
 
     static unity::gmenuharness::MenuMatcher::Parameters phoneParameters();
 
@@ -147,6 +150,12 @@ protected:
     QString createEthernetDevice(int state, const QString& id = "0");
 
     QString createWiFiDevice(int state, const QString& id = "0");
+
+    QString createOfonoModemDevice(const QString &ofonoPath, const QString& id);
+
+    void setDeviceStatistics(const QString &device, quint64 tx, quint64 rx);
+    quint32 getStatisticsRefreshRateMs(const QString &device);
+
 
     static QString randomMac();
 
@@ -182,6 +191,12 @@ protected:
     QVariantMap getConnectionManagerProperties(const QString& path);
 
     void setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value);
+
+    enum DisplayPowerState {
+        Off,
+        On,
+    };
+    void setDisplayPowerState(DisplayPowerState value);
 
     OrgFreedesktopDBusMockInterface& notificationsMockInterface();
 

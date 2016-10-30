@@ -156,6 +156,12 @@ public:
     Q_PROPERTY(QList<wwan::Sim::Ptr> sims READ sims NOTIFY simsChanged)
     virtual QList<wwan::Sim::Ptr> sims() const = 0;
 
+    Q_PROPERTY(bool tx READ tx NOTIFY txChanged)
+    virtual bool tx() const = 0;
+
+    Q_PROPERTY(bool rx READ rx NOTIFY rxChanged)
+    virtual bool rx() const = 0;
+
 
 Q_SIGNALS:
     void flightModeUpdated(bool);
@@ -196,6 +202,10 @@ Q_SIGNALS:
 
     void simsChanged();
 
+    void txChanged();
+
+    void rxChanged();
+
 public Q_SLOTS:
     virtual void setWifiEnabled(bool) = 0;
 
@@ -214,6 +224,7 @@ public Q_SLOTS:
     virtual void setMobileDataEnabled(bool) = 0;
 
     virtual void setSimForMobileData(wwan::Sim::Ptr) = 0;
+
 
 protected:
     /**

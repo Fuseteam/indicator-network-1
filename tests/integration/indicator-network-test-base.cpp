@@ -23,6 +23,11 @@
 #include <NetworkManagerSettingsConnectionInterface.h>
 #include <NetworkManagerSettingsInterface.h>
 
+#include <QDebug>
+
+#define G_SETTINGS_ENABLE_BACKEND
+#include <gio/gsettingsbackend.h>
+
 using namespace QtDBusTest;
 using namespace QtDBusMock;
 using namespace std;
@@ -43,6 +48,18 @@ IndicatorNetworkTestBase::~IndicatorNetworkTestBase()
 void IndicatorNetworkTestBase::SetUp()
 {
     qputenv("INDICATOR_NETWORK_SETTINGS_PATH", temporaryDir.path().toUtf8().constData());
+
+    Q_ASSERT(qEnvironmentVariableIsSet("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"));
+    QString inipath = qgetenv("INDICATOR_NETWOR_TESTING_GSETTINGS_INI");
+    if (QFile::exists(inipath))
+    {
+        QFile::remove(inipath);
+    }
+    QFile inifile(inipath);
+    inifile.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&inifile);
+    out << "[root]\ndata-usage-indication=false\n";
+    inifile.close();
 
     if (qEnvironmentVariableIsSet("TEST_WITH_BUSTLE"))
     {
@@ -78,6 +95,11 @@ void IndicatorNetworkTestBase::SetUp()
                         DBusTypes::POWERD_DBUS_PATH,
                         DBusTypes::POWERD_DBUS_INTERFACE,
                         QDBusConnection::SystemBus);
+    dbusMock.registerCustomMock(
+                "com.canonical.Unity.Screen",
+                "/com/canonical/Unity/Screen",
+                "com.canonical.Unity.Screen",
+                QDBusConnection::SystemBus);
 
     dbusMock.registerCustomMock(
                         DBusTypes::WPASUPPLICANT_DBUS_NAME,
@@ -155,6 +177,34 @@ void IndicatorNetworkTestBase::SetUp()
     sessionConnection.registerService("org.TestIndicatorNetworkService");
 }
 
+void IndicatorNetworkTestBase::TearDown()
+{
+    Q_ASSERT(qEnvironmentVariableIsSet("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"));
+    QString inipath = qgetenv("INDICATOR_NETWOR_TESTING_GSETTINGS_INI");
+    if (QFile::exists(inipath))
+    {
+        QFile::remove(inipath);
+    }
+}
+
+void IndicatorNetworkTestBase::setDataUsageIndicationSetting(bool value)
+{
+    Q_ASSERT(qEnvironmentVariableIsSet("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"));
+
+    GSettingsBackend *backend = g_keyfile_settings_backend_new(qgetenv("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"),
+                                                               "/com/canonical/indicator/network/",
+                                                               "root");
+    GSettings *settings = g_settings_new_with_backend("com.canonical.indicator.network",
+                                                      backend);
+    g_settings_set_value (settings,
+                          "data-usage-indication",
+                          g_variant_new_boolean(value));
+    g_settings_sync();
+    g_object_unref(settings);
+    g_object_unref(backend);
+}
+
+
 mh::MenuMatcher::Parameters IndicatorNetworkTestBase::phoneParameters()
 {
     return mh::MenuMatcher::Parameters(
@@ -211,6 +261,46 @@ QString IndicatorNetworkTestBase::createWiFiDevice(int state, const QString& id)
         EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
     }
     return reply;
+}
+
+QString IndicatorNetworkTestBase::createOfonoModemDevice(const QString &ofonoPath, const QString& id)
+{
+    auto& networkManager(dbusMock.networkManagerInterface());
+    QList<QVariant> argumentList;
+    argumentList << QVariant(QString("modem") + id) << QVariant(ofonoPath);
+    QDBusPendingReply<QString> reply = networkManager.asyncCallWithArgumentList(QStringLiteral("AddOfonoModemDevice"), argumentList);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    return reply;
+}
+
+
+void IndicatorNetworkTestBase::setDeviceStatistics(const QString &device, quint64 tx, quint64 rx)
+{
+    auto& networkManager(dbusMock.networkManagerInterface());
+    QList<QVariant> argumentList;
+    argumentList << QVariant(device) << QVariant(tx) << QVariant(rx);
+    networkManager.asyncCallWithArgumentList(QStringLiteral("SetDeviceStatistics"), argumentList).waitForFinished();
+}
+
+quint32 IndicatorNetworkTestBase::getStatisticsRefreshRateMs(const QString &device)
+{
+    QDBusInterface iface(NM_DBUS_SERVICE,
+                         device,
+                         "org.freedesktop.DBus.Properties",
+                          QDBusConnection::systemBus());
+
+    QDBusPendingReply<QVariant> reply = iface.asyncCall("Get", "org.freedesktop.NetworkManager.Device.Statistics", "RefreshRateMs");
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    QVariant tmp = reply;
+    return tmp.toInt();
 }
 
 QString IndicatorNetworkTestBase::randomMac()
@@ -441,6 +531,21 @@ void IndicatorNetworkTestBase::setNetworkRegistrationProperty(const QString& pat
     if (reply.isError()) {
         EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
     }
+}
+
+void IndicatorNetworkTestBase::setDisplayPowerState(DisplayPowerState value)
+{
+    // com.canonical.Unity.Screen interface only supports DisplayPowerStateChange signal
+    // Interface does not implement proper properties - https://bugs.launchpad.net/ubuntu/+source/repowerd/+bug/1637722
+    auto& unityscreen = dbusMock.mockInterface(
+                            "com.canonical.Unity.Screen",
+                            "/com/canonical/Unity/Screen",
+                            "com.canonical.Unity.Screen",
+                            QDBusConnection::SystemBus);
+
+    QVariantList args;
+    args << QVariant((qint32)(value)) << QVariant(qint32(0));
+    unityscreen.EmitSignal("com.canonical.Unity.Screen", "DisplayPowerStateChange", "ii", args).waitForFinished();
 }
 
 OrgFreedesktopDBusMockInterface& IndicatorNetworkTestBase::notificationsMockInterface()

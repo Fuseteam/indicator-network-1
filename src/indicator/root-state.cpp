@@ -74,6 +74,9 @@ RootState::Private::Private(RootState& parent, nmofono::Manager::Ptr manager)
     connect(m_manager.get(), &Manager::statusUpdated, this, &Private::updateNetworkingIcon);
     connect(m_manager.get(), &Manager::linksUpdated, this, &Private::updateNetworkingIcon);
 
+    connect(m_manager.get(), &nmofono::Manager::txChanged, this, &Private::updateNetworkingIcon);
+    connect(m_manager.get(), &nmofono::Manager::rxChanged, this, &Private::updateNetworkingIcon);
+
     // will also call updateRootState()
     updateNetworkingIcon();
 }
@@ -209,6 +212,21 @@ RootState::Private::updateNetworkingIcon()
             if (signal != wifi::WifiLink::Signal::disconnected)
             {
                 m_networkingIcons << Icons::wifiIcon(signal);
+            }
+        }
+
+        if (m_manager->rx() && m_manager->tx())
+        {
+            m_networkingIcons << "transfer-progress";
+        }
+        else
+        {
+            if (m_manager->rx()){
+                m_networkingIcons << "transfer-progress-download";
+            }
+
+            if (m_manager->tx()){
+                m_networkingIcons << "transfer-progress-upload";
             }
         }
 

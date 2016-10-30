@@ -17,6 +17,7 @@
 
 set_source_files_properties(
     "${DATA_DIR}/nm-device.xml"
+    "${DATA_DIR}/nm-device-statistics.xml"
     "${DATA_DIR}/nm-device-wifi.xml"
     "${DATA_DIR}/nm-access-point.xml"
     "${DATA_DIR}/nm-active-connection.xml"
@@ -26,6 +27,7 @@ set_source_files_properties(
     "${DATA_DIR}/org.freedesktop.URfkill.Device.xml"
     "${DATA_DIR}/org.freedesktop.URfkill.Killswitch.xml"
     "${DATA_DIR}/com.canonical.powerd.xml"
+    "${DATA_DIR}/org.freedesktop.DBus.Properties.xml"
     PROPERTIES
     NO_NAMESPACE YES
 )
@@ -68,6 +70,12 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/nm-device.xml"
     NetworkManagerDeviceInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-device-statistics.xml"
+    NetworkManagerDeviceStatisticsInterface
 )
 
 qt5_add_dbus_interface(
@@ -128,6 +136,12 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/com.canonical.powerd.xml"
     PowerdInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/org.freedesktop.DBus.Properties.xml"
+    PropertiesInterface
 )
 
 add_library(

@@ -1,17 +1,10 @@
 <schemalist>
   <schema id="com.canonical.indicator.network" path="/com/canonical/indicator/network/" gettext-domain="indicator-network">
-    <key name="prompt-on-new-wifi-ap" type="b">
-      <default>true</default>
-      <summary>Whether we should show a dialog when a possible Wi-Fi network appears</summary>
+    <key name="data-usage-indication" type="b">
+      <default>false</default>
+      <summary>Show indication that data is being sent or received.</summary>
       <description>
-        Configures the behavior for discovery of the new networks and whether they result in a dialog being shown which allows for selection of the network.
-      </description>
-    </key>
-    <key name="auto-join-previous" type="b">
-      <default>true</default>
-      <summary>Whether to join networks we've seen before automatically.</summary>
-      <description>
-        This gets set for the Wi-Fi device in Network Manager whether it autoconnects or not.
+        Show icon when device is sending or receiving data.
       </description>
     </key>
   </schema>

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <connectivityqt/internal/dbus-property-cache.h>
+#include <util/dbus-property-cache.h>
 
 #include <NetworkingStatusPrivateInterface.h>
 
@@ -35,7 +35,7 @@ struct SimsListModelParameters
 {
     std::function<void(QObject*)> objectOwner;
     std::shared_ptr<ComUbuntuConnectivity1PrivateInterface> writeInterface;
-    std::shared_ptr<internal::DBusPropertyCache> propertyCache;
+    std::shared_ptr<util::DBusPropertyCache> propertyCache;
 };
 
 }

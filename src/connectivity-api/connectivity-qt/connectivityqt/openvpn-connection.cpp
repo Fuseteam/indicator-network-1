@@ -18,7 +18,7 @@
  */
 
 #include <connectivityqt/openvpn-connection.h>
-#include <connectivityqt/internal/dbus-property-cache.h>
+#include <util/dbus-property-cache.h>
 #include <dbus-types.h>
 
 #include <OpenVpnConnectionInterface.h>
@@ -142,7 +142,7 @@ public:
 
     unique_ptr<ComUbuntuConnectivity1VpnVpnConnectionOpenVpnInterface> m_openvpnInterface;
 
-    internal::DBusPropertyCache::UPtr m_propertyCache;
+    util::DBusPropertyCache::UPtr m_propertyCache;
 };
 
 OpenvpnConnection::OpenvpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection) :
@@ -154,13 +154,13 @@ OpenvpnConnection::OpenvpnConnection(const QDBusObjectPath& path, const QDBusCon
             DBusTypes::DBUS_NAME, path.path(), connection);
 
     d->m_propertyCache =
-            make_unique<internal::DBusPropertyCache>(
+            make_unique<util::DBusPropertyCache>(
                     DBusTypes::DBUS_NAME,
                     ComUbuntuConnectivity1VpnVpnConnectionOpenVpnInterface::staticInterfaceName(),
                     path.path(), connection);
 
     connect(d->m_propertyCache.get(),
-                    &internal::DBusPropertyCache::propertyChanged, d.get(),
+                    &util::DBusPropertyCache::propertyChanged, d.get(),
                     &Priv::propertyChanged);
 }
 

@@ -31,6 +31,7 @@ MAIN_IFACE = 'org.freedesktop.NetworkManager'
 SETTINGS_OBJ = '/org/freedesktop/NetworkManager/Settings'
 SETTINGS_IFACE = 'org.freedesktop.NetworkManager.Settings'
 DEVICE_IFACE = 'org.freedesktop.NetworkManager.Device'
+DEVICE_STATISTICS_IFACE = 'org.freedesktop.NetworkManager.Device.Statistics'
 WIRELESS_DEVICE_IFACE = 'org.freedesktop.NetworkManager.Device.Wireless'
 ACCESS_POINT_IFACE = 'org.freedesktop.NetworkManager.AccessPoint'
 CSETTINGS_IFACE = 'org.freedesktop.NetworkManager.Settings.Connection'
@@ -323,6 +324,52 @@ def AddEthernetDevice(self, device_name, iface_name, state):
 
     obj = dbusmock.get_object(path)
     obj.AddProperties(DEVICE_IFACE, props)
+    obj.AddProperties(DEVICE_STATISTICS_IFACE,
+                      {
+                          'RefreshRateMs': dbus.UInt32(0),
+                          'TxBytes': dbus.UInt64(0),
+                          'RxBytes': dbus.UInt64(0),
+                      })
+
+    devices = self.Get(MAIN_IFACE, 'Devices')
+    devices.append(path)
+    self.Set(MAIN_IFACE, 'Devices', devices)
+
+    self.EmitSignal('org.freedesktop.NetworkManager', 'DeviceAdded', 'o', [path])
+
+    return path
+
+@dbus.service.method(MOCK_IFACE,
+                     in_signature='ss', out_signature='s')
+def AddOfonoModemDevice(self, device_name, ofono_path):
+
+    #  this is a thin skeleton..
+
+    path = '/org/freedesktop/NetworkManager/Devices/' + device_name
+
+    props = {'DeviceType': dbus.UInt32(8),
+             'State': dbus.UInt32(100), # NM_DEVICE_STATE_ACTIVATED
+             'Interface': ofono_path[1:],
+             'ActiveConnection': dbus.ObjectPath('/'),
+             'AvailableConnections': dbus.Array([], signature='o'),
+             'AutoConnect': False,
+             'Managed': True,
+             'Driver': 'ofono',
+             'Udi': ofono_path,
+             'IpInterface': ''}
+
+    self.AddObject(path,
+               DEVICE_IFACE,
+               props,
+               [])
+
+    obj = dbusmock.get_object(path)
+    obj.AddProperties(DEVICE_STATISTICS_IFACE,
+                      {
+                          'RefreshRateMs': dbus.UInt32(0),
+                          'TxBytes': dbus.UInt64(0),
+                          'RxBytes': dbus.UInt64(0),
+                      })
 
     devices = self.Get(MAIN_IFACE, 'Devices')
     devices.append(path)
@@ -381,6 +428,12 @@ def AddWiFiDevice(self, device_name, iface_name, state):
                               'State': dbus.UInt32(state),
                               'Interface': iface_name,
                               'IpInterface': iface_name,
+                          })
+    dev_obj.AddProperties(DEVICE_STATISTICS_IFACE,
+                          {
+                              'RefreshRateMs': dbus.UInt32(0),
+                              'TxBytes': dbus.UInt64(0),
+                              'RxBytes': dbus.UInt64(0),
                           })
 
     devices = self.Get(MAIN_IFACE, 'Devices')
@@ -671,6 +724,24 @@ def RemoveActiveConnection(self, dev_path, active_connection_path):
 
     self.RemoveObject(active_connection_path)
 
+@dbus.service.method(MOCK_IFACE,
+                     in_signature='stt', out_signature='')
+def SetDeviceStatistics(self, device_path, tx, rx):
+    dev_obj = dbusmock.get_object(device_path)
+
+    old_tx = dev_obj.Get(DEVICE_STATISTICS_IFACE, 'TxBytes')
+    old_rx = dev_obj.Get(DEVICE_STATISTICS_IFACE, 'RxBytes')
+
+    updated = {}
+    if old_tx != tx:
+        dev_obj.Set(DEVICE_STATISTICS_IFACE, 'TxBytes', dbus.UInt64(tx))
+        updated["TxBytes"] = dbus.UInt64(tx)
+    if old_rx != rx:
+        dev_obj.Set(DEVICE_STATISTICS_IFACE, 'RxBytes', dbus.UInt64(rx))
+        updated["RxBytes"] = dbus.UInt64(rx)
+
+    if len(updated) != 0:
+        dev_obj.EmitSignal(DEVICE_STATISTICS_IFACE, 'PropertiesChanged', 'a{sv}', [updated])
 
 @dbus.service.method(SETTINGS_IFACE,
                      in_signature='a{sa{sv}}', out_signature='o')

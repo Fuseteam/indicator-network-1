@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<node>
+    <interface name="org.freedesktop.NetworkManager.Device.Statistics">
+        <signal name="PropertiesChanged">
+            <annotation name="org.qtproject.QtDBus.QtTypeName.In0" value="QVariantMap"/>
+            <arg type="a{sv}" name="properties"/>
+        </signal>
+        <property type="u" name="RefreshRateMs" access="readwrite"/>
+        <property type="t" name="TxBytes" access="read"/>
+        <property type="t" name="RxBytes" access="read"/>
+    </interface>
+</node>

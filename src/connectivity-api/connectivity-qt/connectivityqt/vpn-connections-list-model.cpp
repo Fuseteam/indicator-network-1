@@ -220,7 +220,7 @@ public:
 
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
 
-    DBusPropertyCache::SPtr m_propertyCache;
+    util::DBusPropertyCache::SPtr m_propertyCache;
 
     QList<VpnConnection::SPtr> m_vpnConnections;
 };
@@ -232,7 +232,7 @@ VpnConnectionsListModel::VpnConnectionsListModel(const internal::VpnConnectionsL
     d->m_writeInterface = parameters.writeInterface;
     d->m_propertyCache = parameters.propertyCache;
     d->updatePaths(d->m_propertyCache->get("VpnConnections"));
-    connect(d->m_propertyCache.get(), &DBusPropertyCache::propertyChanged, d.get(), &Priv::propertyChanged);
+    connect(d->m_propertyCache.get(), &util::DBusPropertyCache::propertyChanged, d.get(), &Priv::propertyChanged);
 }
 
 VpnConnectionsListModel::~VpnConnectionsListModel()

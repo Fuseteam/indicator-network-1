@@ -125,7 +125,7 @@ public:
     QList<Modem::SPtr> m_modems;
 
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
-    internal::DBusPropertyCache::SPtr m_propertyCache;
+    util::DBusPropertyCache::SPtr m_propertyCache;
 };
 
 ModemsListModel::ModemsListModel(const internal::ModemsListModelParameters &parameters) :
@@ -138,7 +138,7 @@ ModemsListModel::ModemsListModel(const internal::ModemsListModelParameters &para
     d->m_propertyCache = parameters.propertyCache;
 
     connect(d->m_propertyCache.get(),
-            &internal::DBusPropertyCache::propertyChanged, d.get(),
+            &util::DBusPropertyCache::propertyChanged, d.get(),
             &Priv::propertyChanged);
 
     QList<QDBusObjectPath> tmp;

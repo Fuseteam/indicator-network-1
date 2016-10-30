@@ -26,9 +26,7 @@
 
 #include <unity/util/DefinesPtrs.h>
 
-namespace connectivityqt
-{
-namespace internal
+namespace util
 {
 
 class DBusPropertyCache: public QObject
@@ -61,5 +59,4 @@ protected:
     std::shared_ptr<Priv> d;
 };
 
-}
 }

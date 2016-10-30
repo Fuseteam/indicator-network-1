@@ -3344,4 +3344,161 @@ TEST_F(TestIndicator, CellularData_2)
         ).match());
 }
 
+/*
+ * Disabled by default because containst sleeps and what not other horrible things.
+ * There are timers involved, so this will be flaky
+ * To manually run, do following inside ${CMAKE_BINARY_DIR}
+ *     $ export INDICATOR_NETWORK_UNDER_TESTING=1
+ *     $ export INDICATOR_NETWOR_TESTING_GSETTINGS_INI=./data/test_gsettings.ini
+ *     $ export GSETTINGS_SCHEMA_DIR=./data
+ *     $ tests/integration/integration-tests --gtest_filter=TestIndicator.DISABLED_DataUsageIndication_enabled --gtest_also_run_disabled_tests
+ */
+TEST_F(TestIndicator, DISABLED_DataUsageIndication_enabled)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto wifi_device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto ap = createAccessPoint("0", "the ssid", wifi_device);
+    auto connection = createAccessPointConnection("0", "the ssid", wifi_device);
+    createActiveConnection("0", wifi_device, connection, ap);
+
+    auto modem1_device = createOfonoModemDevice("/ril_0", "0");
+
+    setDataUsageIndicationSetting(true);
+
+    ASSERT_NO_THROW(startIndicator());
+    usleep(1000);
+
+    // create second modem to test the other code path
+    createModem("ril_1");
+    auto modem2_device = createOfonoModemDevice("/ril_1", "1");
+
+    setDisplayPowerState(DisplayPowerState::On);
+    usleep(1000);
+
+    EXPECT_NE(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_NE(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_NE(getStatisticsRefreshRateMs(modem2_device), 0);
+
+    // verify that no transfer icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+        ).match());
+
+
+    setDeviceStatistics(wifi_device, 1, 0);
+    usleep(1000);
+    // verify that Tx icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure", "transfer-progress-upload"})
+        ).match());
+
+      setDeviceStatistics(modem1_device, 0, 1);
+      usleep(1000);
+
+      // verify that TxRx icon is seen
+      EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+          .item(mh::MenuItemMatcher()
+               .mode(mh::MenuItemMatcher::Mode::starts_with)
+              .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure", "transfer-progress"})
+          ).match());
+
+      sleep(2);
+
+      // verify that no transfer icon is seen
+      EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+          .item(mh::MenuItemMatcher()
+               .mode(mh::MenuItemMatcher::Mode::starts_with)
+              .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+          ).match());
+
+     setDeviceStatistics(modem2_device, 0, 1);
+     usleep(1000);
+     // verify that Rx icon is seen
+     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+         .item(mh::MenuItemMatcher()
+              .mode(mh::MenuItemMatcher::Mode::starts_with)
+             .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure", "transfer-progress-download"})
+         ).match());
+
+
+    setDisplayPowerState(DisplayPowerState::Off);
+    usleep(1000);
+
+    EXPECT_EQ(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem2_device), 0);
+
+
+    setDisplayPowerState(DisplayPowerState::On);
+    usleep(1000);
+
+    EXPECT_NE(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_NE(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_NE(getStatisticsRefreshRateMs(modem2_device), 0);
+
+    sleep(2);
+
+    // verify that no transfer icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+        ).match());
+}
+
+TEST_F(TestIndicator, DataUsageIndication_disabled)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto wifi_device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto ap = createAccessPoint("0", "the ssid", wifi_device);
+    auto connection = createAccessPointConnection("0", "the ssid", wifi_device);
+    createActiveConnection("0", wifi_device, connection, ap);
+
+    auto modem1_device = createOfonoModemDevice("/ril_0", "0");
+
+    ASSERT_NO_THROW(startIndicator());
+
+    // create second modem to test the other code path
+    createModem("ril_1");
+    auto modem2_device = createOfonoModemDevice("/ril_1", "1");
+
+    setDisplayPowerState(DisplayPowerState::On);
+
+    EXPECT_EQ(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem2_device), 0);
+
+    // verify that no transfer icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+        ).match());
+
+    setDisplayPowerState(DisplayPowerState::Off);
+
+    EXPECT_EQ(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem2_device), 0);
+
+
+    setDisplayPowerState(DisplayPowerState::On);
+
+    EXPECT_EQ(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem2_device), 0);
+
+    // verify that no transfer icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+        ).match());
+}
+
+
 } // namespace

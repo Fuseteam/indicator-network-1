@@ -17,15 +17,13 @@
  *     Pete Woods <pete.woods@canonical.com>
  */
 
-#include <connectivityqt/internal/dbus-property-cache.h>
+#include "dbus-property-cache.h"
 
 #include <PropertiesInterface.h>
 
 using namespace std;
 
-namespace connectivityqt
-{
-namespace internal
+namespace util
 {
 
 class DBusPropertyCache::Priv: public QObject
@@ -178,7 +176,6 @@ QDBusConnection DBusPropertyCache::connection() const
     return d->m_connection;
 }
 
-}
 }
 
 #include "dbus-property-cache.moc"

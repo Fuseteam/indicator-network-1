@@ -51,9 +51,9 @@ public:
 
     QDBusConnection m_sessionConnection;
 
-    internal::DBusPropertyCache::SPtr m_propertyCache;
+    util::DBusPropertyCache::SPtr m_propertyCache;
 
-    internal::DBusPropertyCache::SPtr m_writePropertyCache;
+    util::DBusPropertyCache::SPtr m_writePropertyCache;
 
     shared_ptr<ComUbuntuConnectivity1NetworkingStatusInterface> m_readInterface;
 
@@ -235,24 +235,24 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
             DBusTypes::DBUS_NAME, DBusTypes::PRIVATE_PATH,
             d->m_sessionConnection);
 
-    d->m_writePropertyCache = make_shared<internal::DBusPropertyCache>(
+    d->m_writePropertyCache = make_shared<util::DBusPropertyCache>(
                 DBusTypes::DBUS_NAME, DBusTypes::PRIVATE_INTERFACE,
                 DBusTypes::PRIVATE_PATH, sessionConnection);
     connect(d->m_writePropertyCache.get(),
-            &internal::DBusPropertyCache::propertyChanged, d.get(),
+            &util::DBusPropertyCache::propertyChanged, d.get(),
             &Priv::propertyChanged);
     connect(d->m_writePropertyCache.get(),
-            &internal::DBusPropertyCache::initialized, d.get(),
+            &util::DBusPropertyCache::initialized, d.get(),
             &Connectivity::Priv::interfaceInitialized);
 
-    d->m_propertyCache = make_shared<internal::DBusPropertyCache>(
+    d->m_propertyCache = make_shared<util::DBusPropertyCache>(
             DBusTypes::DBUS_NAME, DBusTypes::SERVICE_INTERFACE,
             DBusTypes::SERVICE_PATH, sessionConnection);
     connect(d->m_propertyCache.get(),
-            &internal::DBusPropertyCache::propertyChanged, d.get(),
+            &util::DBusPropertyCache::propertyChanged, d.get(),
             &Priv::propertyChanged);
     connect(d->m_propertyCache.get(),
-            &internal::DBusPropertyCache::initialized, d.get(),
+            &util::DBusPropertyCache::initialized, d.get(),
             &Connectivity::Priv::interfaceInitialized);
 
 

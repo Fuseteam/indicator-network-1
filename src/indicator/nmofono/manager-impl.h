@@ -99,6 +99,10 @@ public:
 
     QList<wwan::Sim::Ptr> sims() const override;
 
+    bool tx() const override;
+
+    bool rx() const override;
+
     void setHotspotEnabled(bool) override;
 
     void setHotspotSsid(const QByteArray&) override;

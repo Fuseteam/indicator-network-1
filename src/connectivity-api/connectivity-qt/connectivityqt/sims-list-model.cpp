@@ -168,7 +168,7 @@ public:
     QList<Sim::SPtr> m_sims;
 
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
-    internal::DBusPropertyCache::SPtr m_propertyCache;
+    util::DBusPropertyCache::SPtr m_propertyCache;
 };
 
 SimsListModel::SimsListModel(const internal::SimsListModelParameters &parameters) :
@@ -180,7 +180,7 @@ SimsListModel::SimsListModel(const internal::SimsListModelParameters &parameters
     d->m_propertyCache = parameters.propertyCache;
 
     connect(d->m_propertyCache.get(),
-            &internal::DBusPropertyCache::propertyChanged, d.get(),
+            &util::DBusPropertyCache::propertyChanged, d.get(),
             &Priv::propertyChanged);
 
     QList<QDBusObjectPath> tmp;

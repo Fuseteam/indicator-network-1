@@ -134,7 +134,10 @@ public:
     QString serial() const;
 
     QString name() const override;
+
     QString ofonoPath() const;
+    QString nmPath() const;
+    void setNmPath(const QString& path);
 
     WwanType wwanType() const override;
 

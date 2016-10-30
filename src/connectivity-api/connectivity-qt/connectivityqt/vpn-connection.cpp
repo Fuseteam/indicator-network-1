@@ -17,7 +17,7 @@
  *     Pete Woods <pete.woods@canonical.com>
  */
 
-#include <connectivityqt/internal/dbus-property-cache.h>
+#include <util/dbus-property-cache.h>
 #include <connectivityqt/vpn-connection.h>
 #include <dbus-types.h>
 
@@ -64,7 +64,7 @@ public:
 
     unique_ptr<ComUbuntuConnectivity1VpnVpnConnectionInterface> m_vpnInterface;
 
-    internal::DBusPropertyCache::UPtr m_propertyCache;
+    util::DBusPropertyCache::UPtr m_propertyCache;
 };
 
 VpnConnection::VpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection, QObject* parent) :
@@ -75,13 +75,13 @@ VpnConnection::VpnConnection(const QDBusObjectPath& path, const QDBusConnection&
             DBusTypes::DBUS_NAME, path.path(), connection);
 
     d->m_propertyCache =
-            make_unique<internal::DBusPropertyCache>(
+            make_unique<util::DBusPropertyCache>(
                     DBusTypes::DBUS_NAME,
                     ComUbuntuConnectivity1VpnVpnConnectionInterface::staticInterfaceName(),
                     path.path(), connection);
 
     connect(d->m_propertyCache.get(),
-                &internal::DBusPropertyCache::propertyChanged, d.get(),
+                &util::DBusPropertyCache::propertyChanged, d.get(),
                 &Priv::propertyChanged);
 }
 
