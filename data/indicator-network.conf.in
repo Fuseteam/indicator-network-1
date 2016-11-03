@@ -20,4 +20,4 @@ pre-start script
 	fi
 end script
 
-exec @NETWORK_SERVICE@
+exec $SNAP@NETWORK_SERVICE@
