@@ -1,3 +1,11 @@
+indicator-network (0.8.0+17.04.20161103-0ubuntu1) zesty; urgency=medium
+
+  [ Michael Terry ]
+  * Work inside a snap by prefixing hard coded paths with $SNAP. (LP:
+    #1629009)
+
+ -- charles.kerr@canonical.com <charles.kerr@canonical.com>  Thu, 03 Nov 2016 14:21:24 +0000
+
 indicator-network (0.8.0+17.04.20161021-0ubuntu1) zesty; urgency=medium
 
   [ Martin Pitt, Ted Gould ]
