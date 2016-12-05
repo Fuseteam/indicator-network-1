@@ -54,11 +54,15 @@ public:
 
     QString id() const;
 
+    QString uuid() const;
+
     QString type() const;
 
     State state() const;
 
     QDBusObjectPath connectionPath() const;
+
+    QDBusObjectPath specificObject() const;
 
     QDBusObjectPath path() const;
 
@@ -72,6 +76,8 @@ Q_SIGNALS:
     void stateChanged(State state);
 
     void connectionPathChanged(const QDBusObjectPath& connectionPath);
+
+    void specificObjectChanged(const QDBusObjectPath& specificObject);
 
 protected:
     class Priv;

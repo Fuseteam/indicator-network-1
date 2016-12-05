@@ -18,6 +18,7 @@
 set_source_files_properties(
     "${DATA_DIR}/nm-device.xml"
     "${DATA_DIR}/nm-device-statistics.xml"
+    "${DATA_DIR}/nm-device-ethernet.xml"
     "${DATA_DIR}/nm-device-wifi.xml"
     "${DATA_DIR}/nm-access-point.xml"
     "${DATA_DIR}/nm-active-connection.xml"
@@ -76,6 +77,12 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/nm-device-statistics.xml"
     NetworkManagerDeviceStatisticsInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-device-ethernet.xml"
+    NetworkManagerDeviceWiredInterface
 )
 
 qt5_add_dbus_interface(

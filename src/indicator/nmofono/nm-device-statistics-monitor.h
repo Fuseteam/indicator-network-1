@@ -49,7 +49,7 @@ public:
     NMDeviceStatisticsMonitor();
     ~NMDeviceStatisticsMonitor();
 
-    void addLink(Link::Ptr link);
+    void addLink(Link::SPtr link);
 
     void remove(const QString &nmPath);
 

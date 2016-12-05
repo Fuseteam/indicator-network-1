@@ -102,6 +102,18 @@ void MenuItem::setAction(const QString &value)
     Q_EMIT changed();
 }
 
+void MenuItem::setActionAndTargetValue(const QString &action, const Variant& target)
+{
+    if (m_action == action)
+    {
+        return;
+    }
+
+    m_action = action;
+    g_menu_item_set_action_and_target_value(m_gmenuitem.get(), m_action.toUtf8().constData(), target);
+    Q_EMIT changed();
+}
+
 void MenuItem::setAttribute(const QString &attribute,
                   Variant value)
 {

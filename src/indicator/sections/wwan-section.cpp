@@ -58,7 +58,7 @@ public:
     SwitchItem::Ptr m_hotspotSwitch;
     TextItem::Ptr m_openCellularSettings;
 
-    QMap<wwan::Modem::Ptr, WwanLinkItem::Ptr> m_items;
+    QMap<wwan::Modem::Ptr, WwanLinkItem::SPtr> m_items;
 
     Private() = delete;
     Private(Manager::Ptr modemManager, SwitchItem::Ptr mobileDataSwitch ,SwitchItem::Ptr hotspotSwitch);
@@ -139,7 +139,7 @@ WwanSection::Private::modemsChanged()
     m_linkMenuMerger->clear();
 
     multimap<int, WwanLinkItem::Ptr, wwan::Modem::Compare> sorted;
-    QMapIterator<wwan::Modem::Ptr, WwanLinkItem::Ptr> it(m_items);
+    QMapIterator<wwan::Modem::Ptr, WwanLinkItem::SPtr> it(m_items);
     while (it.hasNext())
     {
         it.next();

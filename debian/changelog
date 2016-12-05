@@ -1,3 +1,12 @@
+indicator-network (0.9.0-0ubuntu1) UNRELEASED; urgency=medium
+
+  * Add ethernet support to indicator (and NM dbus template).
+  * Switch to common active connection interface throughout the codebase.
+  * Re-enable tests on all arches except powerpc, ppc64el, s390x.
+  * Fix Wi-Fi widget visibility.
+
+ -- Pete <pete.woods@canonical.com>  Fri, 25 Nov 2016 22:35:52 +0000
+
 indicator-network (0.8.0+17.04.20161111-0ubuntu1) zesty; urgency=medium
 
   * Fix memory corruption inside unix signal handler (LP: #1632275)

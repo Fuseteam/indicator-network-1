@@ -75,7 +75,7 @@ inline void PrintTo (const SS& simState, std::ostream* os)
             << "Present: " << (simState.present ? "y" : "n") << ", "
             << "MCC: " << simState.mcc.toStdString () << ", "
             << "MNC: " << simState.mnc.toStdString () << ", "
-            << "Langs: " << QStringList(simState.preferredLanguages).join (",").toStdString ()
+            << "Langs: [" << QStringList(simState.preferredLanguages).join (",").toStdString () << "], "
             << "Roaming: " << (simState.dataRoamingEnabled ? "y" : "n")
             << ")";
 }

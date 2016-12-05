@@ -47,10 +47,11 @@ public:
     SwitchItem::Ptr m_hotspotSwitch;
     SwitchItem::Ptr m_wifiSwitch;
 
-    QuickAccessSection::Ptr m_quickAccessSection;
-    WifiSection::Ptr m_wifiSection;
-    WwanSection::Ptr m_wwanSection;
-    VpnSection::Ptr m_vpnSection;
+    QuickAccessSection::SPtr m_quickAccessSection;
+    EthernetSection::SPtr m_ethernetSection;
+    WifiSection::SPtr m_wifiSection;
+    WwanSection::SPtr m_wwanSection;
+    VpnSection::SPtr m_vpnSection;
 
     MenuExporter::UPtr m_desktopMenuExporter;
     MenuExporter::UPtr m_desktopGreeterMenuExporter;
@@ -156,6 +157,7 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
 
     d->m_quickAccessSection = factory.newQuickAccessSection(d->m_flightModeSwitch);
     d->m_wwanSection = factory.newWwanSection(d->m_mobileDataSwitch, d->m_hotspotSwitch);
+    d->m_ethernetSection = factory.newEthernetSection();
     d->m_wifiSection = factory.newWiFiSection(d->m_wifiSwitch);
     d->m_vpnSection = factory.newVpnSection();
 
@@ -168,6 +170,11 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
     d->m_desktopGreeterMenu->addSection(d->m_wwanSection);
     d->m_phoneMenu->addSection(d->m_wwanSection);
     d->m_phoneGreeterMenu->addSection(d->m_wwanSection);
+
+    d->m_desktopMenu->addSection(d->m_ethernetSection);
+    d->m_desktopGreeterMenu->addSection(d->m_ethernetSection);
+    d->m_phoneMenu->addSection(d->m_ethernetSection);
+    d->m_phoneGreeterMenu->addSection(d->m_ethernetSection);
 
     d->m_desktopMenu->addSection(d->m_wifiSection);
     d->m_desktopGreeterMenu->addSection(d->m_wifiSection);

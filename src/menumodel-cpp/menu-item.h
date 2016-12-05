@@ -74,6 +74,8 @@ public Q_SLOTS:
 
     void setAction(const QString &value);
 
+    void setActionAndTargetValue(const QString &value, const Variant& target);
+
     void setAttribute(const QString &attribute,
                       Variant value);
 

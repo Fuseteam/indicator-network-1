@@ -147,6 +147,11 @@ Menu::iterator Menu::end()
     return m_items.end();
 }
 
+std::size_t Menu::size() const
+{
+    return m_items.size();
+}
+
 // clear the whole menu
 void Menu::clear()
 {

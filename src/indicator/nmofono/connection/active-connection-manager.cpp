@@ -109,6 +109,11 @@ QSet<ActiveConnection::SPtr> ActiveConnectionManager::connections() const
     return d->m_connections.values().toSet();
 }
 
+ActiveConnection::SPtr ActiveConnectionManager::connection(const QDBusObjectPath& path) const
+{
+    return d->m_connections.value(path);
+}
+
 bool ActiveConnectionManager::deactivate(ActiveConnection::SPtr activeConnection)
 {
     auto reply = d->m_manager->DeactivateConnection(activeConnection->path());

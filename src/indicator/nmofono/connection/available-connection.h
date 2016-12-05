@@ -18,42 +18,50 @@
 
 #pragma once
 
+#include <QDBusConnection>
 #include <QDBusObjectPath>
 #include <QObject>
-#include <QSet>
 
-#include <nmofono/connection/active-connection.h>
+#include <unity/util/DefinesPtrs.h>
+#include <NetworkManager.h>
 
 namespace nmofono
 {
+namespace ethernet
+{
+class EthernetLink;
+}
+
 namespace connection
 {
 
-class ActiveConnectionManager: public QObject
+class AvailableConnection: public QObject
 {
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(ActiveConnectionManager);
+    UNITY_DEFINES_PTRS(AvailableConnection);
 
-    ActiveConnectionManager(const QDBusConnection& systemConnection);
+    AvailableConnection(const QDBusObjectPath& path, const QDBusConnection& systemConnection);
 
-    ~ActiveConnectionManager() = default;
+    ~AvailableConnection() = default;
 
-    QSet<ActiveConnection::SPtr> connections() const;
+    QDBusObjectPath path() const;
 
-    ActiveConnection::SPtr connection(const QDBusObjectPath& path) const;
+    QString connectionId() const;
 
-    bool deactivate(ActiveConnection::SPtr activeConnection);
+    QString connectionUuid() const;
 
 Q_SIGNALS:
-    void connectionsChanged(const QSet<ActiveConnection::SPtr>& connections);
+    void connectionIdChanged(const QString &);
 
-    void connectionsUpdated();
+    void connectionUuidChanged(const QString &);
 
 protected:
     class Priv;
     std::shared_ptr<Priv> d;
+
+    friend ethernet::EthernetLink;
 };
 
 }

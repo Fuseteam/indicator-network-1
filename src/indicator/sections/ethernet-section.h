@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -19,21 +19,26 @@
 
 #pragma once
 
-#include <nmofono/wifi/wifi-link.h>
-#include <nmofono/wwan/modem.h>
+#include <nmofono/manager.h>
 
-class Icons
+#include <menuitems/section.h>
+
+class EthernetSection : public Section
 {
 public:
-    Icons() = delete;
+    UNITY_DEFINES_PTRS(EthernetSection);
 
-    ~Icons() = delete;
+    explicit EthernetSection(nmofono::Manager::Ptr manager);
 
-    static QString strengthIcon(int8_t strength);
+    ~EthernetSection();
 
-    static QString bearerIcon(nmofono::wwan::Modem::Bearer bearer);
+    ActionGroup::Ptr
+    actionGroup() override;
 
-    static QString wifiIcon(nmofono::wifi::WifiLink::Signal signal);
+    MenuModel::Ptr
+    menuModel() override;
 
-    static QString ethernetIcon(nmofono::Link::Status status);
+protected:
+    class Private;
+    std::shared_ptr<Private> d;
 };

@@ -195,6 +195,22 @@ RootState::Private::updateNetworkingIcon()
         // some sort of connection animation
         break;
     case Manager::NetworkingStatus::online:
+        multimap<Link::Id, ethernet::EthernetLink::SPtr> sortedEthernetLinks;
+        for (auto ethernetLink : m_manager->ethernetLinks())
+        {
+            sortedEthernetLinks.insert(make_pair(ethernetLink->id(), ethernetLink));
+        }
+        for (auto pair : sortedEthernetLinks)
+        {
+            auto ethernetLink = pair.second;
+
+            connect(ethernetLink.get(), &ethernet::EthernetLink::statusUpdated, this,
+                    &Private::updateNetworkingIcon, Qt::UniqueConnection);
+
+            auto status = ethernetLink->status();
+            m_networkingIcons << Icons::ethernetIcon(status);
+        }
+
         for (auto wifiLink : m_manager->wifiLinks())
         {
             connect(wifiLink.get(), &wifi::WifiLink::statusUpdated, this,

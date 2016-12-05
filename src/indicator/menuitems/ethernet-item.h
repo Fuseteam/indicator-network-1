@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -19,21 +19,36 @@
 
 #pragma once
 
-#include <nmofono/wifi/wifi-link.h>
-#include <nmofono/wwan/modem.h>
+#include "item.h"
+#include "menumodel-cpp/action.h"
+#include "menumodel-cpp/menu-item.h"
+#include "menumodel-cpp/gio-helpers/variant.h"
 
-class Icons
+#include <functional>
+#include <vector>
+
+class EthernetItem : public Item
 {
+    Q_OBJECT
+
+    class Private;
+    std::unique_ptr<Private> d;
+
 public:
-    Icons() = delete;
+    typedef std::shared_ptr<EthernetItem> Ptr;
 
-    ~Icons() = delete;
+    EthernetItem(unsigned int id);
+    virtual ~EthernetItem();
 
-    static QString strengthIcon(int8_t strength);
+    virtual MenuItem::Ptr menuItem();
 
-    static QString bearerIcon(nmofono::wwan::Modem::Bearer bearer);
+public Q_SLOTS:
+    void setStatusText(const QString &value);
 
-    static QString wifiIcon(nmofono::wifi::WifiLink::Signal signal);
+    void setName(const QString &value);
 
-    static QString ethernetIcon(nmofono::Link::Status status);
+    void setAutoConnect(bool autoConnect);
+
+Q_SIGNALS:
+    void autoConnectChanged(bool autoconnect);
 };

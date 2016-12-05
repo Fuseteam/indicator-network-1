@@ -26,10 +26,11 @@
 #include <connectivity-service/connectivity-service.h>
 #include <menumodel-cpp/menu-exporter.h>
 #include <menumodel-cpp/action-group-merger.h>
+#include <sections/ethernet-section.h>
 #include <sections/quick-access-section.h>
-#include <sections/vpn-section.h>
 #include <sections/wifi-section.h>
 #include <sections/wwan-section.h>
+#include <sections/vpn-section.h>
 #include <menuitems/switch-item.h>
 
 #include <memory>
@@ -57,6 +58,8 @@ public:
     virtual std::unique_ptr<QuickAccessSection> newQuickAccessSection(SwitchItem::Ptr flightModeSwitch);
 
     virtual std::unique_ptr<WwanSection> newWwanSection(SwitchItem::Ptr mobileDataSwitch, SwitchItem::Ptr hotspotSwitch);
+
+    virtual EthernetSection::UPtr newEthernetSection();
 
     virtual std::unique_ptr<WifiSection> newWiFiSection(SwitchItem::Ptr wifiSwitch);
 

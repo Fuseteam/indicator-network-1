@@ -88,6 +88,7 @@ struct Factory::Private
                     singletonNotificationManager(),
                     singletonKillSwitch(),
                     singletonHotspotManager(),
+                    singletonActiveConnectionManager(),
                     QDBusConnection::systemBus());
         }
         return m_nmofono;
@@ -153,6 +154,11 @@ unique_ptr<MenuExporter> Factory::newMenuExporter(const string &path, MenuModel:
 unique_ptr<QuickAccessSection> Factory::newQuickAccessSection(SwitchItem::Ptr flightModeSwitch)
 {
     return make_unique<QuickAccessSection>(d->singletonNmofono(), flightModeSwitch);
+}
+
+unique_ptr<EthernetSection> Factory::newEthernetSection()
+{
+    return make_unique<EthernetSection>(d->singletonNmofono());
 }
 
 unique_ptr<WwanSection> Factory::newWwanSection(SwitchItem::Ptr mobileDataSwitch, SwitchItem::Ptr hotspotSwitch)

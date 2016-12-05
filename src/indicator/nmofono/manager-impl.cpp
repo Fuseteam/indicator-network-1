@@ -20,13 +20,10 @@
 
 #include <nmofono/manager-impl.h>
 #include <nmofono/connectivity-service-settings.h>
+#include <nmofono/ethernet/ethernet-link.h>
 #include <nmofono/wifi/wifi-link-impl.h>
 #include <nmofono/wwan/sim-manager.h>
-#include <NetworkManagerActiveConnectionInterface.h>
-#include <NetworkManagerDeviceInterface.h>
 #include <NetworkManagerInterface.h>
-#include <NetworkManagerSettingsInterface.h>
-#include <NetworkManagerSettingsConnectionInterface.h>
 
 #define slots
 #include <qofono-qt5/qofonomanager.h>
@@ -61,7 +58,9 @@ public:
     Manager& p;
 
     shared_ptr<OrgFreedesktopNetworkManagerInterface> nm;
+    shared_ptr<OrgFreedesktopNetworkManagerSettingsInterface> m_settingsInterface;
     shared_ptr<QOfonoManager> m_ofono;
+    connection::ActiveConnectionManager::SPtr m_activeConnectionManager;
 
     bool m_flightMode = true;
     bool m_unstoppableOperationHappening = false;
@@ -76,7 +75,7 @@ public:
 
     QList<QDBusObjectPath> m_nmDevices;
 
-    QSet<Link::Ptr> m_nmLinks;
+    QSet<Link::SPtr> m_nmLinks;
     QMap<QString, wwan::Modem::Ptr> m_ofonoLinks;
 
     SimUnlockDialog::Ptr m_unlockDialog;
@@ -527,10 +526,14 @@ ManagerImpl::updateNetworkingStatus(uint status)
 ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
                          KillSwitch::Ptr killSwitch,
                          HotspotManager::SPtr hotspotManager,
+                         connection::ActiveConnectionManager::SPtr activeConnectionManager,
                          const QDBusConnection& systemConnection) :
         d(new ManagerImpl::Private(*this))
 {
     d->nm = make_shared<OrgFreedesktopNetworkManagerInterface>(NM_DBUS_SERVICE, NM_DBUS_PATH, systemConnection);
+    d->m_settingsInterface = make_shared<OrgFreedesktopNetworkManagerSettingsInterface>(
+                    NM_DBUS_SERVICE, NM_DBUS_PATH_SETTINGS, systemConnection);
+    d->m_activeConnectionManager = activeConnectionManager;
 
     d->m_unlockDialog = make_shared<SimUnlockDialog>(notificationManager);
     connect(d->m_unlockDialog.get(), &SimUnlockDialog::ready, d.get(), &Private::sim_unlock_ready);
@@ -720,7 +723,7 @@ ManagerImpl::device_removed(const QDBusObjectPath &path)
 
     d->m_statisticsMonitor->remove(path.path());
 
-    Link::Ptr toRemove;
+    Link::SPtr toRemove;
     for (auto dev : d->m_nmLinks)
     {
         auto wifiLink = dynamic_pointer_cast<wifi::WifiLinkImpl>(dev);
@@ -754,41 +757,55 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
         }
     }
 
-    Link::Ptr link;
+    Link::SPtr link;
     try {
         auto dev = make_shared<OrgFreedesktopNetworkManagerDeviceInterface>(
             NM_DBUS_SERVICE, path.path(), d->nm->connection());
-        if (dev->deviceType() == NM_DEVICE_TYPE_WIFI) {
-            wifi::WifiLink::Ptr tmp = make_shared<wifi::WifiLinkImpl>(dev,
-                                                d->nm,
-                                                d->m_killSwitch);
-
-            // We're not interested in showing access points
-            if (tmp->name() != d->m_hotspotManager->interface())
-            {
-                tmp->setDisconnectWifi(d->m_hotspotManager->disconnectWifi());
-                QObject::connect(d->m_hotspotManager.get(), &HotspotManager::disconnectWifiChanged,
-                        tmp.get(), &wifi::WifiLink::setDisconnectWifi);
-
-                link = tmp;
-            }
-        }
-        else if (dev->deviceType() == NM_DEVICE_TYPE_MODEM)
+        switch (dev->deviceType())
         {
-            if (dev->driver() == "ofono")
+            case NM_DEVICE_TYPE_WIFI:
             {
-                for (const auto &modem : d->m_ofonoLinks)
+                wifi::WifiLink::SPtr tmp = make_shared<wifi::WifiLinkImpl>(dev,
+                                                    d->nm,
+                                                    d->m_killSwitch,
+                                                    d->m_activeConnectionManager);
+
+                // We're not interested in showing access points
+                if (tmp->name() != d->m_hotspotManager->interface())
                 {
-                    if (modem->ofonoPath() == dev->udi())
+                    tmp->setDisconnectWifi(d->m_hotspotManager->disconnectWifi());
+                    QObject::connect(d->m_hotspotManager.get(), &HotspotManager::disconnectWifiChanged,
+                            tmp.get(), &wifi::WifiLink::setDisconnectWifi);
+
+                    link = tmp;
+                }
+                break;
+            }
+            case NM_DEVICE_TYPE_ETHERNET:
+            {
+                link = make_shared<ethernet::EthernetLink>(
+                        dev, d->nm, d->m_settingsInterface, d->m_activeConnectionManager);
+                break;
+            }
+            case NM_DEVICE_TYPE_MODEM:
+            {
+                if (dev->driver() == "ofono")
+                {
+                    for (const auto &modem : d->m_ofonoLinks)
                     {
-                        modem->setNmPath(path.path());
-                        d->m_statisticsMonitor->addLink(modem);
-                        break;
+                        if (modem->ofonoPath() == dev->udi())
+                        {
+                            modem->setNmPath(path.path());
+                            d->m_statisticsMonitor->addLink(modem);
+                            break;
+                        }
                     }
                 }
+                break;
             }
+            default:
+                break;
         }
-
     } catch (const exception &e) {
         qDebug() << ": failed to create Device proxy for "<< path.path() << ": ";
         qDebug() << "\t" << e.what();
@@ -813,10 +830,10 @@ ManagerImpl::unstoppableOperationHappening() const
     return d->m_unstoppableOperationHappening;
 }
 
-QSet<Link::Ptr>
+QSet<Link::SPtr>
 ManagerImpl::links() const
 {
-    QSet<Link::Ptr> result(d->m_nmLinks);
+    QSet<Link::SPtr> result(d->m_nmLinks);
     for(auto i: d->m_ofonoLinks)
     {
         result.insert(i);
@@ -917,15 +934,29 @@ ManagerImpl::unlockModemByName(const QString &name)
 }
 
 
-QSet<wifi::WifiLink::Ptr>
+QSet<wifi::WifiLink::SPtr>
 ManagerImpl::wifiLinks() const
 {
-    QSet<wifi::WifiLink::Ptr> result;
+    QSet<wifi::WifiLink::SPtr> result;
     for(auto link: d->m_nmLinks)
     {
         if (link->type() == Link::Type::wifi)
         {
             result.insert(dynamic_pointer_cast<wifi::WifiLink>(link));
+        }
+    }
+    return result;
+}
+
+QSet<ethernet::EthernetLink::SPtr>
+ManagerImpl::ethernetLinks() const
+{
+    QSet<ethernet::EthernetLink::SPtr> result;
+    for(auto link: d->m_nmLinks)
+    {
+        if (link->type() == Link::Type::ethernet)
+        {
+            result.insert(dynamic_pointer_cast<ethernet::EthernetLink>(link));
         }
     }
     return result;

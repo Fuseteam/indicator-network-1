@@ -20,6 +20,7 @@
 #pragma once
 
 #include <nmofono/kill-switch.h>
+#include <nmofono/connection/active-connection-manager.h>
 #include <nmofono/wifi/wifi-link.h>
 #include <util/qhash-sharedptr.h>
 
@@ -39,7 +40,8 @@ public:
 
     WifiLinkImpl(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
          std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
-         KillSwitch::Ptr killSwitch);
+         KillSwitch::Ptr killSwitch,
+         connection::ActiveConnectionManager::SPtr activeConnectionManager);
     ~WifiLinkImpl();
 
     // public API

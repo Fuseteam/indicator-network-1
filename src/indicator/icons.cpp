@@ -89,3 +89,24 @@ QString Icons::wifiIcon(nmofono::wifi::WifiLink::Signal signal)
     // shouldn't be reached
     return QString();
 }
+
+QString Icons::ethernetIcon(nmofono::Link::Status status)
+{
+    switch (status)
+    {
+    case Link::Status::connected:
+        return "network-wired-connected";
+    case Link::Status::connecting:
+        return "network-wired-connected";
+    case Link::Status::disabled:
+        return "network-wired-disabled";
+    case Link::Status::offline:
+        return "network-wired-disabled";
+    case Link::Status::online:
+        return "network-wired-active";
+    case Link::Status::failed:
+        return "network-wired-failed";
+    }
+    // shouldn't be reached
+    return QString();
+}

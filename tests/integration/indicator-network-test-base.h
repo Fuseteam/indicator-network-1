@@ -131,6 +131,12 @@ public:
         disconnected
     };
 
+    enum class Toggle
+    {
+        enabled,
+        disabled
+    };
+
     IndicatorNetworkTestBase();
 
     ~IndicatorNetworkTestBase();
@@ -148,6 +154,8 @@ protected:
     void startIndicator();
 
     QString createEthernetDevice(int state, const QString& id = "0");
+
+    QString createEthernetConnection(const QString& name, const QString& device);
 
     QString createWiFiDevice(int state, const QString& id = "0");
 
@@ -172,7 +180,7 @@ protected:
 
     void removeWifiConnection(const QString& device, const QString& connection);
 
-    QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& specificObject);
+    QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& specificObject = "/");
 
     void removeActiveConnection(const QString& device, const QString& active_connection);
 
@@ -243,7 +251,16 @@ protected:
                 bool locked = false,
                 const std::string& connectivityIcon = "");
 
+    static unity::gmenuharness::MenuItemMatcher ethernetInfo(const std::string& label,
+                                                             const std::string& status,
+                                                             Toggle autoConnect = Toggle::enabled);
+
+    static unity::gmenuharness::MenuItemMatcher radio(const std::string& label,
+                                                      Toggle toggled);
+
     static unity::gmenuharness::MenuItemMatcher cellularSettings();
+
+    static unity::gmenuharness::MenuItemMatcher ethernetSettings();
 
     static unity::gmenuharness::MenuItemMatcher vpnSettings();
 

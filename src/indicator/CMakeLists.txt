@@ -25,6 +25,8 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/connection/active-connection.cpp
     nmofono/connection/active-connection-manager.cpp
     nmofono/connection/active-vpn-connection.cpp
+    nmofono/connection/available-connection.cpp
+    nmofono/ethernet/ethernet-link.cpp
     nmofono/wifi/access-point.cpp
     nmofono/wifi/access-point-impl.cpp
     nmofono/wifi/grouped-access-point.cpp
@@ -45,6 +47,8 @@ set(NETWORK_SERVICE_SOURCES
     sim-unlock-dialog.cpp
     root-state.cpp
     vpn-status-notifier.cpp
+    sections/ethernet-section.cpp
+    sections/ethernet-link-section.cpp
     sections/quick-access-section.cpp
     sections/wifi-section.cpp
     sections/vpn-section.cpp
@@ -58,6 +62,9 @@ set(NETWORK_SERVICE_SOURCES
     connectivity-service/dbus-sim.cpp
 
     menuitems/access-point-item.cpp
+    menuitems/ethernet-connection-item.cpp
+    menuitems/ethernet-item.cpp
+    menuitems/ethernet-link-item.cpp
     menuitems/switch-item.cpp
     menuitems/text-item.cpp
     menuitems/vpn-item.cpp

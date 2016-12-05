@@ -21,6 +21,7 @@
 
 #include <nmofono/hotspot-manager.h>
 #include <nmofono/link.h>
+#include <nmofono/ethernet/ethernet-link.h>
 #include <nmofono/wifi/wifi-link.h>
 #include <nmofono/wwan/modem.h>
 #include <nmofono/wwan/sim.h>
@@ -83,10 +84,12 @@ public:
     virtual bool unstoppableOperationHappening() const = 0;
 
     /// @private
-    Q_PROPERTY(QSet<Link::Ptr> links READ links NOTIFY linksUpdated)
-    virtual QSet<Link::Ptr> links() const = 0;
+    Q_PROPERTY(QSet<Link::SPtr> links READ links NOTIFY linksUpdated)
+    virtual QSet<Link::SPtr> links() const = 0;
 
-    virtual QSet<wifi::WifiLink::Ptr> wifiLinks() const = 0;
+    virtual QSet<wifi::WifiLink::SPtr> wifiLinks() const = 0;
+
+    virtual QSet<ethernet::EthernetLink::SPtr> ethernetLinks() const = 0;
 
     virtual QSet<wwan::Modem::Ptr> modemLinks() const = 0;
 

@@ -31,7 +31,7 @@ class WifiLinkItem : public Item
 public:
     typedef std::shared_ptr<WifiLinkItem> Ptr;
 
-    WifiLinkItem(nmofono::wifi::WifiLink::Ptr link);
+    WifiLinkItem(nmofono::wifi::WifiLink::SPtr link);
     virtual ~WifiLinkItem();
 
     virtual MenuItem::Ptr menuItem();

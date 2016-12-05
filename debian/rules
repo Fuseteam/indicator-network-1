@@ -8,15 +8,8 @@ include /usr/share/dpkg/default.mk
 export DPKG_GENSYMBOLS_CHECK_LEVEL = 4
 
 ENABLE_TESTS = ON
-ifneq (,$(filter $(DEB_HOST_ARCH),arm64 s390x powerpc ppc64el))
-        ENABLE_TESTS = OFF
-endif
-ifneq (,$(filter $(DEB_HOST_ARCH),i386))
-	ifeq (Ubuntu,$(DEB_VENDOR))
-		ifeq (vivid,$(DEB_DISTRIBUTION))
-			ENABLE_TESTS = OFF
-		endif
-	endif
+ifneq (,$(filter $(DEB_HOST_ARCH),s390x powerpc ppc64el))
+	ENABLE_TESTS = OFF
 endif
 
 %:

@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <nmofono/connection/active-connection-manager.h>
 #include <nmofono/manager.h>
 #include <nmofono/kill-switch.h>
 #include <nmofono/hotspot-manager.h>
@@ -51,6 +52,7 @@ public:
             std::shared_ptr<notify::NotificationManager> notificationManager,
             KillSwitch::Ptr killSwitch,
             HotspotManager::SPtr hotspotManager,
+            connection::ActiveConnectionManager::SPtr activeConnectionManager,
             const QDBusConnection& systemBus);
 
     // Public API
@@ -66,8 +68,9 @@ public:
 
     bool roaming() const override;
 
-    QSet<Link::Ptr> links() const override;
-    QSet<wifi::WifiLink::Ptr> wifiLinks() const override;
+    QSet<Link::SPtr> links() const override;
+    QSet<wifi::WifiLink::SPtr> wifiLinks() const override;
+    QSet<ethernet::EthernetLink::SPtr> ethernetLinks() const override;
     QSet<wwan::Modem::Ptr> modemLinks() const override;
 
     Manager::NetworkingStatus status() const override;

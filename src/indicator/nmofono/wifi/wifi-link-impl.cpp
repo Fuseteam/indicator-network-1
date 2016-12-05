@@ -23,7 +23,6 @@
 #include <url-dispatcher-cpp/url-dispatcher.h>
 #include <cassert>
 
-#include <NetworkManagerActiveConnectionInterface.h>
 #include <NetworkManagerDeviceWirelessInterface.h>
 #include <NetworkManagerSettingsConnectionInterface.h>
 
@@ -69,13 +68,14 @@ public:
     shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> m_dev;
     OrgFreedesktopNetworkManagerDeviceWirelessInterface m_wireless;
     shared_ptr<OrgFreedesktopNetworkManagerInterface> m_nm;
+    connection::ActiveConnectionManager::SPtr m_activeConnectionManager;
 
     KillSwitch::Ptr m_killSwitch;
 
     map<AccessPointImpl::Key, shared_ptr<GroupedAccessPoint>> m_grouper;
     uint32_t m_lastState = 0;
     QString m_name;
-    shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> m_activeConnection;
+    connection::ActiveConnection::SPtr m_activeConnection;
     unique_ptr<QMetaObject::Connection> m_signalStrengthConnection;
     bool m_connecting = false;
     bool m_disconnectWifi = false;
@@ -180,24 +180,21 @@ public:
         }
 
         // already up-to-date
-        if (m_activeConnection && m_activeConnection->path() == path.path())
+        if (m_activeConnection && m_activeConnection->path() == path)
         {
             return;
         }
 
-        try {
-            m_activeConnection = make_shared<
-                    OrgFreedesktopNetworkManagerConnectionActiveInterface>(
-                    NM_DBUS_SERVICE, path.path(), m_dev->connection());
-            uint state = m_activeConnection->state();
+        m_activeConnection = m_activeConnectionManager->connection(path);
+        if (m_activeConnection)
+        {
+            auto state = m_activeConnection->state();
             switch (state) {
-            case NM_ACTIVE_CONNECTION_STATE_UNKNOWN:
-            case NM_ACTIVE_CONNECTION_STATE_ACTIVATING:
-            case NM_ACTIVE_CONNECTION_STATE_ACTIVATED:
-            case NM_ACTIVE_CONNECTION_STATE_DEACTIVATING:
-            case NM_ACTIVE_CONNECTION_STATE_DEACTIVATED:
-                ;
-
+            case connection::ActiveConnection::State::unknown:
+            case connection::ActiveConnection::State::activating:
+            case connection::ActiveConnection::State::activated:
+            case connection::ActiveConnection::State::deactivating:
+            case connection::ActiveConnection::State::deactivated:
                 // for Wi-Fi devices specific_object is the AccessPoint object.
                 QDBusObjectPath ap_path = m_activeConnection->specificObject();
                 for (auto &ap : m_groupedAccessPoints) {
@@ -216,10 +213,10 @@ public:
                     }
                 }
             }
-        } catch (exception &e) {
-            qWarning() << "failed to get active connection:";
-            qWarning() << "\tpath: " << path.path();
-            qWarning() << "\t" << QString::fromStdString(e.what());
+        }
+        else
+        {
+            qWarning() << "Failed to get active connection:" << path.path();
         }
     }
 
@@ -367,9 +364,11 @@ public Q_SLOTS:
 
 WifiLinkImpl::WifiLinkImpl(shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
            shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
-           KillSwitch::Ptr killSwitch)
+           KillSwitch::Ptr killSwitch,
+           connection::ActiveConnectionManager::SPtr activeConnectionManager)
     : d(new Private(*this, dev, nm, killSwitch)) {
     d->m_name = d->m_dev->interface();
+    d->m_activeConnectionManager = activeConnectionManager;
 
     connect(&d->m_wireless, &OrgFreedesktopNetworkManagerDeviceWirelessInterface::AccessPointAdded, d.get(), &Private::ap_added);
     connect(&d->m_wireless, &OrgFreedesktopNetworkManagerDeviceWirelessInterface::AccessPointRemoved, d.get(), &Private::ap_removed);

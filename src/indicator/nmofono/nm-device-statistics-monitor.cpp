@@ -18,6 +18,7 @@
  */
 
 #include <nmofono/nm-device-statistics-monitor.h>
+#include <nmofono/ethernet/ethernet-link.h>
 
 #include <NetworkManager.h>
 
@@ -153,10 +154,6 @@ public:
 
     void setUpInterface(const QString &path)
     {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << path;
-#endif
-
         if (!m_interfaces.contains(path))
         {
             return;
@@ -175,9 +172,6 @@ public:
 
     void resetInterface(const QString &path)
     {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << path;
-#endif
         if (!m_interfaces.contains(path))
         {
             return;
@@ -189,9 +183,6 @@ public:
 
     void connectAllInterfaces()
     {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << "";
-#endif
         for (auto path : m_interfaces.keys())
         {
             setUpInterface(path);
@@ -200,9 +191,6 @@ public:
 
     void disconnectAllInterfaces()
     {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << "";
-#endif
         for (auto path : m_interfaces.keys())
         {
             resetInterface(path);
@@ -215,9 +203,6 @@ public Q_SLOTS:
     void handleDisplayPowerStateChange(int status, int reason)
     {
         Q_UNUSED(reason)
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << status;
-#endif
 
         if (m_status != (Status)status) {
             m_status = (Status)status;
@@ -289,7 +274,7 @@ NMDeviceStatisticsMonitor::~NMDeviceStatisticsMonitor()
 }
 
 void
-NMDeviceStatisticsMonitor::addLink(Link::Ptr link)
+NMDeviceStatisticsMonitor::addLink(Link::SPtr link)
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     qDebug() << "adding" << link->name();
@@ -299,21 +284,15 @@ NMDeviceStatisticsMonitor::addLink(Link::Ptr link)
 
     if (std::dynamic_pointer_cast<wifi::WifiLinkImpl>(link))
     {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << "   it's a WiFi link";
-#endif
         path = std::dynamic_pointer_cast<wifi::WifiLinkImpl>(link)->device_path().path();
     }
     else if (std::dynamic_pointer_cast<wwan::Modem>(link))
     {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << "   it's a modem link";
-#endif
         path = std::dynamic_pointer_cast<wwan::Modem>(link)->nmPath();
     }
-    else
+    else if (std::dynamic_pointer_cast<ethernet::EthernetLink>(link))
     {
-        qWarning() << "Unhandled link type with name:" << link->name();
+        path = std::dynamic_pointer_cast<ethernet::EthernetLink>(link)->devicePath().path();
     }
 
     if (path.isEmpty())
@@ -335,10 +314,6 @@ NMDeviceStatisticsMonitor::addLink(Link::Ptr link)
 void
 NMDeviceStatisticsMonitor::remove(const QString &nmPath)
 {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    qDebug() << "removing" << nmPath;
-#endif
-
     if (d->m_interfaces.contains(nmPath))
     {
         d->resetInterface(nmPath);

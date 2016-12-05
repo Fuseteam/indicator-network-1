@@ -79,6 +79,8 @@ public:
 
     iterator end();
 
+    std::size_t size() const;
+
     // clear the whole menu
     void clear();
 

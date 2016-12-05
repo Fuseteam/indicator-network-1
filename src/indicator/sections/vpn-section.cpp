@@ -46,7 +46,6 @@ public:
     Menu::Ptr m_topMenu;
     MenuItem::Ptr m_topItem;
 
-    MenuItem::Ptr m_vpnSettingsItem;
     Menu::Ptr m_vpnSettingsMenu;
     TextItem::Ptr m_openVpnSettings;
 

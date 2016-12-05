@@ -1,8 +1,5 @@
 
 set(INDICATOR_NETWORK_TESTING_GSETTINGS_SCHEMA_DIR "${CMAKE_BINARY_DIR}/data") #need this somewhere higher up in the hierarchy
-#set(INDICATOR_NETWORK_UNDER_TESTING 1)
-#set(INDICATOR_NETWORK_TESTING_GSETTINGS_INI=${CMAKE_BINARY_DIR}/data/test_gsettings.ini)
-#set(GSETTINGS_SCHEMA_DIR="${INDICATOR_NETWORK_TESTING_GSETTINGS_SCHEMA_DIR}")
 
 add_definitions(
     -DNETWORK_SERVICE_BIN="${CMAKE_BINARY_DIR}/src/indicator/indicator-network-service"

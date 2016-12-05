@@ -23,6 +23,7 @@
 #include <nmofono/wifi/access-point.h>
 
 #include <QSet>
+#include <unity/util/DefinesPtrs.h>
 
 namespace nmofono {
 namespace wifi {
@@ -38,7 +39,7 @@ WifiLink : public Link
     Q_OBJECT
 
 public:
-    typedef std::shared_ptr<WifiLink> Ptr;
+    UNITY_DEFINES_PTRS(WifiLink);
     typedef unsigned int Id;
 
     enum class Mode

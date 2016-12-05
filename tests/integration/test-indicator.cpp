@@ -22,6 +22,9 @@
 #include <QTestEventLoop>
 #include <QSignalSpy>
 
+#include <NetworkManagerDeviceInterface.h>
+#include <NetworkManagerActiveConnectionInterface.h>
+
 using namespace std;
 using namespace testing;
 using namespace connectivityqt;
@@ -52,12 +55,441 @@ TEST_F(TestIndicator, BasicMenuContents)
                 .item(modemInfo("", "fake.tel", "gsm-3g-full"))
                 .item(cellularSettings())
             )
-            .item(wifiEnableSwitch())
-            .item(wifiSettings())
             .item(mh::MenuItemMatcher()
                 .section()
             )
         ).match());
+}
+
+TEST_F(TestIndicator, OneDisabledEthernetAtStartup)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto connection = createEthernetConnection("Home", device);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicator, OneConnectedEthernetAtStartup)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto connection = createEthernetConnection("Home", device);
+    createActiveConnection("0", device, connection);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicator, TwoEthernetAtStartupConnectedAndDisconnected)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // Active and connected with two connections
+    auto eth0 = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED, "0");
+    auto eth0connection0 = createEthernetConnection("Home", eth0);
+    auto eth0connection1 = createEthernetConnection("Work", eth0);
+    createActiveConnection("0", eth0, eth0connection0);
+
+    // Active but disconnected
+    auto eth1 = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED, "1");
+    setNmProperty(eth1, NM_DBUS_INTERFACE_DEVICE, "Autoconnect", true);
+    auto eth1connection0 = createEthernetConnection("Home", eth1);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected", "network-wired-disabled"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet (eth0)",
+                      "Connected",
+                      Toggle::enabled)
+                )
+                .item(radio("Home", Toggle::enabled))
+                .item(radio("Work", Toggle::disabled))
+            )
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet (eth1)",
+                      "Disconnected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicator, OneDisabledEthernetAfterStartup)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto connection = createEthernetConnection("Home", device);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicator, OneConnectedEthernetAfterStartup)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto connection = createEthernetConnection("Home", device);
+    createActiveConnection("0", device, connection);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicator, TwoEthernetAfterStartupConnectedAndDisconnected)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    // Active and connected with two connections
+    auto eth0 = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED, "0");
+    auto eth0connection0 = createEthernetConnection("Home", eth0);
+    auto eth0connection1 = createEthernetConnection("Work", eth0);
+    createActiveConnection("0", eth0, eth0connection0);
+
+    // Active but disconnected
+    auto eth1 = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED, "1");
+    setNmProperty(eth1, NM_DBUS_INTERFACE_DEVICE, "Autoconnect", true);
+    auto eth1connection0 = createEthernetConnection("Home", eth1);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected", "network-wired-disabled"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet (eth0)",
+                      "Connected",
+                      Toggle::enabled)
+                )
+                .item(radio("Home", Toggle::enabled))
+                .item(radio("Work", Toggle::disabled))
+            )
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet (eth1)",
+                      "Disconnected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicator, ConnectToEthernet)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto connection = createEthernetConnection("Home", device);
+    OrgFreedesktopNetworkManagerDeviceInterface deviceInterface(NM_DBUS_SERVICE, device, dbusTestRunner.systemConnection());
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_FALSE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_DISCONNECTED, deviceInterface.state());
+    QDBusObjectPath activeConnection = deviceInterface.activeConnection();
+    EXPECT_EQ("/", activeConnection.path().toStdString());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                    .activate()
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+
+    EXPECT_TRUE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_ACTIVATED, deviceInterface.state());
+    activeConnection = deviceInterface.activeConnection();
+    EXPECT_NE("/", activeConnection.path().toStdString());
+}
+
+TEST_F(TestIndicator, ConnectToEthernetSelectProfile)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto homeConnection = createEthernetConnection("Home", device);
+    auto roamingConnection = createEthernetConnection("Roaming", device);
+    auto workConnection = createEthernetConnection("Work", device);
+    OrgFreedesktopNetworkManagerDeviceInterface deviceInterface(NM_DBUS_SERVICE, device, dbusTestRunner.systemConnection());
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_FALSE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_DISCONNECTED, deviceInterface.state());
+    QDBusObjectPath activeConnection = deviceInterface.activeConnection();
+    EXPECT_EQ("/", activeConnection.path().toStdString());
+
+    // First select a different profile
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                )
+                .item(radio("Home", Toggle::enabled))
+                .item(radio("Roaming", Toggle::disabled))
+                .item(radio("Work", Toggle::disabled).activate())
+            )
+        ).match());
+
+    // Now connect
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                    .activate()
+                )
+                .item(radio("Home", Toggle::disabled))
+                .item(radio("Roaming", Toggle::disabled))
+                .item(radio("Work", Toggle::enabled))
+            )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                )
+                .item(radio("Home", Toggle::disabled))
+                .item(radio("Roaming", Toggle::disabled))
+                .item(radio("Work", Toggle::enabled))
+            )
+        ).match());
+
+    EXPECT_TRUE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_ACTIVATED, deviceInterface.state());
+    activeConnection = deviceInterface.activeConnection();
+    ASSERT_NE("/", activeConnection.path().toStdString());
+
+    // Check we're connected to the "Work" profile
+    OrgFreedesktopNetworkManagerConnectionActiveInterface activeConnectionInterface(NM_DBUS_SERVICE, activeConnection.path(), dbusTestRunner.systemConnection());
+    auto connection = activeConnectionInterface.connection();
+    EXPECT_EQ(workConnection, connection.path());
+}
+
+
+TEST_F(TestIndicator, DisconnectFromEthernet)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto connection = createEthernetConnection("Home", device);
+    createActiveConnection("0", device, connection);
+    OrgFreedesktopNetworkManagerDeviceInterface deviceInterface(NM_DBUS_SERVICE, device, dbusTestRunner.systemConnection());
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_TRUE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_ACTIVATED, deviceInterface.state());
+    QDBusObjectPath activeConnection = deviceInterface.activeConnection();
+    EXPECT_NE("/", activeConnection.path().toStdString());
+
+    auto& deviceMockInterface = dbusMock.mockInterface(NM_DBUS_SERVICE, device, NM_DBUS_INTERFACE_DEVICE, QDBusConnection::SystemBus);
+    QSignalSpy deviceSpy(&deviceMockInterface, SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                    .activate()
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+
+    WAIT_FOR_SIGNALS(deviceSpy, 1);
+    ASSERT_EQ(1, deviceSpy.size());
+    {
+        auto & call = deviceSpy.at(0);
+        EXPECT_EQ("Disconnect", call.at(0).toString());
+    }
+
+    EXPECT_FALSE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_DISCONNECTED, deviceInterface.state());
+    activeConnection = deviceInterface.activeConnection();
+    EXPECT_EQ("/", activeConnection.path().toStdString());
 }
 
 TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
@@ -202,8 +634,6 @@ TEST_F(TestIndicator, SecondModem)
                 .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-full"))
                 .item(cellularSettings())
             )
-            .item(wifiEnableSwitch())
-            .item(wifiSettings())
             .item(mh::MenuItemMatcher()
                 .section()
             )

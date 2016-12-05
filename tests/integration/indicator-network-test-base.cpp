@@ -217,15 +217,21 @@ mh::MenuMatcher::Parameters IndicatorNetworkTestBase::unlockSimParameters(std::s
             "/com/canonical/indicator/network/unlocksim" + to_string(exportId));
 }
 
-void IndicatorNetworkTestBase::startIndicator()
+void
+IndicatorNetworkTestBase::startIndicator()
 {
     try
     {
-        indicator.reset(
-                new QProcessDBusService(DBusTypes::DBUS_NAME,
-                                        QDBusConnection::SessionBus,
-                                        NETWORK_SERVICE_BIN,
-                                        QStringList()));
+        if (qEnvironmentVariableIsSet("TEST_WITH_GDB"))
+        {
+            indicator.reset(new QProcessDBusService(DBusTypes::DBUS_NAME, QDBusConnection::SessionBus, "/usr/bin/gdb", QStringList
+                { "-batch", "-ex", "run", "-ex", "bt", NETWORK_SERVICE_BIN }));
+        }
+        else
+        {
+            indicator.reset(new QProcessDBusService(DBusTypes::DBUS_NAME, QDBusConnection::SessionBus,
+                NETWORK_SERVICE_BIN, QStringList()));
+        }
         indicator->start(dbusTestRunner.sessionConnection());
     }
     catch (exception const& e)
@@ -239,6 +245,40 @@ QString IndicatorNetworkTestBase::createEthernetDevice(int state, const QString&
 {
     auto& networkManager(dbusMock.networkManagerInterface());
     auto reply = networkManager.AddEthernetDevice(id, "eth" + id, state);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    QString path = reply;
+
+    if (state == NM_DEVICE_STATE_ACTIVATED)
+    {
+        setNmProperty(path, NM_DBUS_INTERFACE_DEVICE, "Autoconnect", true);
+    }
+
+    return reply;
+}
+
+QString IndicatorNetworkTestBase::createEthernetConnection(const QString& name, const QString& device)
+{
+    auto& networkManager(dbusMock.networkManagerInterface());
+
+    VariantDictMap settings{
+        {"802-3-ethernet", QVariantMap{
+            {"duplex", "full"},
+            {"mac-address", randomMac().toUtf8()},
+            {"mac-address-blacklist", QStringList()}
+        }},
+        {"connection", QVariantMap{
+            {"id", name},
+            {"interface-name", "ens33"},
+            {"type", "802-3-ethernet"},
+            {"permissions", QStringList()},
+            {"secondaries", QStringList()}
+        }}
+    };
+    auto reply = networkManager.AddDeviceConnection(device, settings);
     reply.waitForFinished();
     if (reply.isError())
     {
@@ -272,7 +312,6 @@ QString IndicatorNetworkTestBase::createOfonoModemDevice(const QString &ofonoPat
     }
     return reply;
 }
-
 
 void IndicatorNetworkTestBase::setDeviceStatistics(const QString &device, quint64 tx, quint64 rx)
 {
@@ -654,6 +693,34 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::cellularSettings()
     return mh::MenuItemMatcher()
         .label("Cellular settings…")
         .action("indicator.cellular.settings");
+}
+
+mh::MenuItemMatcher IndicatorNetworkTestBase::ethernetInfo(const string& label,
+                                                           const string& status,
+                                                           Toggle autoConnect)
+{
+    return mh::MenuItemMatcher()
+        .checkbox()
+        .widget("com.canonical.indicator.switch")
+        .toggled(autoConnect == Toggle::enabled)
+        .label(label)
+        .pass_through_string_attribute("x-canonical-subtitle-action", status);
+}
+
+mh::MenuItemMatcher IndicatorNetworkTestBase::radio(const string& label,
+                                                    Toggle toggled)
+{
+    return mh::MenuItemMatcher()
+        .radio()
+        .label(label)
+        .toggled(toggled == Toggle::enabled);
+}
+
+mh::MenuItemMatcher IndicatorNetworkTestBase::ethernetSettings()
+{
+    return mh::MenuItemMatcher()
+        .label("Ethernet settings…")
+        .action("indicator.ethernet.settings");
 }
 
 QString IndicatorNetworkTestBase::createVpnConnection(const QString& id,
