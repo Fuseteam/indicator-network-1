@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Ken VanDine <ken.vandine@canonical.com>
 Build-Depends: cmake,
-               cmake-extras (>= 0.4),
+               cmake-extras (>= 0.10),
                dbus,
                debhelper (>= 9.0.0),
                doxygen,

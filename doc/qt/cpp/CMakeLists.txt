@@ -1,7 +1,7 @@
 
 add_subdirectory(examples)
 
-include(UseDoxygen OPTIONAL)
+find_package(DoxygenBuilder)
 
 add_doxygen(
     qtdoc

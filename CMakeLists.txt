@@ -22,9 +22,9 @@ add_definitions(
 )
 
 find_package(PkgConfig REQUIRED)
-include(EnableCoverageReport)
+find_package(CoverageReport)
 include(GNUInstallDirs)
-include(UseGSettings)
+find_package(GSettings)
 
 set(GETTEXT_PACKAGE indicator-network)
 set(LOCALE_DIR "${CMAKE_INSTALL_FULL_DATADIR}/locale")
