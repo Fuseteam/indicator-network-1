@@ -15,6 +15,7 @@
  *
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ *     Pete Woods <pete.woods@canonical.com>
  */
 
 #include <connectivityqt/sims-list-model.h>

@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
+ *     Pete Woods <pete.woods@canonical.com>
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
