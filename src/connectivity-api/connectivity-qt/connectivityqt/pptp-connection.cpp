@@ -15,6 +15,7 @@
  *
  * Authors:
  *     Pete Woods <pete.woods@canonical.com>
+ *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
 #include <connectivityqt/pptp-connection.h>
